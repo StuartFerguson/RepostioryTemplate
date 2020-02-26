@@ -38,10 +38,7 @@ namespace EstateReporting.BusinessLogic.Tests
             Mock<IDomainEventHandler> domainEventHandler = new Mock<IDomainEventHandler>();
             Func<Type, IDomainEventHandler> createDomainEventHandlerFunc = (type) => { return domainEventHandler.Object; };
             
-            Should.Throw<NotSupportedException>(() =>
-                                                {
-                                                    DomainEventHandlerResolver resolver = new DomainEventHandlerResolver(eventHandlerConfiguration, createDomainEventHandlerFunc);
-                                                });
+            Should.Throw<NotSupportedException>(() => new DomainEventHandlerResolver(eventHandlerConfiguration, createDomainEventHandlerFunc));
         }
 
         [Fact]

@@ -30,6 +30,7 @@
                                                  String connectionString,
                                                  CancellationToken cancellationToken)
         {
+            throw new NotImplementedException("This is only required to complete the interface");
         }
 
         /// <summary>
@@ -42,6 +43,7 @@
                                                               ConnectionStringType connectionStringType,
                                                               CancellationToken cancellationToken)
         {
+            throw new NotImplementedException("This is only required to complete the interface");
         }
 
         /// <summary>
@@ -63,6 +65,8 @@
                     databaseName = "EstateReportingReadModel" + externalIdentifier;
                     connectionString = ConfigurationReader.GetConnectionString("EstateReportingReadModel");
                     break;
+                default:
+                    throw new NotSupportedException($"Connection String type [{connectionStringType}] is not supported");
             }
 
             DbConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString)
