@@ -8,8 +8,8 @@
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="EstateReporting.BusinessLogic.IDomainEventHandlerResover" />
-    public class DomainEventHandlerResolver : IDomainEventHandlerResover
+    /// <seealso cref="IDomainEventHandlerResolver" />
+    public class DomainEventHandlerResolver : IDomainEventHandlerResolver
     {
         #region Fields
 
@@ -31,7 +31,7 @@
         /// Initializes a new instance of the <see cref="DomainEventHandlerResolver" /> class.
         /// </summary>
         /// <param name="eventHandlerConfiguration">The event handler configuration.</param>
-        public DomainEventHandlerResolver(Dictionary<String, String[]> eventHandlerConfiguration)
+        public DomainEventHandlerResolver(Dictionary<String, String[]> eventHandlerConfiguration, Func<Type, IDomainEventHandler> createEventHandlerResolver)
         {
             this.EventHandlerConfiguration = eventHandlerConfiguration;
 
@@ -56,7 +56,7 @@
                     throw new NotSupportedException("Event handler configuration is not for a valid type");
                 }
 
-                IDomainEventHandler eventHandler = (IDomainEventHandler)Activator.CreateInstance(handlerType);
+                IDomainEventHandler eventHandler = createEventHandlerResolver(handlerType);
                 this.DomainEventHandlers.Add(handlerTypeString, eventHandler);
             }
         }

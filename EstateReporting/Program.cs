@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 namespace EstateReporting
 {
     using System.IO;
-    using Autofac.Extensions.DependencyInjection;
 
     [ExcludeFromCodeCoverage]
     public class Program
@@ -42,7 +41,7 @@ namespace EstateReporting
                                                      webBuilder.UseStartup<Startup>();
                                                      webBuilder.UseConfiguration(config);
                                                      webBuilder.UseKestrel();
-                                                 }).UseServiceProviderFactory(new AutofacServiceProviderFactory());
+                                                 });
             return hostBuilder;
         }
 

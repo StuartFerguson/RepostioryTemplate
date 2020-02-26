@@ -18,9 +18,9 @@ namespace EstateReporting.Controllers
     [ExcludeFromCodeCoverage]
     public class DomainEventController : ControllerBase
     {
-        private readonly IDomainEventHandlerResover DomainEventHandlerResolver;
+        private readonly IDomainEventHandlerResolver DomainEventHandlerResolver;
 
-        public DomainEventController(IDomainEventHandlerResover domainEventHandlerResolver)
+        public DomainEventController(IDomainEventHandlerResolver domainEventHandlerResolver)
         {
             this.DomainEventHandlerResolver = domainEventHandlerResolver;
         }

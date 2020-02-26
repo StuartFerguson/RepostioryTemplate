@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="0.0.8.4" />
+  </ItemGroup>
+
+</Project>

@@ -6,7 +6,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public interface IDomainEventHandlerResover
+    public interface IDomainEventHandlerResolver
     {
         #region Methods
 
