@@ -10,24 +10,30 @@ using Microsoft.Extensions.Hosting;
 
 namespace EstateReporting
 {
+    using System.Data.Common;
     using System.IO;
     using System.Net.Http;
     using System.Reflection;
-    using Autofac;
+    using System.Threading;
+    using System.Xml.Serialization;
     using BusinessLogic;
     using Common;
+    using Database;
     using EventStore.ClientAPI;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.AspNetCore.Mvc.Versioning;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
     using NLog.Extensions.Logging;
+    using Repository;
     using Shared.DomainDrivenDesign.EventStore;
+    using Shared.EntityFramework;
     using Shared.EntityFramework.ConnectionStringConfiguration;
     using Shared.EventStore.EventStore;
     using Shared.Extensions;
@@ -36,6 +42,7 @@ namespace EstateReporting
     using Shared.Repositories;
     using Swashbuckle.AspNetCore.Filters;
     using Swashbuckle.AspNetCore.SwaggerGen;
+    using ConnectionStringType = Shared.Repositories.ConnectionStringType;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public class Startup
@@ -59,9 +66,11 @@ namespace EstateReporting
         public void ConfigureServices(IServiceCollection services)
         {
             this.ConfigureMiddlewareServices(services);
-        }
 
-        public void ConfigureContainer(ContainerBuilder builder)
+
+        }
+        
+        public void ConfigureContainer(IServiceCollection services)
         {
             ConfigurationReader.Initialise(Startup.Configuration);
             
@@ -70,13 +79,15 @@ namespace EstateReporting
             if (useConnectionStringConfig)
             {
                 String connectionStringConfigurationConnString = ConfigurationReader.GetConnectionString("ConnectionStringConfiguration");
-                builder.Register(c => new ConnectionStringConfigurationContext(connectionStringConfigurationConnString)).InstancePerDependency();
-                builder.RegisterType<ConnectionStringConfigurationRepository>().As<IConnectionStringConfigurationRepository>().SingleInstance();
+                services.AddSingleton<IConnectionStringConfigurationRepository, ConnectionStringConfigurationRepository>();
+                services.AddTransient<ConnectionStringConfigurationContext>(c =>
+                                                                            {
+                                                                                return new ConnectionStringConfigurationContext(connectionStringConfigurationConnString);
+                                                                            });
             }
             else
             {
-                // TODO: Once we have a Read Model
-                //this.RegisterType<Vme.Repositories.IConnectionStringRepository, ConfigReaderConnectionStringRepository>().Singleton();
+                services.AddSingleton<IConnectionStringConfigurationRepository, ConfigurationReaderConnectionStringRepository>();
             }
 
             Dictionary<String, String[]> eventHandlersConfiguration = new Dictionary<String, String[]>();
@@ -91,19 +102,30 @@ namespace EstateReporting
                 }
             }
 
-            DomainEventHandlerResolver domainEventHandlerResolver = new DomainEventHandlerResolver(eventHandlersConfiguration);
+            services.AddSingleton<Dictionary<String, String[]>>(eventHandlersConfiguration);
 
-            //Can we create a static method in this class that returns IContainer?
-            builder.RegisterInstance<IDomainEventHandlerResover>(domainEventHandlerResolver).SingleInstance();
-
-            //builder.RegisterType<ModelFactory>().As<IModelFactory>().SingleInstance();
-            //builder.RegisterType<Factories.ModelFactory>().As<Factories.IModelFactory>().SingleInstance();
-            //builder.RegisterType<SecurityServiceClient>().As<ISecurityServiceClient>().SingleInstance();
+            services.AddSingleton<IEstateReportingRepository, EstateReportingRepository>();
+            services.AddSingleton<IDbContextFactory<EstateReportingContext>, DbContextFactory<EstateReportingContext>>();
             
-            Func<String, String> apiAddressResolver = (serviceName) => { return ConfigurationReader.GetBaseServerUri(serviceName).OriginalString; };
+            services.AddSingleton<Func<Type, IDomainEventHandler>>(container => (type) =>
+                                                                                {
+                                                                                    IDomainEventHandler handler = container.GetService(type) as IDomainEventHandler;
+                                                                                    return handler;
+                                                                                });
 
-            builder.RegisterInstance<Func<String, String>>(apiAddressResolver);
-            builder.RegisterType<HttpClient>().SingleInstance();
+            services.AddSingleton<Func<String, EstateReportingContext>>(cont => (connectionString) => { return new EstateReportingContext(connectionString); });
+            
+            services.AddSingleton<EstateDomainEventHandler>();
+            services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
+
+            //    //builder.RegisterType<ModelFactory>().As<IModelFactory>().SingleInstance();
+            //    //builder.RegisterType<Factories.ModelFactory>().As<Factories.IModelFactory>().SingleInstance();
+            //    //builder.RegisterType<SecurityServiceClient>().As<ISecurityServiceClient>().SingleInstance();
+
+            //Func <String, String> apiAddressResolver = (serviceName) => { return ConfigurationReader.GetBaseServerUri(serviceName).OriginalString; };
+
+            //    builder.RegisterInstance<Func<String, String>>(apiAddressResolver);
+            //    builder.RegisterType<HttpClient>().SingleInstance();
         }
 
         private void ConfigureMiddlewareServices(IServiceCollection services)
@@ -223,4 +245,6 @@ namespace EstateReporting
                              });
         }
     }
+
+    
 }

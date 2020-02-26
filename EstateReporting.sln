@@ -3,15 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting", "EstateReporting\EstateReporting.csproj", "{AEDDA931-5EEA-4DDC-8F36-8BB5CF97B516}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting", "EstateReporting\EstateReporting.csproj", "{AEDDA931-5EEA-4DDC-8F36-8BB5CF97B516}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EFE4B683-720B-453D-84B7-8955A5648620}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3DAECF53-D7C1-4473-8BC2-296BDFD906A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.BusinessLogic", "EstateReporting.BusinessLogic\EstateReporting.BusinessLogic.csproj", "{61B2DB90-7847-4468-8D0D-48910CA3CA52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.BusinessLogic", "EstateReporting.BusinessLogic\EstateReporting.BusinessLogic.csproj", "{61B2DB90-7847-4468-8D0D-48910CA3CA52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.BusinessLogic.Tests", "EstateReporting.BusinessLogic.Tests\EstateReporting.BusinessLogic.Tests.csproj", "{3039BBE0-3310-41C9-BA4F-9CE901123AEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.BusinessLogic.Tests", "EstateReporting.BusinessLogic.Tests\EstateReporting.BusinessLogic.Tests.csproj", "{3039BBE0-3310-41C9-BA4F-9CE901123AEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Repository", "EstateReporting.Repository\EstateReporting.Repository.csproj", "{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Database", "EstateReporting.Database\EstateReporting.Database.csproj", "{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Repository.Tests", "EstateReporting.Repository.Tests\EstateReporting.Repository.Tests.csproj", "{69C591C3-4632-4C82-9631-706215655714}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Tests", "EstateReporting.Tests\EstateReporting.Tests.csproj", "{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +39,22 @@ Global
 		{3039BBE0-3310-41C9-BA4F-9CE901123AEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3039BBE0-3310-41C9-BA4F-9CE901123AEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3039BBE0-3310-41C9-BA4F-9CE901123AEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69C591C3-4632-4C82-9631-706215655714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C591C3-4632-4C82-9631-706215655714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C591C3-4632-4C82-9631-706215655714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C591C3-4632-4C82-9631-706215655714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +63,10 @@ Global
 		{AEDDA931-5EEA-4DDC-8F36-8BB5CF97B516} = {EFE4B683-720B-453D-84B7-8955A5648620}
 		{61B2DB90-7847-4468-8D0D-48910CA3CA52} = {EFE4B683-720B-453D-84B7-8955A5648620}
 		{3039BBE0-3310-41C9-BA4F-9CE901123AEF} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
+		{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8} = {EFE4B683-720B-453D-84B7-8955A5648620}
+		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C} = {EFE4B683-720B-453D-84B7-8955A5648620}
+		{69C591C3-4632-4C82-9631-706215655714} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
+		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {977E9A6E-2332-4BC9-B774-75F089C6DB46}

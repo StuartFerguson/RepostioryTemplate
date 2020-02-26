@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200225165624_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200225165624_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200225205011_InitialDatabase1.cs" />
+    <Compile Remove="Migrations\20200225205011_InitialDatabase1.Designer.cs" />
+    <Compile Remove="Migrations\20200225210318_InitialDatabase1.cs" />
+    <Compile Remove="Migrations\20200225210318_InitialDatabase1.Designer.cs" />
+    <Compile Remove="Migrations\20200225210724_InitialDatabase1.cs" />
+    <Compile Remove="Migrations\20200225210724_InitialDatabase1.Designer.cs" />
+    <Compile Remove="Migrations\20200225211039_InitialDatabase1.cs" />
+    <Compile Remove="Migrations\20200225211039_InitialDatabase1.Designer.cs" />
+    <Compile Remove="Migrations\20200226072926_InitialDatabase1.cs" />
+    <Compile Remove="Migrations\20200226072926_InitialDatabase1.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+    <PackageReference Include="Shared" Version="0.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
+  </ItemGroup>
+
+</Project>
