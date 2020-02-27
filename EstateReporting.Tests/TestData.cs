@@ -170,7 +170,7 @@
         /// The merchant security user added event
         /// </summary>
         public static MerchantSecurityUserAddedEvent MerchantSecurityUserAddedEvent =
-            MerchantSecurityUserAddedEvent.Create(TestData.EstateId, TestData.MerchantId, TestData.SecurityUserId, TestData.EmailAddress);
+            MerchantSecurityUserAddedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.SecurityUserId, TestData.EmailAddress);
 
         #endregion
     }
