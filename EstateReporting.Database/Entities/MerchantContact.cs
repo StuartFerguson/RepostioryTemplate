@@ -1,16 +1,23 @@
 ﻿namespace EstateReporting.Database.Entities
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// 
     /// </summary>
-    [Table("estatesecurityuser")]
-    public class EstateSecurityUser
+    [Table("merchantcontact")]
+    public class MerchantContact
     {
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the contact identifier.
+        /// </summary>
+        /// <value>
+        /// The contact identifier.
+        /// </value>
+        public Guid ContactId { get; set; }
 
         /// <summary>
         /// Gets or sets the created date time.
@@ -37,12 +44,28 @@
         public Guid EstateId { get; set; }
 
         /// <summary>
-        /// Gets or sets the security user identifier.
+        /// Gets or sets the merchant identifier.
         /// </summary>
         /// <value>
-        /// The security user identifier.
+        /// The merchant identifier.
         /// </value>
-        public Guid SecurityUserId { get; set; }
+        public Guid MerchantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public String Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the phone number.
+        /// </summary>
+        /// <value>
+        /// The phone number.
+        /// </value>
+        public String PhoneNumber { get; set; }
 
         #endregion
     }

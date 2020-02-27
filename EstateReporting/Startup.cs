@@ -116,6 +116,7 @@ namespace EstateReporting
             services.AddSingleton<Func<String, EstateReportingContext>>(cont => (connectionString) => { return new EstateReportingContext(connectionString); });
             
             services.AddSingleton<EstateDomainEventHandler>();
+            services.AddSingleton<MerchantDomainEventHandler>();
             services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
 
             //    //builder.RegisterType<ModelFactory>().As<IModelFactory>().SingleInstance();

@@ -20,6 +20,8 @@
     <Compile Remove="Migrations\20200226072817_InitialDatabase.Designer.cs" />
     <Compile Remove="Migrations\20200226072926_InitialDatabase1.cs" />
     <Compile Remove="Migrations\20200226072926_InitialDatabase1.Designer.cs" />
+    <Compile Remove="Migrations\20200227113254_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200227113254_InitialDatabase.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
