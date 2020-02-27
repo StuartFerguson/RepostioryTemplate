@@ -86,6 +86,31 @@
             Logger.LogInformation($"Read Model database for estate [{estateId}] migrated to latest version");
         }
 
+        /// <summary>
+        /// Adds the estate security user.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddEstateSecurityUser(SecurityUserAddedEvent domainEvent,
+                                                CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            EstateSecurityUser estateSecurityUser = new EstateSecurityUser
+                                                    {
+                                                        CreatedDateTime = domainEvent.EventCreatedDateTime,
+                                                        EstateId = domainEvent.EstateId,
+                                                        EmailAddress = domainEvent.EmailAddress,
+                                                        SecurityUserId = domainEvent.SecurityUserId
+                                                    };
+
+            await context.EstateSecurityUsers.AddAsync(estateSecurityUser, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         #endregion
     }
 }

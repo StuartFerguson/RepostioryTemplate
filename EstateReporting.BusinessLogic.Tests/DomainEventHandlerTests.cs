@@ -3,6 +3,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using System;
     using System.Threading;
     using EstateManagement.Estate.DomainEvents;
+    using EstateReporting.Tests;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;
     using Repository;
@@ -25,7 +26,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void EstateDomainEventHandler_EstateCreatedEvent_EventIsHandled()
         {
-            EstateCreatedEvent estateCreatedEvent = EstateCreatedEvent.Create(Guid.NewGuid(), "TestEstate1");
+            EstateCreatedEvent estateCreatedEvent = TestData.EstateCreatedEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
@@ -37,6 +38,23 @@ namespace EstateReporting.BusinessLogic.Tests
                                 {
                                     await eventHandler.Handle(estateCreatedEvent, CancellationToken.None);
                                 });
+        }
+
+        [Fact]
+        public void EstateDomainEventHandler_SecurityUserAddedEvent_EventIsHandled()
+        {
+            SecurityUserAddedEvent securityUserAddedEvent = TestData.SecurityUserAddedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            EstateDomainEventHandler eventHandler = new EstateDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(securityUserAddedEvent, CancellationToken.None);
+                            });
         }
     }
 }
