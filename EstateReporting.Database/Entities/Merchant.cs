@@ -1,14 +1,13 @@
 ﻿namespace EstateReporting.Database.Entities
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// 
     /// </summary>
-    [Table("estate")]
-    public class Estate
+    [Table("merchant")]
+    public class Merchant
     {
         #region Properties
 
@@ -27,6 +26,14 @@
         /// The estate identifier.
         /// </value>
         public Guid EstateId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant identifier.
+        /// </summary>
+        /// <value>
+        /// The merchant identifier.
+        /// </value>
+        public Guid MerchantId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

@@ -3,6 +3,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using System;
     using System.Threading;
     using EstateManagement.Estate.DomainEvents;
+    using EstateManagement.Merchant.DomainEvents;
     using EstateReporting.Tests;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;
@@ -10,6 +11,8 @@ namespace EstateReporting.BusinessLogic.Tests
     using Shared.Logger;
     using Shouldly;
     using Xunit;
+    using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
+    using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
     public class EstateDomainEventHandlerTests
     {
@@ -43,7 +46,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void EstateDomainEventHandler_SecurityUserAddedEvent_EventIsHandled()
         {
-            SecurityUserAddedEvent securityUserAddedEvent = TestData.SecurityUserAddedEvent;
+            EstateSecurityUserAddedEvent securityUserAddedEvent = TestData.EstateSecurityUserAddedEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
@@ -54,6 +57,91 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(securityUserAddedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_MerchantCreatedEvent_EventIsHandled()
+        {
+            MerchantCreatedEvent merchantCreatedEvent = TestData.MerchantCreatedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(merchantCreatedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_AddressAddedEvent_EventIsHandled()
+        {
+            AddressAddedEvent addressAddedEvent = TestData.AddressAddedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(addressAddedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_ContactAddedEvent_EventIsHandled()
+        {
+            ContactAddedEvent contactAddedEvent = TestData.ContactAddedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(contactAddedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_DeviceAddedToMerchantEvent_EventIsHandled()
+        {
+            DeviceAddedToMerchantEvent deviceAddedToMerchantEvent = TestData.DeviceAddedToMerchantEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(deviceAddedToMerchantEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_SecurityUserAddedEvent_EventIsHandled()
+        {
+            MerchantSecurityUserAddedEvent merchantSecurityUserAddedEvent = TestData.MerchantSecurityUserAddedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(merchantSecurityUserAddedEvent, CancellationToken.None);
                             });
         }
     }

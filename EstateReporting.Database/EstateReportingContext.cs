@@ -1,7 +1,6 @@
 ﻿namespace EstateReporting.Database
 {
     using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -27,7 +26,7 @@
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EstateReportingContext"/> class.
+        /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
         public EstateReportingContext()
         {
@@ -38,7 +37,7 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EstateReportingContext"/> class.
+        /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         public EstateReportingContext(String connectionString)
@@ -47,7 +46,7 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EstateReportingContext"/> class.
+        /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
         /// <param name="dbContextOptions">The database context options.</param>
         public EstateReportingContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
@@ -74,28 +73,49 @@
         /// </value>
         public DbSet<EstateSecurityUser> EstateSecurityUsers { get; set; }
 
+        /// <summary>
+        /// Gets or sets the merchant addresses.
+        /// </summary>
+        /// <value>
+        /// The merchant addresses.
+        /// </value>
+        public DbSet<MerchantAddress> MerchantAddresses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant contacts.
+        /// </summary>
+        /// <value>
+        /// The merchant contacts.
+        /// </value>
+        public DbSet<MerchantContact> MerchantContacts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant devices.
+        /// </summary>
+        /// <value>
+        /// The merchant devices.
+        /// </value>
+        public DbSet<MerchantDevice> MerchantDevices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the estate security users.
+        /// </summary>
+        /// <value>
+        /// The estate security users.
+        /// </value>
+        public DbSet<Merchant> Merchants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant security users.
+        /// </summary>
+        /// <value>
+        /// The merchant security users.
+        /// </value>
+        public DbSet<MerchantSecurityUser> MerchantSecurityUsers { get; set; }
+
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Sets the ignore duplicates.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task SetIgnoreDuplicates(CancellationToken cancellationToken)
-        {
-            String[] alterStatements =
-            {
-                nameof(Estate),
-                nameof(EstateSecurityUser)
-            };
-
-            alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();
-
-            String sql = string.Join(";", alterStatements);
-
-            await this.Database.ExecuteSqlRawAsync(sql, cancellationToken);
-        }
 
         /// <summary>
         /// Migrates the asynchronous.
@@ -153,7 +173,76 @@
         /// </remarks>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Estate>().HasKey(t => new
+                                                            {
+                                                                t.EstateId
+                                                            });
+
+            modelBuilder.Entity<EstateSecurityUser>().HasKey(t => new
+                                                      {
+                                                          t.SecurityUserId,
+                                                          t.EstateId
+                                                      });
+
+            modelBuilder.Entity<Merchant>().HasKey(t => new
+                                                      {
+                                                          t.EstateId,
+                                                          t.MerchantId
+                                                      });
+
+            modelBuilder.Entity<MerchantAddress>().HasKey(t => new
+                                                      {
+                                                          t.EstateId,
+                                                          t.MerchantId,
+                                                          t.AddressId
+                                                      });
+
+            modelBuilder.Entity<MerchantContact>().HasKey(t => new
+                                                      {
+                                                          t.EstateId,
+                                                          t.MerchantId,
+                                                          t.ContactId
+                                                      });
+
+            modelBuilder.Entity<MerchantDevice>().HasKey(t => new
+                                                      {
+                                                          t.EstateId,
+                                                          t.MerchantId,
+                                                          t.DeviceId
+                                                      });
+
+            modelBuilder.Entity<MerchantSecurityUser>().HasKey(t => new
+                                                      {
+                                                          t.EstateId,
+                                                          t.MerchantId,
+                                                          t.SecurityUserId
+                                                      });
+
             base.OnModelCreating(modelBuilder);
+        }
+
+        /// <summary>
+        /// Sets the ignore duplicates.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task SetIgnoreDuplicates(CancellationToken cancellationToken)
+        {
+            String[] alterStatements =
+            {
+                nameof(Estate), 
+                nameof(EstateSecurityUser), 
+                nameof(Merchant),
+                nameof(MerchantAddress), 
+                nameof(MerchantContact), 
+                nameof(MerchantDevice),
+                nameof(MerchantSecurityUser)
+            };
+
+            alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();
+
+            String sql = string.Join(";", alterStatements);
+
+            await this.Database.ExecuteSqlRawAsync(sql, cancellationToken);
         }
 
         #endregion
