@@ -66,6 +66,14 @@
         /// </value>
         public DbSet<Estate> Estates { get; set; }
 
+        /// <summary>
+        /// Gets or sets the estate security users.
+        /// </summary>
+        /// <value>
+        /// The estate security users.
+        /// </value>
+        public DbSet<EstateSecurityUser> EstateSecurityUsers { get; set; }
+
         #endregion
 
         #region Methods
@@ -76,7 +84,11 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         private async Task SetIgnoreDuplicates(CancellationToken cancellationToken)
         {
-            String[] alterStatements = {nameof(Estate)};
+            String[] alterStatements =
+            {
+                nameof(Estate),
+                nameof(EstateSecurityUser)
+            };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();
 

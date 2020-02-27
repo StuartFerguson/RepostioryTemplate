@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    [Migration("20200226072817_InitialDatabase")]
+    [Migration("20200227113254_InitialDatabase")]
     partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,26 @@ namespace EstateReporting.Database.Migrations
                     b.HasKey("EstateId");
 
                     b.ToTable("estate");
+                });
+
+            modelBuilder.Entity("EstateReporting.Database.Entities.EstateSecurityUser", b =>
+                {
+                    b.Property<Guid>("SecurityUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EstateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SecurityUserId");
+
+                    b.ToTable("estatesecurityuser");
                 });
 #pragma warning restore 612, 618
         }

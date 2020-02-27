@@ -29,6 +29,16 @@
         Task CreateReadModel(EstateCreatedEvent domainEvent,
                              CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Adds the estate security user.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddEstateSecurityUser(SecurityUserAddedEvent domainEvent,
+                                   CancellationToken cancellationToken);
+
+
         #endregion
     }
 }

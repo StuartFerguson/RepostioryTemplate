@@ -35,6 +35,26 @@ namespace EstateReporting.Database.Migrations
 
                     b.ToTable("estate");
                 });
+
+            modelBuilder.Entity("EstateReporting.Database.Entities.EstateSecurityUser", b =>
+                {
+                    b.Property<Guid>("SecurityUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EstateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SecurityUserId");
+
+                    b.ToTable("estatesecurityuser");
+                });
 #pragma warning restore 612, 618
         }
     }
