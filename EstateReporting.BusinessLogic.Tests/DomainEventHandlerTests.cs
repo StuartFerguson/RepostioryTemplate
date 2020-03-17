@@ -61,6 +61,23 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public void EstateDomainEventHandler_OperatorAddedToEstateEvent_EventIsHandled()
+        {
+            OperatorAddedToEstateEvent operatorAddedToEstateEvent = TestData.OperatorAddedToEstateEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            EstateDomainEventHandler eventHandler = new EstateDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(operatorAddedToEstateEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
         public void MerchantDomainEventHandler_MerchantCreatedEvent_EventIsHandled()
         {
             MerchantCreatedEvent merchantCreatedEvent = TestData.MerchantCreatedEvent;
@@ -142,6 +159,23 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(merchantSecurityUserAddedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_OperatorAssignedToMerchantEvent_EventIsHandled()
+        {
+            OperatorAssignedToMerchantEvent operatorAssignedToMerchantEvent = TestData.OperatorAssignedToMerchantEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(operatorAssignedToMerchantEvent, CancellationToken.None);
                             });
         }
     }

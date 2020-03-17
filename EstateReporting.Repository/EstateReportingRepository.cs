@@ -67,6 +67,32 @@
         }
 
         /// <summary>
+        /// Adds the estate operator.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddEstateOperator(OperatorAddedToEstateEvent domainEvent,
+                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            EstateOperator estateOperator = new EstateOperator
+                                            {
+                                                EstateId = domainEvent.EstateId,
+                                                Name = domainEvent.Name,
+                                                OperatorId = domainEvent.OperatorId,
+                                                RequireCustomMerchantNumber = domainEvent.RequireCustomMerchantNumber,
+                                                RequireCustomTerminalNumber = domainEvent.RequireCustomTerminalNumber
+                                            };
+
+            await context.EstateOperators.AddAsync(estateOperator, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Adds the estate security user.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -199,6 +225,33 @@
                                             };
 
             await context.MerchantDevices.AddAsync(merchantDevice, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the merchant operator.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddMerchantOperator(OperatorAssignedToMerchantEvent domainEvent,
+                                              CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            MerchantOperator merchantOperator = new MerchantOperator
+                                                {
+                                                    Name = domainEvent.Name,
+                                                    EstateId = domainEvent.EstateId,
+                                                    MerchantId = domainEvent.MerchantId,
+                                                    MerchantNumber = domainEvent.MerchantNumber,
+                                                    OperatorId = domainEvent.OperatorId,
+                                                    TerminalNumber = domainEvent.TerminalNumber
+                                                };
+
+            await context.MerchantOperators.AddAsync(merchantOperator, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }

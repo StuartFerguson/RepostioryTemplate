@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="0.0.8.4" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="0.0.8.4" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="0.0.9.1" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="0.0.9.1" />
   </ItemGroup>
 
 </Project>

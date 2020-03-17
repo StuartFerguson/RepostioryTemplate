@@ -81,8 +81,26 @@ namespace EstateReporting.Repository.Tests
 
             await reportingRepository.AddEstateSecurityUser(TestData.EstateSecurityUserAddedEvent, CancellationToken.None);
 
-            EstateSecurityUser estateSecurityUser = await context.EstateSecurityUsers.SingleOrDefaultAsync(e => e.SecurityUserId == TestData.SecurityUserId);
+            EstateSecurityUser estateSecurityUser = await context.EstateSecurityUsers.SingleOrDefaultAsync(e => e.SecurityUserId == TestData.EstateSecurityUserId);
             estateSecurityUser.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddEstateOperator_EstateOperatorAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddEstateOperator(TestData.OperatorAddedToEstateEvent, CancellationToken.None);
+
+            EstateOperator estateOperator = await context.EstateOperators.SingleOrDefaultAsync(e => e.OperatorId == TestData.OperatorId);
+            estateOperator.ShouldNotBeNull();
         }
 
         [Theory]
@@ -171,8 +189,26 @@ namespace EstateReporting.Repository.Tests
 
             await reportingRepository.AddMerchantSecurityUser(TestData.MerchantSecurityUserAddedEvent, CancellationToken.None);
 
-            MerchantSecurityUser merchantSecurityUser = await context.MerchantSecurityUsers.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.SecurityUserId == TestData.SecurityUserId && e.EstateId == TestData.EstateId);
+            MerchantSecurityUser merchantSecurityUser = await context.MerchantSecurityUsers.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.SecurityUserId == TestData.MerchantSecurityUserId && e.EstateId == TestData.EstateId);
             merchantSecurityUser.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddMerchantOperator_MerchantOperatorAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddMerchantOperator(TestData.OperatorAssignedToMerchantEvent, CancellationToken.None);
+
+            MerchantOperator merchantOperator = await context.MerchantOperators.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.OperatorId == TestData.OperatorId && e.EstateId == TestData.EstateId);
+            merchantOperator.ShouldNotBeNull();
         }
 
 
