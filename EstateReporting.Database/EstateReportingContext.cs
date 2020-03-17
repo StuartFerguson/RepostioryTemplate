@@ -58,6 +58,14 @@
         #region Properties
 
         /// <summary>
+        /// Gets or sets the estate operators.
+        /// </summary>
+        /// <value>
+        /// The estate operators.
+        /// </value>
+        public DbSet<EstateOperator> EstateOperators { get; set; }
+
+        /// <summary>
         /// Gets or sets the estates.
         /// </summary>
         /// <value>
@@ -96,6 +104,14 @@
         /// The merchant devices.
         /// </value>
         public DbSet<MerchantDevice> MerchantDevices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant operators.
+        /// </summary>
+        /// <value>
+        /// The merchant operators.
+        /// </value>
+        public DbSet<MerchantOperator> MerchantOperators { get; set; }
 
         /// <summary>
         /// Gets or sets the estate security users.
@@ -174,49 +190,62 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Estate>().HasKey(t => new
-                                                            {
-                                                                t.EstateId
-                                                            });
-
-            modelBuilder.Entity<EstateSecurityUser>().HasKey(t => new
                                                       {
-                                                          t.SecurityUserId,
                                                           t.EstateId
                                                       });
 
+            modelBuilder.Entity<EstateSecurityUser>().HasKey(t => new
+                                                                  {
+                                                                      t.SecurityUserId,
+                                                                      t.EstateId
+                                                                  });
+
             modelBuilder.Entity<Merchant>().HasKey(t => new
-                                                      {
-                                                          t.EstateId,
-                                                          t.MerchantId
-                                                      });
+                                                        {
+                                                            t.EstateId,
+                                                            t.MerchantId
+                                                        });
 
             modelBuilder.Entity<MerchantAddress>().HasKey(t => new
-                                                      {
-                                                          t.EstateId,
-                                                          t.MerchantId,
-                                                          t.AddressId
-                                                      });
+                                                               {
+                                                                   t.EstateId,
+                                                                   t.MerchantId,
+                                                                   t.AddressId
+                                                               });
 
             modelBuilder.Entity<MerchantContact>().HasKey(t => new
-                                                      {
-                                                          t.EstateId,
-                                                          t.MerchantId,
-                                                          t.ContactId
-                                                      });
+                                                               {
+                                                                   t.EstateId,
+                                                                   t.MerchantId,
+                                                                   t.ContactId
+                                                               });
 
             modelBuilder.Entity<MerchantDevice>().HasKey(t => new
-                                                      {
-                                                          t.EstateId,
-                                                          t.MerchantId,
-                                                          t.DeviceId
-                                                      });
+                                                              {
+                                                                  t.EstateId,
+                                                                  t.MerchantId,
+                                                                  t.DeviceId
+                                                              });
 
             modelBuilder.Entity<MerchantSecurityUser>().HasKey(t => new
-                                                      {
-                                                          t.EstateId,
-                                                          t.MerchantId,
-                                                          t.SecurityUserId
-                                                      });
+                                                                    {
+                                                                        t.EstateId,
+                                                                        t.MerchantId,
+                                                                        t.SecurityUserId
+                                                                    });
+
+            modelBuilder.Entity<EstateOperator>().HasKey(t => new
+                                                              {
+                                                                  t.EstateId,
+                                                                  t.OperatorId
+                                                              });
+
+            modelBuilder.Entity<MerchantOperator>().HasKey(t => new
+                                                                {
+                                                                    t.EstateId,
+                                                                    t.MerchantId,
+                                                                    t.OperatorId
+                                                                });
 
             base.OnModelCreating(modelBuilder);
         }
@@ -229,13 +258,15 @@
         {
             String[] alterStatements =
             {
-                nameof(Estate), 
-                nameof(EstateSecurityUser), 
+                nameof(Estate),
+                nameof(EstateSecurityUser),
+                nameof(EstateOperator),
                 nameof(Merchant),
-                nameof(MerchantAddress), 
-                nameof(MerchantContact), 
+                nameof(MerchantAddress),
+                nameof(MerchantContact),
                 nameof(MerchantDevice),
-                nameof(MerchantSecurityUser)
+                nameof(MerchantSecurityUser),
+                nameof(MerchantOperator)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

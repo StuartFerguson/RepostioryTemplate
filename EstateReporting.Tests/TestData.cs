@@ -147,13 +147,13 @@
         /// <summary>
         /// The security user identifier
         /// </summary>
-        public static Guid SecurityUserId = Guid.Parse("CBEE25E6-1B08-4023-B20C-CFE0AD746808");
+        public static Guid EstateSecurityUserId = Guid.Parse("CBEE25E6-1B08-4023-B20C-CFE0AD746808");
 
         /// <summary>
         /// The estate security user added event
         /// </summary>
         public static EstateSecurityUserAddedEvent EstateSecurityUserAddedEvent =
-            EstateSecurityUserAddedEvent.Create(TestData.EstateId, TestData.SecurityUserId, TestData.EmailAddress);
+            EstateSecurityUserAddedEvent.Create(TestData.EstateId, TestData.EstateSecurityUserId, TestData.EmailAddress);
 
         /// <summary>
         /// The merchant name
@@ -166,11 +166,39 @@
         public static MerchantCreatedEvent MerchantCreatedEvent =
             MerchantCreatedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.MerchantName, DateTime.Now);
 
+        public static String MerchantNumber = "12345678";
+
+        public static Guid MerchantSecurityUserId = Guid.Parse("DFCE7A95-CB6D-442A-928A-F1B41D2AA4A9");
+
         /// <summary>
         /// The merchant security user added event
         /// </summary>
         public static MerchantSecurityUserAddedEvent MerchantSecurityUserAddedEvent =
-            MerchantSecurityUserAddedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.SecurityUserId, TestData.EmailAddress);
+            MerchantSecurityUserAddedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.MerchantSecurityUserId, TestData.EmailAddress);
+
+        public static Guid OperatorId = Guid.Parse("DCDC5054-C026-4492-AFED-C74E4DEFD00C");
+
+        public static String OperatorName = "Test Operator 1";
+
+        public static Boolean RequireCustomMerchantNumber = true;
+
+        public static Boolean RequireCustomTerminalNumber = true;
+
+        public static OperatorAddedToEstateEvent OperatorAddedToEstateEvent =
+            OperatorAddedToEstateEvent.Create(TestData.EstateId,
+                                              TestData.OperatorId,
+                                              TestData.OperatorName,
+                                              TestData.RequireCustomMerchantNumber,
+                                              TestData.RequireCustomTerminalNumber);
+
+        public static String TerminalNumber = "12345679";
+
+        public static OperatorAssignedToMerchantEvent OperatorAssignedToMerchantEvent = OperatorAssignedToMerchantEvent.Create(TestData.MerchantId,
+                                                                                                                               TestData.EstateId,
+                                                                                                                               TestData.OperatorId,
+                                                                                                                               TestData.OperatorName,
+                                                                                                                               TestData.MerchantNumber,
+                                                                                                                               TestData.TerminalNumber);
 
         #endregion
     }
