@@ -129,6 +129,14 @@
         /// </value>
         public DbSet<MerchantSecurityUser> MerchantSecurityUsers { get; set; }
 
+        /// <summary>
+        /// Gets or sets the transactions.
+        /// </summary>
+        /// <value>
+        /// The transactions.
+        /// </value>
+        public DbSet<Transaction> Transactions { get; set; }
+
         #endregion
 
         #region Methods
@@ -139,7 +147,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
-            if (this.Database.IsSqlServer() || this.Database.IsSqlite())
+            if (this.Database.IsSqlServer())
             {
                 await this.Database.MigrateAsync(cancellationToken);
             }
@@ -247,6 +255,13 @@
                                                                     t.OperatorId
                                                                 });
 
+            modelBuilder.Entity<Transaction>().HasKey(t => new
+                                                                {
+                                                                    t.EstateId,
+                                                                    t.MerchantId,
+                                                                    t.TransactionId
+                                                                });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -266,7 +281,8 @@
                 nameof(MerchantContact),
                 nameof(MerchantDevice),
                 nameof(MerchantSecurityUser),
-                nameof(MerchantOperator)
+                nameof(MerchantOperator),
+                nameof(Transaction),
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

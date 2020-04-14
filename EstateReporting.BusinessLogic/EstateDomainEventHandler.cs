@@ -3,9 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EstateManagement.Estate.DomainEvents;
-    using EstateReporting.Repository;
+    using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
-    using Shared.Logger;
 
     /// <summary>
     /// 
@@ -13,10 +12,21 @@
     /// <seealso cref="EstateReporting.BusinessLogic.IDomainEventHandler" />
     public class EstateDomainEventHandler : IDomainEventHandler
     {
+        #region Fields
+
+        /// <summary>
+        /// The estate reporting repository
+        /// </summary>
         private readonly IEstateReportingRepository EstateReportingRepository;
+
+        #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EstateDomainEventHandler"/> class.
+        /// </summary>
+        /// <param name="estateReportingRepository">The estate reporting repository.</param>
         public EstateDomainEventHandler(IEstateReportingRepository estateReportingRepository)
         {
             this.EstateReportingRepository = estateReportingRepository;
@@ -42,7 +52,8 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task HandleSpecificDomainEvent(EstateCreatedEvent domainEvent, CancellationToken cancellationToken)
+        private async Task HandleSpecificDomainEvent(EstateCreatedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.CreateReadModel(domainEvent, cancellationToken);
 

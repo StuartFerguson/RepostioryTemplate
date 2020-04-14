@@ -14,6 +14,7 @@ namespace EstateReporting.Repository.Tests
     using Microsoft.EntityFrameworkCore.Diagnostics;
     using Moq;
     using Shared.EntityFramework;
+    using Shared.Exceptions;
     using Shared.Logger;
     using Shouldly;
 
@@ -211,8 +212,301 @@ namespace EstateReporting.Repository.Tests
             merchantOperator.ShouldNotBeNull();
         }
 
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_StartTransaction_TransactionAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.StartTransaction(TestData.TransactionHasStartedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+        }
+        
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_RecordTransactionAdditionalRequestData_RequestDataRecorded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.RecordTransactionAdditionalRequestData(TestData.AdditionalRequestDataRecordedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_RecordTransactionAdditionalResponseData_ResponseDataRecorded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+                                                });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.RecordTransactionAdditionalResponseData(TestData.AdditionalResponseDataRecordedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_LocallyAuthorised_TransactionUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.ResponseMessage.ShouldBe(TestData.TransactionHasBeenLocallyAuthorisedEvent.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(TestData.TransactionHasBeenLocallyAuthorisedEvent.ResponseCode);
+            transaction.IsAuthorised.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_LocallyAuthorised_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyAuthorisedEvent,
+                                                                                                         CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_LocallyDeclined_TransactionUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyDeclinedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.ResponseMessage.ShouldBe(TestData.TransactionHasBeenLocallyDeclinedEvent.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(TestData.TransactionHasBeenLocallyDeclinedEvent.ResponseCode);
+            transaction.IsAuthorised.ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_LocallyDeclined_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () => {
+                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyDeclinedEvent, CancellationToken.None);
+
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_OperatorAuthorised_TransactionUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionAuthorisedByOperatorEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.ResponseMessage.ShouldBe(TestData.TransactionAuthorisedByOperatorEvent.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(TestData.TransactionAuthorisedByOperatorEvent.ResponseCode);
+            transaction.IsAuthorised.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_OperatorAuthorised_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionAuthorisedByOperatorEvent,
+                                                                                                         CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_OperatorDeclined_TransactionUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionDeclinedByOperatorEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.ResponseMessage.ShouldBe(TestData.TransactionDeclinedByOperatorEvent.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(TestData.TransactionDeclinedByOperatorEvent.ResponseCode);
+            transaction.IsAuthorised.ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateTransactionAuthorisation_OperatorDeclined_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionDeclinedByOperatorEvent,
+                                                                                                         CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_CompleteTransaction_TransactionCompleted(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.CompleteTransaction(TestData.TransactionHasBeenCompletedEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.IsCompleted.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_CompleteTransaction_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () => { await reportingRepository.CompleteTransaction(TestData.TransactionHasBeenCompletedEvent, CancellationToken.None); });
+        }
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
@@ -230,7 +524,7 @@ namespace EstateReporting.Repository.Tests
 
                 DbContextOptionsBuilder<EstateReportingContext> builder = new DbContextOptionsBuilder<EstateReportingContext>().UseSqlite(inMemorySqlite);
                 context = new EstateReportingContext(builder.Options);
-                await context.Database.MigrateAsync();
+                await context.Database.EnsureCreatedAsync();
 
             }
             else

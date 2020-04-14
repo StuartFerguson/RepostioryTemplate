@@ -1,8 +1,10 @@
 ﻿namespace EstateReporting.Tests
 {
     using System;
+    using System.Collections.Generic;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -199,6 +201,107 @@
                                                                                                                                TestData.OperatorName,
                                                                                                                                TestData.MerchantNumber,
                                                                                                                                TestData.TerminalNumber);
+
+        public static Guid TransactionId = Guid.Parse("4187AA70-4E36-451B-9B88-A164C08A9D4D");
+
+        public static DateTime TransactionDateTime = DateTime.Now;
+
+        public static String TransactionNumber = "1";
+
+        public static String TransactionType = "Logon";
+
+        public static String TransactionReference = "123456";
+
+        public static TransactionHasStartedEvent TransactionHasStartedEvent = TransactionHasStartedEvent.Create(TestData.TransactionId,
+                                                                                                                TestData.EstateId,
+                                                                                                                TestData.MerchantId,
+                                                                                                                TestData.TransactionDateTime,
+                                                                                                                TestData.TransactionNumber,
+                                                                                                                TestData.TransactionType,
+                                                                                                                TestData.TransactionReference,
+                                                                                                                TestData.DeviceIdentifier);
+
+        public static AdditionalRequestDataRecordedEvent AdditionalRequestDataRecordedEvent =
+            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalRequestData);
+
+        public static Dictionary<String, String> AdditionalRequestData =>
+            new Dictionary<String, String>
+            {
+                {"Amount", "100.00"},
+                {"CustomerAccountNumber", "123456789" }
+            };
+
+        public static Dictionary<String, String> AdditionalResponseData =>
+            new Dictionary<String, String>
+            {
+                {"Amount", "100.00"},
+                {"CustomerAccountNumber", "123456789" }
+            };
+
+        public static AdditionalResponseDataRecordedEvent AdditionalResponseDataRecordedEvent =
+            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalResponseData);
+
+        public static String AuthorisationCode = "ABCD1234";
+        public static String ResponseCode = "0000";
+        public static String ResponseMessage = "SUCCESS";
+        public static String DeclinedResponseCode = "0001";
+        public static String DeclinedResponseMessage = "DeclinedResponseMessage";
+
+        public static String OperatorAuthorisationCode = "OP1234";
+
+        public static String OperatorResponseCode = "200";
+
+        public static String OperatorResponseMessage = "Topup Successful";
+
+        public static String OperatorTransactionId = "SF12345";
+
+        public static String DeclinedOperatorResponseCode = "400";
+
+        public static String DeclinedOperatorResponseMessage = "Topup Failed";
+
+        public static Boolean IsAuthorised = true;
+
+        public static TransactionHasBeenLocallyAuthorisedEvent TransactionHasBeenLocallyAuthorisedEvent =
+            TransactionHasBeenLocallyAuthorisedEvent.Create(TestData.TransactionId,
+                                                            TestData.EstateId,
+                                                            TestData.MerchantId,
+                                                            TestData.AuthorisationCode,
+                                                            TestData.ResponseCode,
+                                                            TestData.ResponseMessage);
+
+        public static TransactionHasBeenLocallyDeclinedEvent TransactionHasBeenLocallyDeclinedEvent =
+            TransactionHasBeenLocallyDeclinedEvent.Create(TestData.TransactionId,
+                                                          TestData.EstateId,
+                                                          TestData.MerchantId,
+                                                          TestData.DeclinedResponseCode,
+                                                          TestData.DeclinedResponseMessage);
+
+        public static TransactionAuthorisedByOperatorEvent TransactionAuthorisedByOperatorEvent =
+            TransactionAuthorisedByOperatorEvent.Create(TestData.TransactionId,
+                                                        TestData.EstateId,
+                                                        TestData.MerchantId,
+                                                        TestData.AuthorisationCode,
+                                                        TestData.OperatorResponseCode,
+                                                        TestData.OperatorResponseMessage,
+                                                        TestData.OperatorTransactionId,
+                                                        TestData.ResponseCode,
+                                                        TestData.ResponseMessage);
+
+        public static TransactionDeclinedByOperatorEvent TransactionDeclinedByOperatorEvent =
+            TransactionDeclinedByOperatorEvent.Create(TestData.TransactionId,
+                                                      TestData.EstateId,
+                                                      TestData.MerchantId,
+                                                      TestData.DeclinedOperatorResponseCode,
+                                                      TestData.DeclinedOperatorResponseMessage,
+                                                      TestData.DeclinedResponseCode,
+                                                      TestData.DeclinedResponseMessage);
+
+        public static TransactionHasBeenCompletedEvent TransactionHasBeenCompletedEvent = TransactionHasBeenCompletedEvent.Create(TestData.TransactionId,
+                                                                                                                                  TestData.EstateId,
+                                                                                                                                  TestData.MerchantId,
+                                                                                                                                  TestData.ResponseCode,
+                                                                                                                                  TestData.ResponseMessage,
+                                                                                                                                  TestData.IsAuthorised);
 
         #endregion
     }

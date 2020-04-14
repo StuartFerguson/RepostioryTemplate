@@ -10,6 +10,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using Repository;
     using Shared.Logger;
     using Shouldly;
+    using TransactionProcessor.Transaction.DomainEvents;
     using Xunit;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -22,6 +23,26 @@ namespace EstateReporting.BusinessLogic.Tests
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
             EstateDomainEventHandler eventHandler = new EstateDomainEventHandler(estateReportingRepository.Object);
+
+            eventHandler.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_CanBeCreated_IsCreated()
+        {
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            eventHandler.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_CanBeCreated_IsCreated()
+        {
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
 
             eventHandler.ShouldNotBeNull();
         }
@@ -176,6 +197,142 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(operatorAssignedToMerchantEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionHasStartedEvent_EventIsHandled()
+        {
+            TransactionHasStartedEvent transactionHasStartedEvent = TestData.TransactionHasStartedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionHasStartedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_AdditionalRequestDataRecordedEvent_EventIsHandled()
+        {
+            AdditionalRequestDataRecordedEvent additionalRequestDataRecordedEvent = TestData.AdditionalRequestDataRecordedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(additionalRequestDataRecordedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_AdditionalResponseDataRecordedEvent_EventIsHandled()
+        {
+            AdditionalResponseDataRecordedEvent additionalResponseDataRecordedEvent = TestData.AdditionalResponseDataRecordedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(additionalResponseDataRecordedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionHasBeenLocallyAuthorisedEvent_EventIsHandled()
+        {
+            TransactionHasBeenLocallyAuthorisedEvent transactionHasBeenLocallyAuthorisedEvent = TestData.TransactionHasBeenLocallyAuthorisedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionHasBeenLocallyDeclinedEvent_EventIsHandled()
+        {
+            TransactionHasBeenLocallyDeclinedEvent transactionHasBeenLocallyDeclinedEvent = TestData.TransactionHasBeenLocallyDeclinedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionHasBeenLocallyDeclinedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionAuthorisedByOperatorEvent_EventIsHandled()
+        {
+            TransactionAuthorisedByOperatorEvent transactionAuthorisedByOperatorEvent = TestData.TransactionAuthorisedByOperatorEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionAuthorisedByOperatorEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionDeclinedByOperatorEvent_EventIsHandled()
+        {
+            TransactionDeclinedByOperatorEvent transactionDeclinedByOperatorEvent = TestData.TransactionDeclinedByOperatorEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionDeclinedByOperatorEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_TransactionHasBeenCompletedEvent_EventIsHandled()
+        {
+            TransactionHasBeenCompletedEvent transactionHasBeenCompletedEvent = TestData.TransactionHasBeenCompletedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionHasBeenCompletedEvent, CancellationToken.None);
                             });
         }
     }
