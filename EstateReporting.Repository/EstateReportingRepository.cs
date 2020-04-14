@@ -7,8 +7,11 @@
     using Database.Entities;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using Microsoft.EntityFrameworkCore;
     using Shared.EntityFramework;
+    using Shared.Exceptions;
     using Shared.Logger;
+    using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -283,6 +286,30 @@
         }
 
         /// <summary>
+        /// Completes the transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task CompleteTransaction(TransactionHasBeenCompletedEvent domainEvent,
+                                              CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.IsCompleted = true;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Creates the read model.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -300,6 +327,167 @@
             await context.MigrateAsync(cancellationToken);
 
             Logger.LogInformation($"Read Model database for estate [{estateId}] migrated to latest version");
+        }
+
+        /// <summary>
+        /// Records the transaction additional request data.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task RecordTransactionAdditionalRequestData(AdditionalRequestDataRecordedEvent domainEvent,
+                                                                 CancellationToken cancellationToken)
+        {
+            // TODO: Need some way of parsing operator specfic data, this requires the transaction to record the operator id,
+            //       somewhere in the transaction events
+        }
+
+        /// <summary>
+        /// Records the transaction additional response data.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task RecordTransactionAdditionalResponseData(AdditionalResponseDataRecordedEvent domainEvent,
+                                                                  CancellationToken cancellationToken)
+        {
+            // TODO: Need some way of parsing operator specfic data, this requires the transaction to record the operator id,
+            //       somewhere in the transaction events
+        }
+
+        /// <summary>
+        /// Starts the transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task StartTransaction(TransactionHasStartedEvent domainEvent,
+                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = new Transaction
+                                      {
+                                          EstateId = domainEvent.EstateId,
+                                          MerchantId = domainEvent.MerchantId,
+                                          TransactionDate = domainEvent.TransactionDateTime.Date,
+                                          TransactionDateTime = domainEvent.TransactionDateTime,
+                                          TransactionTime = domainEvent.TransactionDateTime.TimeOfDay,
+                                          TransactionId = domainEvent.TransactionId,
+                                          TransactionNumber = domainEvent.TransactionNumber,
+                                          TransactionReference = domainEvent.TransactionReference,
+                                          TransactionType = domainEvent.TransactionType,
+                                          DeviceIdentifier = domainEvent.DeviceIdentifier
+                                      };
+
+            await context.Transactions.AddAsync(transaction, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyAuthorisedEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.IsAuthorised = true;
+            transaction.ResponseCode = domainEvent.ResponseCode;
+            transaction.AuthorisationCode = domainEvent.AuthorisationCode;
+            transaction.ResponseMessage = domainEvent.ResponseMessage;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyDeclinedEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.IsAuthorised = false;
+            transaction.ResponseCode = domainEvent.ResponseCode;
+            transaction.ResponseMessage = domainEvent.ResponseMessage;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateTransactionAuthorisation(TransactionAuthorisedByOperatorEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.IsAuthorised = true;
+            transaction.ResponseCode = domainEvent.ResponseCode;
+            transaction.AuthorisationCode = domainEvent.AuthorisationCode;
+            transaction.ResponseMessage = domainEvent.ResponseMessage;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.IsAuthorised = false;
+            transaction.ResponseCode = domainEvent.ResponseCode;
+            transaction.ResponseMessage = domainEvent.ResponseMessage;
+
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         #endregion

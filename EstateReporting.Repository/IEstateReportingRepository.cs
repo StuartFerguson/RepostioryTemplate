@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -96,6 +97,15 @@
                                      CancellationToken cancellationToken);
 
         /// <summary>
+        /// Completes the transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CompleteTransaction(TransactionHasBeenCompletedEvent domainEvent,
+                                 CancellationToken cancellationToken);
+
+        /// <summary>
         /// Creates the read model.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -103,6 +113,69 @@
         /// <returns></returns>
         Task CreateReadModel(EstateCreatedEvent domainEvent,
                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Records the transaction additional request data.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task RecordTransactionAdditionalRequestData(AdditionalRequestDataRecordedEvent domainEvent,
+                                                    CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Records the transaction additional response data.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task RecordTransactionAdditionalResponseData(AdditionalResponseDataRecordedEvent domainEvent,
+                                                     CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Starts the transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task StartTransaction(TransactionHasStartedEvent domainEvent,
+                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyAuthorisedEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyDeclinedEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateTransactionAuthorisation(TransactionAuthorisedByOperatorEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the transaction authorisation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
+                                            CancellationToken cancellationToken);
 
         #endregion
     }
