@@ -222,7 +222,7 @@
                                                                                                                 TestData.DeviceIdentifier);
 
         public static AdditionalRequestDataRecordedEvent AdditionalRequestDataRecordedEvent =
-            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalRequestData);
+            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.OperatorName, TestData.AdditionalRequestData);
 
         public static Dictionary<String, String> AdditionalRequestData =>
             new Dictionary<String, String>
@@ -239,7 +239,7 @@
             };
 
         public static AdditionalResponseDataRecordedEvent AdditionalResponseDataRecordedEvent =
-            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalResponseData);
+            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.OperatorName, TestData.AdditionalResponseData);
 
         public static String AuthorisationCode = "ABCD1234";
         public static String ResponseCode = "0000";
@@ -280,6 +280,7 @@
             TransactionAuthorisedByOperatorEvent.Create(TestData.TransactionId,
                                                         TestData.EstateId,
                                                         TestData.MerchantId,
+                                                        TestData.OperatorName,
                                                         TestData.AuthorisationCode,
                                                         TestData.OperatorResponseCode,
                                                         TestData.OperatorResponseMessage,
@@ -291,6 +292,7 @@
             TransactionDeclinedByOperatorEvent.Create(TestData.TransactionId,
                                                       TestData.EstateId,
                                                       TestData.MerchantId,
+                                                      TestData.OperatorName,
                                                       TestData.DeclinedOperatorResponseCode,
                                                       TestData.DeclinedOperatorResponseMessage,
                                                       TestData.DeclinedResponseCode,
