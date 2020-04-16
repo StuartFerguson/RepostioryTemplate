@@ -25,8 +25,9 @@ namespace EstateReporting.Database.Migrations
                                                                TransactionDateTime = table.Column<DateTime>(nullable: false),
                                                                TransactionNumber = table.Column<string>(nullable: true),
                                                                TransactionReference = table.Column<string>(nullable: true),
-                                                               TransactionType = table.Column<string>(nullable: true)
-                                                           },
+                                                               TransactionType = table.Column<string>(nullable: true),
+                                                               OperatorIdentifier = table.Column<string>(nullable: true),
+                                         },
                                          constraints: table =>
                                                       {
                                                           table.PrimaryKey("PK_transaction", x => new { x.EstateId, x.MerchantId, x.TransactionId });

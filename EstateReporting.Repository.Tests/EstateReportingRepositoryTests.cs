@@ -253,6 +253,9 @@ namespace EstateReporting.Repository.Tests
 
             Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
             transaction.ShouldNotBeNull();
+
+            TransactionAdditionalRequestData transactionAdditionalRequestData = await context.TransactionsAdditionalRequestData.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transactionAdditionalRequestData.ShouldNotBeNull();
         }
 
         [Theory]
@@ -278,6 +281,9 @@ namespace EstateReporting.Repository.Tests
 
             Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
             transaction.ShouldNotBeNull();
+
+            TransactionAdditionalResponseData transactionAdditionalResponseData = await context.TransactionsAdditionalResponseData.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transactionAdditionalResponseData.ShouldNotBeNull();
         }
 
         [Theory]

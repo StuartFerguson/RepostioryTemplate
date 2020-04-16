@@ -61,6 +61,14 @@
         public Guid MerchantId { get; set; }
 
         /// <summary>
+        /// Gets or sets the operator identifier.
+        /// </summary>
+        /// <value>
+        /// The operator identifier.
+        /// </value>
+        public String OperatorIdentifier { get; set; }
+
+        /// <summary>
         /// Gets or sets the response code.
         /// </summary>
         /// <value>

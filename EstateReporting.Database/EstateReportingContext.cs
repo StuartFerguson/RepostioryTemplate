@@ -137,6 +137,22 @@
         /// </value>
         public DbSet<Transaction> Transactions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the transaction additional request data.
+        /// </summary>
+        /// <value>
+        /// The transaction additional request data.
+        /// </value>
+        public DbSet<TransactionAdditionalRequestData> TransactionsAdditionalRequestData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transaction additional response data.
+        /// </summary>
+        /// <value>
+        /// The transaction additional response data.
+        /// </value>
+        public DbSet<TransactionAdditionalResponseData> TransactionsAdditionalResponseData { get; set; }
+
         #endregion
 
         #region Methods
@@ -262,6 +278,20 @@
                                                                     t.TransactionId
                                                                 });
 
+            modelBuilder.Entity<TransactionAdditionalRequestData>().HasKey(t => new
+                                                           {
+                                                               t.EstateId,
+                                                               t.MerchantId,
+                                                               t.TransactionId
+                                                           });
+
+            modelBuilder.Entity<TransactionAdditionalRequestData>().HasKey(t => new
+                                                           {
+                                                               t.EstateId,
+                                                               t.MerchantId,
+                                                               t.TransactionId
+                                                           });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -283,6 +313,8 @@
                 nameof(MerchantSecurityUser),
                 nameof(MerchantOperator),
                 nameof(Transaction),
+                nameof(TransactionAdditionalRequestData),
+                nameof(TransactionAdditionalResponseData)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

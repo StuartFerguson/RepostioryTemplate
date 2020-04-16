@@ -1,6 +1,8 @@
 ﻿namespace EstateReporting.Repository
 {
     using System;
+    using System.Collections.Generic;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Database;
@@ -22,6 +24,20 @@
     public class EstateReportingRepository : IEstateReportingRepository
     {
         #region Fields
+
+        /// <summary>
+        /// The additional request fields
+        /// </summary>
+        private readonly List<String> AdditionalRequestFields = new List<String>
+                                                                {
+                                                                    "Amount",
+                                                                    "CustomerAccountNumber"
+                                                                };
+
+        /// <summary>
+        /// The additional response fields
+        /// </summary>
+        private readonly List<String> AdditionalResponseFields = new List<String>();
 
         /// <summary>
         /// The database context factory
@@ -290,6 +306,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task CompleteTransaction(TransactionHasBeenCompletedEvent domainEvent,
                                               CancellationToken cancellationToken)
         {
@@ -337,8 +354,34 @@
         public async Task RecordTransactionAdditionalRequestData(AdditionalRequestDataRecordedEvent domainEvent,
                                                                  CancellationToken cancellationToken)
         {
-            // TODO: Need some way of parsing operator specfic data, this requires the transaction to record the operator id,
-            //       somewhere in the transaction events
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            TransactionAdditionalRequestData additionalRequestData = new TransactionAdditionalRequestData
+                                                                     {
+                                                                         EstateId = domainEvent.EstateId,
+                                                                         MerchantId = domainEvent.MerchantId,
+                                                                         TransactionId = domainEvent.TransactionId
+                                                                     };
+
+            foreach (String additionalRequestField in this.AdditionalRequestFields)
+            {
+                if (domainEvent.AdditionalTransactionRequestMetadata.ContainsKey(additionalRequestField))
+                {
+                    Type dbTableType = additionalRequestData.GetType();
+                    PropertyInfo propertyInfo = dbTableType.GetProperty(additionalRequestField);
+
+                    if (propertyInfo != null)
+                    {
+                        propertyInfo.SetValue(additionalRequestData, domainEvent.AdditionalTransactionRequestMetadata[additionalRequestField]);
+                    }
+                }
+            }
+
+            await context.TransactionsAdditionalRequestData.AddAsync(additionalRequestData, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -349,8 +392,34 @@
         public async Task RecordTransactionAdditionalResponseData(AdditionalResponseDataRecordedEvent domainEvent,
                                                                   CancellationToken cancellationToken)
         {
-            // TODO: Need some way of parsing operator specfic data, this requires the transaction to record the operator id,
-            //       somewhere in the transaction events
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            TransactionAdditionalResponseData additionalResponseData = new TransactionAdditionalResponseData
+                                                                       {
+                                                                           EstateId = domainEvent.EstateId,
+                                                                           MerchantId = domainEvent.MerchantId,
+                                                                           TransactionId = domainEvent.TransactionId
+                                                                       };
+
+            foreach (String additionalResponseField in this.AdditionalResponseFields)
+            {
+                if (domainEvent.AdditionalTransactionResponseMetadata.ContainsKey(additionalResponseField))
+                {
+                    Type dbTableType = additionalResponseData.GetType();
+                    PropertyInfo propertyInfo = dbTableType.GetProperty(additionalResponseField);
+
+                    if (propertyInfo != null)
+                    {
+                        propertyInfo.SetValue(additionalResponseData, domainEvent.AdditionalTransactionResponseMetadata[additionalResponseField]);
+                    }
+                }
+            }
+
+            await context.TransactionsAdditionalResponseData.AddAsync(additionalResponseData, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -389,6 +458,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyAuthorisedEvent domainEvent,
                                                          CancellationToken cancellationToken)
         {
@@ -416,6 +486,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyDeclinedEvent domainEvent,
                                                          CancellationToken cancellationToken)
         {
@@ -442,6 +513,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionAuthorisedByOperatorEvent domainEvent,
                                                          CancellationToken cancellationToken)
         {
@@ -460,6 +532,7 @@
             transaction.ResponseCode = domainEvent.ResponseCode;
             transaction.AuthorisationCode = domainEvent.AuthorisationCode;
             transaction.ResponseMessage = domainEvent.ResponseMessage;
+            transaction.OperatorIdentifier = domainEvent.OperatorIdentifier;
 
             await context.SaveChangesAsync(cancellationToken);
         }
@@ -469,6 +542,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                                          CancellationToken cancellationToken)
         {
@@ -486,6 +560,7 @@
             transaction.IsAuthorised = false;
             transaction.ResponseCode = domainEvent.ResponseCode;
             transaction.ResponseMessage = domainEvent.ResponseMessage;
+            transaction.OperatorIdentifier = domainEvent.OperatorIdentifier;
 
             await context.SaveChangesAsync(cancellationToken);
         }

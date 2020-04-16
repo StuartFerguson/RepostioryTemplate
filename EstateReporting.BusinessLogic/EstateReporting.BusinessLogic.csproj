@@ -9,7 +9,7 @@
     <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="0.0.10" />
     <PackageReference Include="Shared.DomainDrivenDesign" Version="0.0.12" />
     <PackageReference Include="Shared.EventStore" Version="0.0.12" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="0.0.6.5" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="0.0.6.2" />
   </ItemGroup>
 
   <ItemGroup>
