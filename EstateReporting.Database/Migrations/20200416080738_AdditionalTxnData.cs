@@ -7,11 +7,6 @@ namespace EstateReporting.Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                                               name: "OperatorIdentifier",
-                                               table: "transaction",
-                                               nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "transactionadditionalrequestdata",
                 columns: table => new
@@ -48,10 +43,6 @@ namespace EstateReporting.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "transactionadditionalresponsedata");
-            
-            migrationBuilder.DropColumn(
-                name: "OperatorIdentifier",
-                table: "transaction");
         }
     }
 }
