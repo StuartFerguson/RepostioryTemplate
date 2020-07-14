@@ -5,10 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shared" Version="0.0.12" />
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="0.0.10" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="0.0.10" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="0.0.6.5" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.1.1" />
+    <PackageReference Include="Shared" Version="0.0.15.7" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.1.1" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.1.1" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
@@ -219,10 +221,12 @@
                                                                                                                 TestData.TransactionNumber,
                                                                                                                 TestData.TransactionType,
                                                                                                                 TestData.TransactionReference,
-                                                                                                                TestData.DeviceIdentifier);
+                                                                                                                TestData.DeviceIdentifier,
+                                                                                                                TestData.TransactionAmount);
 
         public static AdditionalRequestDataRecordedEvent AdditionalRequestDataRecordedEvent =
-            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalRequestData);
+            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
+                                                      TestData.OperatorName, TestData.AdditionalRequestData);
 
         public static Dictionary<String, String> AdditionalRequestData =>
             new Dictionary<String, String>
@@ -239,7 +243,8 @@
             };
 
         public static AdditionalResponseDataRecordedEvent AdditionalResponseDataRecordedEvent =
-            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.AdditionalResponseData);
+            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
+                                                       TestData.OperatorName, TestData.AdditionalResponseData);
 
         public static String AuthorisationCode = "ABCD1234";
         public static String ResponseCode = "0000";
@@ -280,6 +285,7 @@
             TransactionAuthorisedByOperatorEvent.Create(TestData.TransactionId,
                                                         TestData.EstateId,
                                                         TestData.MerchantId,
+                                                        TestData.OperatorName,
                                                         TestData.AuthorisationCode,
                                                         TestData.OperatorResponseCode,
                                                         TestData.OperatorResponseMessage,
@@ -291,6 +297,7 @@
             TransactionDeclinedByOperatorEvent.Create(TestData.TransactionId,
                                                       TestData.EstateId,
                                                       TestData.MerchantId,
+                                                      TestData.OperatorName,
                                                       TestData.DeclinedOperatorResponseCode,
                                                       TestData.DeclinedOperatorResponseMessage,
                                                       TestData.DeclinedResponseCode,
@@ -302,6 +309,53 @@
                                                                                                                                   TestData.ResponseCode,
                                                                                                                                   TestData.ResponseMessage,
                                                                                                                                   TestData.IsAuthorised);
+
+        public static Decimal? TransactionAmount = 100.00m;
+
+        public static Guid ContractId = Guid.Parse("D3F17288-2E3C-41F0-BD00-95047DC13BDA");
+
+        public static String ContractDescription = "Test Contract";
+
+        public static Guid ProductId = Guid.Parse("033BC002-FC65-4123-81E6-B7D21885BB0C");
+
+        public static String ProductName = "Test Product 1";
+
+        public static String ProductDisplayText = "100 KES";
+
+        public static Decimal ProductFixedValue = 100.00m;
+
+        public static Guid TransactionFeeId = Guid.Parse("F092CBF5-2F34-407B-8E50-21164C841A89");
+
+        public static Int32 FeeCalculationType = 0;
+
+        public static String TransactionFeeDescription = "Merchant Commission";
+
+        public static Decimal FeeValue = 0.5m;
+
+        public static ContractCreatedEvent ContractCreatedEvent = ContractCreatedEvent.Create(TestData.ContractId, TestData.EstateId,
+                                                                                              TestData.OperatorId, TestData.ContractDescription);
+
+        public static FixedValueProductAddedToContractEvent FixedValueProductAddedToContractEvent = FixedValueProductAddedToContractEvent.Create(TestData.ContractId,
+                                                                                                                                                 TestData.EstateId,
+                                                                                                                                                 TestData.ProductId,
+                                                                                                                                                 TestData.ProductName,
+                                                                                                                                                 TestData.ProductDisplayText,
+                                                                                                                                                 TestData.ProductFixedValue);
+
+        public static VariableValueProductAddedToContractEvent VariableValueProductAddedToContractEvent = VariableValueProductAddedToContractEvent.Create(TestData.ContractId,
+                                                                                                                                                 TestData.EstateId,
+                                                                                                                                                 TestData.ProductId,
+                                                                                                                                                 TestData.ProductName,
+                                                                                                                                                 TestData.ProductDisplayText);
+
+        public static TransactionFeeForProductAddedToContractEvent TransactionFeeForProductAddedToContractEvent = TransactionFeeForProductAddedToContractEvent.Create(TestData.ContractId,
+                                                                                                                                                                      TestData.EstateId,
+                                                                                                                                                                      TestData.ProductId,
+                                                                                                                                                                      TestData.TransactionFeeId,
+                                                                                                                                                                      TestData.TransactionFeeDescription,
+                                                                                                                                                                      TestData.FeeCalculationType,
+                                                                                                                                                                      TestData.FeeValue);
+
 
         #endregion
     }

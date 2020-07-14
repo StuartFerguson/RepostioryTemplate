@@ -507,6 +507,86 @@ namespace EstateReporting.Repository.Tests
 
             Should.Throw<NotFoundException>(async () => { await reportingRepository.CompleteTransaction(TestData.TransactionHasBeenCompletedEvent, CancellationToken.None); });
         }
+
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddContract_ContractAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddContract(TestData.ContractCreatedEvent, CancellationToken.None);
+
+            Contract contract = await context.Contracts.SingleOrDefaultAsync(e => e.ContractId== TestData.ContractId);
+            contract.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddContractProduct_FixedValue_ContractProductAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddContractProduct(TestData.FixedValueProductAddedToContractEvent, CancellationToken.None);
+
+            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
+                                                                                                e.ProductId == TestData.ProductId);
+            contractProduct.ShouldNotBeNull();
+            contractProduct.Value.ShouldBe(TestData.ProductFixedValue);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddContractProduct_VariableValue_ContractProductAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddContractProduct(TestData.VariableValueProductAddedToContractEvent, CancellationToken.None);
+
+            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
+                                                                                                       e.ProductId == TestData.ProductId);
+            contractProduct.ShouldNotBeNull();
+            contractProduct.Value.ShouldBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddContractProductTransactionFee_ContractProductTransactionFee(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddContractProductTransactionFee(TestData.TransactionFeeForProductAddedToContractEvent, CancellationToken.None);
+
+            ContractProductTransactionFee contractProductTransactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
+                                                                                                       e.ProductId == TestData.ProductId &&
+                                                                                                       e.TransactionFeeId == TestData.TransactionFeeId);
+            contractProductTransactionFee.ShouldNotBeNull();
+        }
+
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
@@ -532,9 +612,6 @@ namespace EstateReporting.Repository.Tests
                 throw new NotSupportedException($"Database type [{databaseType}] not supported");
             }
             
-
-            
-
             return context;
         }
 

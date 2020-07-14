@@ -19,7 +19,6 @@ namespace EstateReporting
     using BusinessLogic;
     using Common;
     using Database;
-    using EventStore.ClientAPI;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -32,7 +31,6 @@ namespace EstateReporting
     using Newtonsoft.Json.Serialization;
     using NLog.Extensions.Logging;
     using Repository;
-    using Shared.DomainDrivenDesign.EventStore;
     using Shared.EntityFramework;
     using Shared.EntityFramework.ConnectionStringConfiguration;
     using Shared.EventStore.EventStore;
@@ -118,6 +116,7 @@ namespace EstateReporting
             services.AddSingleton<EstateDomainEventHandler>();
             services.AddSingleton<MerchantDomainEventHandler>();
             services.AddSingleton<TransactionDomainEventHandler>();
+            services.AddSingleton<ContractDomainEventHandler>();
             services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
 
             //    //builder.RegisterType<ModelFactory>().As<IModelFactory>().SingleInstance();

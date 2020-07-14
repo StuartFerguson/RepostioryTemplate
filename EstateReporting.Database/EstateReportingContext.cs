@@ -74,6 +74,30 @@
         public DbSet<Estate> Estates { get; set; }
 
         /// <summary>
+        /// Gets or sets the contracts.
+        /// </summary>
+        /// <value>
+        /// The contracts.
+        /// </value>
+        public DbSet<Contract> Contracts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contract products.
+        /// </summary>
+        /// <value>
+        /// The contract products.
+        /// </value>
+        public DbSet<ContractProduct> ContractProducts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contract product transaction fees.
+        /// </summary>
+        /// <value>
+        /// The contract product transaction fees.
+        /// </value>
+        public DbSet<ContractProductTransactionFee> ContractProductTransactionFees { get; set; }
+
+        /// <summary>
         /// Gets or sets the estate security users.
         /// </summary>
         /// <value>
@@ -262,6 +286,28 @@
                                                                     t.TransactionId
                                                                 });
 
+            modelBuilder.Entity<Contract>().HasKey(c => new
+                                                        {
+                                                            c.EstateId,
+                                                            c.OperatorId,
+                                                            c.ContractId
+                                                        });
+
+            modelBuilder.Entity<ContractProduct>().HasKey(c => new
+                                                        {
+                                                            c.EstateId,
+                                                            c.ContractId,
+                                                            c.ProductId
+                                                        });
+
+            modelBuilder.Entity<ContractProductTransactionFee>().HasKey(c => new
+                                                               {
+                                                                   c.EstateId,
+                                                                   c.ContractId,
+                                                                   c.ProductId,
+                                                                   c.TransactionFeeId
+                                                               });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -283,6 +329,9 @@
                 nameof(MerchantSecurityUser),
                 nameof(MerchantOperator),
                 nameof(Transaction),
+                nameof(Contract),
+                nameof(ContractProduct),
+                nameof(ContractProductTransactionFee)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();
