@@ -360,7 +360,7 @@
                 nameof(MerchantOperator),
                 nameof(Transaction),
                 nameof(TransactionAdditionalRequestData),
-                nameof(TransactionAdditionalResponseData)
+                nameof(TransactionAdditionalResponseData),
                 nameof(Contract),
                 nameof(ContractProduct),
                 nameof(ContractProductTransactionFee)
