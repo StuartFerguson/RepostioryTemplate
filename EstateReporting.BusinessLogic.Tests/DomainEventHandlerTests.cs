@@ -2,6 +2,7 @@ namespace EstateReporting.BusinessLogic.Tests
 {
     using System;
     using System.Threading;
+    using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using EstateReporting.Tests;
@@ -333,6 +334,74 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(transactionHasBeenCompletedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void ContractDomainEventHandler_ContractCreatedEvent_EventIsHandled()
+        {
+            ContractCreatedEvent contractCreatedEvent  = TestData.ContractCreatedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            ContractDomainEventHandler eventHandler = new ContractDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(contractCreatedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void ContractDomainEventHandler_FixedValueProductAddedToContractEvent_EventIsHandled()
+        {
+            FixedValueProductAddedToContractEvent fixedValueProductAddedToContractEvent = TestData.FixedValueProductAddedToContractEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            ContractDomainEventHandler eventHandler = new ContractDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(fixedValueProductAddedToContractEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void ContractDomainEventHandler_VariableValueProductAddedToContractEvent_EventIsHandled()
+        {
+            VariableValueProductAddedToContractEvent variableValueProductAddedToContractEvent = TestData.VariableValueProductAddedToContractEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            ContractDomainEventHandler eventHandler = new ContractDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(variableValueProductAddedToContractEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void ContractDomainEventHandler_TransactionFeeForProductAddedToContractEvent_EventIsHandled()
+        {
+            TransactionFeeForProductAddedToContractEvent transactionFeeForProductAddedToContractEvent = TestData.TransactionFeeForProductAddedToContractEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            ContractDomainEventHandler eventHandler = new ContractDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionFeeForProductAddedToContractEvent, CancellationToken.None);
                             });
         }
     }

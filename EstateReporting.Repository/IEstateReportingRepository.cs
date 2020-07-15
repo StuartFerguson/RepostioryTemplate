@@ -2,6 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
@@ -14,6 +15,42 @@
     public interface IEstateReportingRepository
     {
         #region Methods
+
+        /// <summary>
+        /// Adds the contract.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddContract(ContractCreatedEvent domainEvent,
+                         CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the contract product.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddContractProduct(VariableValueProductAddedToContractEvent domainEvent,
+                                CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddContractProductTransactionFee(TransactionFeeForProductAddedToContractEvent domainEvent,
+                                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the contract product.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddContractProduct(FixedValueProductAddedToContractEvent domainEvent,
+                                CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the estate.

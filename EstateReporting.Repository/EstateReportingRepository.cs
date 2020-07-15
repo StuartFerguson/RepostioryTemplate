@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Database;
     using Database.Entities;
+    using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,108 @@
         #endregion
 
         #region Methods
+
+        public async Task AddContract(ContractCreatedEvent domainEvent,
+                                      CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Contract contract = new Contract
+                                {
+                                    OperatorId = domainEvent.OperatorId,
+                                    EstateId = domainEvent.EstateId,
+                                    ContractId = domainEvent.ContractId,
+                                    Description = domainEvent.Description
+                                };
+
+            await context.Contracts.AddAsync(contract, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the contract product.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddContractProduct(VariableValueProductAddedToContractEvent domainEvent,
+                                             CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            ContractProduct contractProduct = new ContractProduct
+                                {
+                                    EstateId = domainEvent.EstateId,
+                                    ContractId = domainEvent.ContractId,
+                                    ProductId = domainEvent.ProductId,
+                                    DisplayText = domainEvent.DisplayText,
+                                    ProductName = domainEvent.ProductName,
+                                    Value = null
+                                };
+
+            await context.ContractProducts.AddAsync(contractProduct, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the contract product.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddContractProduct(FixedValueProductAddedToContractEvent domainEvent,
+                                             CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            ContractProduct contractProduct = new ContractProduct
+                                              {
+                                                  EstateId = domainEvent.EstateId,
+                                                  ContractId = domainEvent.ContractId,
+                                                  ProductId = domainEvent.ProductId,
+                                                  DisplayText = domainEvent.DisplayText,
+                                                  ProductName = domainEvent.ProductName,
+                                                  Value = domainEvent.Value
+                                              };
+
+            await context.ContractProducts.AddAsync(contractProduct, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken); 
+        }
+
+        /// <summary>
+        /// Adds the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddContractProductTransactionFee(TransactionFeeForProductAddedToContractEvent domainEvent,
+                                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            ContractProductTransactionFee contractProductTransactionFee = new ContractProductTransactionFee
+            {
+                                                  EstateId = domainEvent.EstateId,
+                                                  ContractId = domainEvent.ContractId,
+                                                  ProductId = domainEvent.ProductId,
+                                                  Description = domainEvent.Description,
+                                                  Value = domainEvent.Value,
+                                                  TransactionFeeId = domainEvent.TransactionFeeId,
+                                                  CalculationType = domainEvent.CalculationType
+                                              };
+
+            await context.ContractProductTransactionFees.AddAsync(contractProductTransactionFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Adds the estate.

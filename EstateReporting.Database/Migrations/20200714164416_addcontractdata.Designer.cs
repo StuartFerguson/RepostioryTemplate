@@ -4,14 +4,16 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20200714164416_addcontractdata")]
+    partial class addcontractdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,9 +333,6 @@ namespace EstateReporting.Database.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OperatorIdentifier")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ResponseCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -361,45 +360,6 @@ namespace EstateReporting.Database.Migrations
                     b.HasKey("EstateId", "MerchantId", "TransactionId");
 
                     b.ToTable("transaction");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.TransactionAdditionalRequestData", b =>
-                {
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TransactionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Amount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerAccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EstateId", "MerchantId", "TransactionId");
-
-                    b.ToTable("transactionadditionalrequestdata");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.TransactionAdditionalResponseData", b =>
-                {
-                    b.Property<Guid>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("TransactionId");
-
-                    b.ToTable("transactionadditionalresponsedata");
                 });
 #pragma warning restore 612, 618
         }
