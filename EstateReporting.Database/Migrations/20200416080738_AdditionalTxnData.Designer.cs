@@ -4,92 +4,22 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20200416080738_AdditionalTxnData")]
+    partial class AdditionalTxnData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.Contract", b =>
-                {
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OperatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContractId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EstateId", "OperatorId", "ContractId");
-
-                    b.ToTable("contract");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.ContractProduct", b =>
-                {
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContractId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DisplayText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("EstateId", "ContractId", "ProductId");
-
-                    b.ToTable("contractproduct");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.ContractProductTransactionFee", b =>
-                {
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContractId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TransactionFeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CalculationType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("EstateId", "ContractId", "ProductId", "TransactionFeeId");
-
-                    b.ToTable("contractproducttransactionfee");
-                });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Estate", b =>
                 {
