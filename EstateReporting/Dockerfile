@@ -8,7 +8,10 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["EstateReporting/NuGet.Config", "."]
 COPY ["EstateReporting/EstateReporting.csproj", "EstateReporting/"]
-COPY ["EstateReporting.BusinessLogic/EstateReporting.BusinessLogic.csproj", "../EstateReporting.BusinessLogic/"]
+COPY ["EstateReporting/NuGet.Config", "EstateReporting/"]
+COPY ["EstateReporting.BusinessLogic/EstateReporting.BusinessLogic.csproj", "EstateReporting.BusinessLogic/"]
+COPY ["EstateReporting.Repository/EstateReporting.Repository.csproj", "EstateReporting.Repository/"]
+COPY ["EstateReporting.Database/EstateReporting.Database.csproj", "EstateReporting.Database/"]
 RUN dotnet restore "EstateReporting/EstateReporting.csproj"
 COPY . .
 WORKDIR "/src/EstateReporting"
