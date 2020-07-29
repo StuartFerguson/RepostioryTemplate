@@ -330,7 +330,7 @@
 
         public static String TransactionFeeDescription = "Merchant Commission";
 
-        public static Decimal FeeValue = 0.5m;
+        public static Decimal FeeValue = 0.0005m;
 
         public static ContractCreatedEvent ContractCreatedEvent = ContractCreatedEvent.Create(TestData.ContractId, TestData.EstateId,
                                                                                               TestData.OperatorId, TestData.ContractDescription);
