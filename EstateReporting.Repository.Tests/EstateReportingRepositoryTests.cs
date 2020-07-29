@@ -593,6 +593,50 @@ namespace EstateReporting.Repository.Tests
             contractProductTransactionFee.ShouldNotBeNull();
         }
 
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddProductDetailsToTransaction_ProductDetailsAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+            {
+                TransactionId = TestData.TransactionId,
+                MerchantId = TestData.MerchantId,
+                EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddProductDetailsToTransaction(TestData.ProductDetailsAddedToTransactionEvent, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.ContractId.ShouldBe(TestData.ProductDetailsAddedToTransactionEvent.ContractId);
+            transaction.ProductId.ShouldBe(TestData.ProductDetailsAddedToTransactionEvent.ProductId);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddProductDetailsToTransaction_TransactionNotFound_ErrorThroen(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.AddProductDetailsToTransaction(TestData.ProductDetailsAddedToTransactionEvent,
+                                                                                                         CancellationToken.None);
+                                            });
+        }
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;

@@ -214,6 +214,15 @@
         Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                             CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Adds the product details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
         #endregion
     }
 }

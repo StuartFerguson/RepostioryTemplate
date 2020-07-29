@@ -95,14 +95,14 @@
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProduct contractProduct = new ContractProduct
-                                {
-                                    EstateId = domainEvent.EstateId,
-                                    ContractId = domainEvent.ContractId,
-                                    ProductId = domainEvent.ProductId,
-                                    DisplayText = domainEvent.DisplayText,
-                                    ProductName = domainEvent.ProductName,
-                                    Value = null
-                                };
+                                              {
+                                                  EstateId = domainEvent.EstateId,
+                                                  ContractId = domainEvent.ContractId,
+                                                  ProductId = domainEvent.ProductId,
+                                                  DisplayText = domainEvent.DisplayText,
+                                                  ProductName = domainEvent.ProductName,
+                                                  Value = null
+                                              };
 
             await context.ContractProducts.AddAsync(contractProduct, cancellationToken);
 
@@ -133,7 +133,7 @@
 
             await context.ContractProducts.AddAsync(contractProduct, cancellationToken);
 
-            await context.SaveChangesAsync(cancellationToken); 
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -149,15 +149,15 @@
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProductTransactionFee contractProductTransactionFee = new ContractProductTransactionFee
-            {
-                                                  EstateId = domainEvent.EstateId,
-                                                  ContractId = domainEvent.ContractId,
-                                                  ProductId = domainEvent.ProductId,
-                                                  Description = domainEvent.Description,
-                                                  Value = domainEvent.Value,
-                                                  TransactionFeeId = domainEvent.TransactionFeeId,
-                                                  CalculationType = domainEvent.CalculationType
-                                              };
+                                                                          {
+                                                                              EstateId = domainEvent.EstateId,
+                                                                              ContractId = domainEvent.ContractId,
+                                                                              ProductId = domainEvent.ProductId,
+                                                                              Description = domainEvent.Description,
+                                                                              Value = domainEvent.Value,
+                                                                              TransactionFeeId = domainEvent.TransactionFeeId,
+                                                                              CalculationType = domainEvent.CalculationType
+                                                                          };
 
             await context.ContractProductTransactionFees.AddAsync(contractProductTransactionFee, cancellationToken);
 
@@ -405,6 +405,32 @@
         }
 
         /// <summary>
+        /// Adds the product details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.ContractId = domainEvent.ContractId;
+            transaction.ProductId = domainEvent.ProductId;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Completes the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -417,7 +443,8 @@
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (transaction == null)
             {
@@ -569,7 +596,8 @@
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (transaction == null)
             {
@@ -597,7 +625,8 @@
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (transaction == null)
             {
@@ -624,7 +653,8 @@
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (transaction == null)
             {
@@ -653,7 +683,8 @@
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId);
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (transaction == null)
             {

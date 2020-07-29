@@ -356,6 +356,10 @@
                                                                                                                                                                       TestData.FeeCalculationType,
                                                                                                                                                                       TestData.FeeValue);
 
+        public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent = ProductDetailsAddedToTransactionEvent.Create(TestData.TransactionId,
+                                                                                                                                                 TestData.EstateId,
+                                                                                                                                                 TestData.ContractId,
+                                                                                                                                                 TestData.ProductId);
 
         #endregion
     }

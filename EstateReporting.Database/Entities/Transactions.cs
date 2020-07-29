@@ -21,6 +21,14 @@
         public String AuthorisationCode { get; set; }
 
         /// <summary>
+        /// Gets or sets the contract identifier.
+        /// </summary>
+        /// <value>
+        /// The contract identifier.
+        /// </value>
+        public Guid ContractId { get; set; }
+
+        /// <summary>
         /// Gets or sets the device identifier.
         /// </summary>
         /// <value>
@@ -67,6 +75,14 @@
         /// The operator identifier.
         /// </value>
         public String OperatorIdentifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product identifier.
+        /// </summary>
+        /// <value>
+        /// The product identifier.
+        /// </value>
+        public Guid ProductId { get; set; }
 
         /// <summary>
         /// Gets or sets the response code.
