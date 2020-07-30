@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.1.1" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.1.1" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.1.1" />
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.1.1" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.2.2" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.2.2" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.2.1" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.2.2" />
   </ItemGroup>
 
 </Project>
