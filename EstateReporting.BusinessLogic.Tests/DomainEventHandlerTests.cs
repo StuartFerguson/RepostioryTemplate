@@ -421,5 +421,22 @@ namespace EstateReporting.BusinessLogic.Tests
                                 await eventHandler.Handle(transactionFeeForProductAddedToContractEvent, CancellationToken.None);
                             });
         }
+
+        [Fact]
+        public void ContractDomainEventHandler_TransactionFeeForProductDisabledEvent_EventIsHandled()
+        {
+            TransactionFeeForProductDisabledEvent transactionFeeForProductDisabledEvent = TestData.TransactionFeeForProductDisabledEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            ContractDomainEventHandler eventHandler = new ContractDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(transactionFeeForProductDisabledEvent, CancellationToken.None);
+                            });
+        }
     }
 }

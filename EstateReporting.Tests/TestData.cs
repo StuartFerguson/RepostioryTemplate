@@ -328,6 +328,8 @@
 
         public static Int32 FeeCalculationType = 0;
 
+        public static Int32 FeeType = 0;
+
         public static String TransactionFeeDescription = "Merchant Commission";
 
         public static Decimal FeeValue = 0.0005m;
@@ -354,12 +356,18 @@
                                                                                                                                                                       TestData.TransactionFeeId,
                                                                                                                                                                       TestData.TransactionFeeDescription,
                                                                                                                                                                       TestData.FeeCalculationType,
+                                                                                                                                                                      TestData.FeeType,
                                                                                                                                                                       TestData.FeeValue);
 
         public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent = ProductDetailsAddedToTransactionEvent.Create(TestData.TransactionId,
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.ContractId,
                                                                                                                                                  TestData.ProductId);
+
+        public static TransactionFeeForProductDisabledEvent TransactionFeeForProductDisabledEvent = TransactionFeeForProductDisabledEvent.Create(TestData.ContractId,
+                                                                                                                                                 TestData.EstateId,
+                                                                                                                                                 TestData.ProductId,
+                                                                                                                                                 TestData.TransactionFeeId);
 
         #endregion
     }

@@ -110,6 +110,30 @@
         }
 
         /// <summary>
+        /// Disables the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
+                                                               CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(t => t.TransactionFeeId == domainEvent.TransactionFeeId);
+
+            if (transactionFee == null)
+            {
+                throw new NotFoundException($"Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model");
+            }
+
+            transactionFee.IsEnabled = false;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Adds the contract product.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -156,7 +180,9 @@
                                                                               Description = domainEvent.Description,
                                                                               Value = domainEvent.Value,
                                                                               TransactionFeeId = domainEvent.TransactionFeeId,
-                                                                              CalculationType = domainEvent.CalculationType
+                                                                              CalculationType = domainEvent.CalculationType,
+                                                                              IsEnabled = true,
+                                                                              FeeType = domainEvent.FeeType
                                                                           };
 
             await context.ContractProductTransactionFees.AddAsync(contractProductTransactionFee, cancellationToken);

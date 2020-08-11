@@ -41,6 +41,22 @@
         public Int32 CalculationType { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the fee.
+        /// </summary>
+        /// <value>
+        /// The type of the fee.
+        /// </value>
+        public Int32 FeeType { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is enabled; otherwise, <c>false</c>.
+        /// </value>
+        public Boolean IsEnabled { get; set; }
+
+        /// <summary>
         /// Gets or sets the transaction fee identifier.
         /// </summary>
         /// <value>

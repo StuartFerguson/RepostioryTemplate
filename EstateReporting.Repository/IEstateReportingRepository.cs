@@ -44,6 +44,15 @@
                                               CancellationToken cancellationToken);
 
         /// <summary>
+        /// Disables the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
+                                                  CancellationToken cancellationToken);
+
+        /// <summary>
         /// Adds the contract product.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
