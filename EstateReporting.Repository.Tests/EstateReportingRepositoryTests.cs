@@ -637,6 +637,58 @@ namespace EstateReporting.Repository.Tests
                                                                                                          CancellationToken.None);
                                             });
         }
+        
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_DisableContractProductTransactionFee_TransactionFeeDisabled(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.ContractProductTransactionFees.AddAsync(new ContractProductTransactionFee
+                                                                  {
+                                                                      EstateId = TestData.EstateId,
+                                                                      ProductId = TestData.ProductId,
+                                                                      TransactionFeeId = TestData.TransactionFeeId,
+                                                                      Value = TestData.FeeValue,
+                                                                      FeeType = TestData.FeeType,
+                                                                      Description = TestData.TransactionFeeDescription,
+                                                                      CalculationType = TestData.FeeCalculationType,
+                                                                      IsEnabled = true,
+                                                                      ContractId = TestData.ContractId
+                                                                  });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            
+            await reportingRepository.DisableContractProductTransactionFee(TestData.TransactionFeeForProductDisabledEvent, CancellationToken.None);
+
+            ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleAsync(t => t.TransactionFeeId == TestData.TransactionFeeId);
+
+            transactionFee.IsEnabled.ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_DisableContractProductTransactionFee_TransactionFeeNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.DisableContractProductTransactionFee(TestData.TransactionFeeForProductDisabledEvent,
+                                                                                                               CancellationToken.None);
+                                            });
+        }
+
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
