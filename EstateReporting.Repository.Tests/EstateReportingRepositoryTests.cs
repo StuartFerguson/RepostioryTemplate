@@ -637,7 +637,105 @@ namespace EstateReporting.Repository.Tests
                                                                                                          CancellationToken.None);
                                             });
         }
-        
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFeeDetailsToTransaction_MerchantFeeAddedToTransactionEvent_FeeAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+            {
+                TransactionId = TestData.TransactionId,
+                MerchantId = TestData.MerchantId,
+                EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFeeDetailsToTransaction(TestData.MerchantFeeAddedToTransactionEvent, CancellationToken.None);
+
+            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == TestData.TransactionId && e.FeeId == TestData.TransactionFeeId);
+            transactionFee.ShouldNotBeNull();
+            transactionFee.FeeId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeId);
+            transactionFee.CalculatedValue.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.CalculatedValue);
+            transactionFee.CalculationType.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeCalculationType);
+            transactionFee.EventId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.EventId);
+            transactionFee.FeeType.ShouldBe(0);
+            transactionFee.FeeValue.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeValue);
+            transactionFee.TransactionId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.TransactionId);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFeeDetailsToTransaction_MerchantFeeAddedToTransactionEvent_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            Should.Throw<NotFoundException>(async () =>
+            {
+                await reportingRepository.AddFeeDetailsToTransaction(TestData.MerchantFeeAddedToTransactionEvent, CancellationToken.None);
+            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFeeDetailsToTransaction_ServiceProviderFeeAddedToTransactionEvent_FeeAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+            {
+                TransactionId = TestData.TransactionId,
+                MerchantId = TestData.MerchantId,
+                EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFeeDetailsToTransaction(TestData.ServiceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+
+            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == TestData.TransactionId && e.FeeId == TestData.TransactionFeeId);
+            transactionFee.ShouldNotBeNull();
+            transactionFee.FeeId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeId);
+            transactionFee.CalculatedValue.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.CalculatedValue);
+            transactionFee.CalculationType.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeCalculationType);
+            transactionFee.EventId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.EventId);
+            transactionFee.FeeType.ShouldBe(1);
+            transactionFee.FeeValue.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeValue);
+            transactionFee.TransactionId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.TransactionId);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFeeDetailsToTransaction_ServiceProviderFeeAddedToTransactionEvent_TransactionNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            Should.Throw<NotFoundException>(async () =>
+            {
+                await reportingRepository.AddFeeDetailsToTransaction(TestData.ServiceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+            });
+        }
+
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]

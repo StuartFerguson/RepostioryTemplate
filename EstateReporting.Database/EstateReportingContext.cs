@@ -163,6 +163,14 @@
         public DbSet<Transaction> Transactions { get; set; }
 
         /// <summary>
+        /// Gets or sets the transaction fees.
+        /// </summary>
+        /// <value>
+        /// The transaction fees.
+        /// </value>
+        public DbSet<TransactionFee> TransactionFees { get; set; }
+
+        /// <summary>
         /// Gets or sets the transaction additional request data.
         /// </summary>
         /// <value>
@@ -303,6 +311,12 @@
                                                                     t.TransactionId
                                                                 });
 
+            modelBuilder.Entity<TransactionFee>().HasKey(t => new
+                                                           {
+                                                               t.TransactionId,
+                                                               t.FeeId
+                                                           });
+
             modelBuilder.Entity<Contract>().HasKey(c => new
                                                         {
                                                             c.EstateId,
@@ -361,6 +375,7 @@
                 nameof(MerchantSecurityUser),
                 nameof(MerchantOperator),
                 nameof(Transaction),
+                nameof(TransactionFee),
                 nameof(TransactionAdditionalRequestData),
                 nameof(TransactionAdditionalResponseData),
                 nameof(Contract),
