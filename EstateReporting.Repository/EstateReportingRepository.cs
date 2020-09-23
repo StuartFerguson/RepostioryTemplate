@@ -62,6 +62,11 @@
 
         #region Methods
 
+        /// <summary>
+        /// Adds the contract.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public async Task AddContract(ContractCreatedEvent domainEvent,
                                       CancellationToken cancellationToken)
         {
@@ -114,6 +119,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model</exception>
         public async Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
                                                                CancellationToken cancellationToken)
         {
@@ -435,6 +441,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
                                                          CancellationToken cancellationToken)
         {
@@ -452,6 +459,80 @@
 
             transaction.ContractId = domainEvent.ContractId;
             transaction.ProductId = domainEvent.ProductId;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            TransactionFee transactionFee = new TransactionFee
+                                            {
+                                                FeeId = domainEvent.FeeId,
+                                                CalculatedValue = domainEvent.CalculatedValue,
+                                                CalculationType = domainEvent.FeeCalculationType,
+                                                EventId = domainEvent.EventId,
+                                                FeeType = 0,
+                                                FeeValue = domainEvent.FeeValue,
+                                                TransactionId = domainEvent.TransactionId
+                                            };
+
+            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            TransactionFee transactionFee = new TransactionFee
+                                            {
+                                                FeeId = domainEvent.FeeId,
+                                                CalculatedValue = domainEvent.CalculatedValue,
+                                                CalculationType = domainEvent.FeeCalculationType,
+                                                EventId = domainEvent.EventId,
+                                                FeeType = 1,
+                                                FeeValue = domainEvent.FeeValue,
+                                                TransactionId = domainEvent.TransactionId
+                                            };
+
+            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }

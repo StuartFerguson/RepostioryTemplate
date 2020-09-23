@@ -334,6 +334,8 @@
 
         public static Decimal FeeValue = 0.0005m;
 
+        private static Decimal CalculatedValue = 2.95m;
+
         public static ContractCreatedEvent ContractCreatedEvent = ContractCreatedEvent.Create(TestData.ContractId, TestData.EstateId,
                                                                                               TestData.OperatorId, TestData.ContractDescription);
 
@@ -361,6 +363,7 @@
 
         public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent = ProductDetailsAddedToTransactionEvent.Create(TestData.TransactionId,
                                                                                                                                                  TestData.EstateId,
+                                                                                                                                                 TestData.MerchantId,
                                                                                                                                                  TestData.ContractId,
                                                                                                                                                  TestData.ProductId);
 
@@ -368,6 +371,22 @@
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.TransactionFeeId);
+
+        public static MerchantFeeAddedToTransactionEvent MerchantFeeAddedToTransactionEvent = MerchantFeeAddedToTransactionEvent.Create(TestData.TransactionId,
+            TestData.EstateId,
+            TestData.MerchantId,
+            TestData.CalculatedValue,
+            TestData.FeeCalculationType,
+            TestData.TransactionFeeId,
+            TestData.FeeValue);
+
+        public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = ServiceProviderFeeAddedToTransactionEvent.Create(TestData.TransactionId,
+            TestData.EstateId,
+            TestData.MerchantId,
+            TestData.CalculatedValue,
+            TestData.FeeCalculationType,
+            TestData.TransactionFeeId,
+            TestData.FeeValue);
 
         #endregion
     }

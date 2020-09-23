@@ -355,6 +355,40 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public void TransactionDomainEventHandler_MerchantFeeAddedToTransactionEvent_EventIsHandled()
+        {
+            MerchantFeeAddedToTransactionEvent merchantFeeAddedToTransactionEvent = TestData.MerchantFeeAddedToTransactionEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(merchantFeeAddedToTransactionEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_ServiceProviderFeeAddedToTransactionEvent_EventIsHandled()
+        {
+            ServiceProviderFeeAddedToTransactionEvent serviceProviderFeeAddedToTransactionEvent = TestData.ServiceProviderFeeAddedToTransactionEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(serviceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
         public void ContractDomainEventHandler_ContractCreatedEvent_EventIsHandled()
         {
             ContractCreatedEvent contractCreatedEvent  = TestData.ContractCreatedEvent;
