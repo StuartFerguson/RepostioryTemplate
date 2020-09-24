@@ -1,10 +1,12 @@
 ﻿namespace EstateReporting.Database.Entities
 {
     using System;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// 
     /// </summary>
+    [Table("transactionfee")]
     public class TransactionFee
     {
         #region Properties
