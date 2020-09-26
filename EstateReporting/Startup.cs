@@ -19,12 +19,15 @@ namespace EstateReporting
     using BusinessLogic;
     using Common;
     using Database;
+    using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.AspNetCore.Mvc.Versioning;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -63,15 +66,13 @@ namespace EstateReporting
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigurationReader.Initialise(Startup.Configuration);
+
             this.ConfigureMiddlewareServices(services);
-
-
         }
         
         public void ConfigureContainer(IServiceCollection services)
         {
-            ConfigurationReader.Initialise(Startup.Configuration);
-            
             Boolean useConnectionStringConfig = Boolean.Parse(ConfigurationReader.GetValue("AppSettings", "UseConnectionStringConfig"));
             
             if (useConnectionStringConfig)
@@ -131,6 +132,18 @@ namespace EstateReporting
 
         private void ConfigureMiddlewareServices(IServiceCollection services)
         {
+            services.AddHealthChecks()
+                    .AddSqlServer(connectionString: ConfigurationReader.GetConnectionString("HealthCheck"),
+                                  healthQuery: "SELECT 1;",
+                                  name: "Read Model Server",
+                                  failureStatus: HealthStatus.Degraded,
+                                  tags: new string[] { "db", "sql", "sqlserver" })
+                    .AddUrlGroup(new Uri($"{ConfigurationReader.GetValue("SecurityConfiguration", "Authority")}/health"),
+                                 name: "Security Service",
+                                 httpMethod: HttpMethod.Get,
+                                 failureStatus: HealthStatus.Unhealthy,
+                                 tags: new string[] { "security", "authorisation" });
+
             services.AddApiVersioning(
                                       options =>
                                       {
@@ -232,6 +245,11 @@ namespace EstateReporting
             app.UseEndpoints(endpoints =>
                              {
                                  endpoints.MapControllers();
+                                 endpoints.MapHealthChecks("health", new HealthCheckOptions()
+                                                                     {
+                                                                         Predicate = _ => true,
+                                                                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                                                                     });
                              });
             app.UseSwagger();
 
