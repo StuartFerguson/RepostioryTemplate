@@ -6,11 +6,11 @@ namespace EstateReporting.BusinessLogic.Tests
     using System.Collections.Generic;
     using System.Linq;
     using EstateManagement.Estate.DomainEvents;
-    using EstateReporting.Tests;
     using Microsoft.EntityFrameworkCore.Internal;
     using Moq;
     using Repository;
     using Shouldly;
+    using Testing;
 
     public class DomainEventHandlerResolverTests
     {

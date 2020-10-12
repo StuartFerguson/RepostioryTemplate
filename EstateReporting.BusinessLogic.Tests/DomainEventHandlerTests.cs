@@ -5,12 +5,12 @@ namespace EstateReporting.BusinessLogic.Tests
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
-    using EstateReporting.Tests;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;
     using Repository;
     using Shared.Logger;
     using Shouldly;
+    using Testing;
     using TransactionProcessor.Transaction.DomainEvents;
     using Xunit;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;

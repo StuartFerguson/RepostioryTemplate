@@ -1,11 +1,11 @@
-﻿namespace EstateReporting.Tests
+﻿namespace EstateReporting.Testing
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using Models;
     using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -389,5 +389,53 @@
             TestData.FeeValue);
 
         #endregion
+
+        public static String StartDate = "20201001";
+
+        public static String EndDate = "20201002";
+
+        public static String CurrencyCode = "KES";
+
+        public static TransactionsByDayModel TransactionsByDayModelEmptyTransactionDayModelList = new TransactionsByDayModel
+                                                                                               {
+                                                                                                   TransactionDayModels = new List<TransactionDayModel>()
+                                                                                               };
+
+        public static TransactionsByDayModel TransactionsByDayModelNullTransactionDayModelList = new TransactionsByDayModel
+                                                                                              {
+                                                                                                  TransactionDayModels = null
+                                                                                              };
+        
+
+        public static TransactionsByDayModel TransactionsByDayModel = new TransactionsByDayModel
+                                                                      {
+                                                                          TransactionDayModels = new List<TransactionDayModel>
+                                                                                                 {
+                                                                                                     new TransactionDayModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         Date = new DateTime(2020, 10, 1),
+                                                                                                         ValueOfTransactions = 1000.00m,
+                                                                                                         NumberOfTransactions = 50
+                                                                                                     },
+                                                                                                     new TransactionDayModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         Date = new DateTime(2020, 10, 2),
+                                                                                                         ValueOfTransactions = 1510.00m,
+                                                                                                         NumberOfTransactions = 65
+                                                                                                     }
+                                                                                                 }
+                                                                      };
+        
+        public static TransactionDayModel TransactionDayModel = new TransactionDayModel
+                                                                {
+                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                    Date = new DateTime(2020, 10, 1),
+                                                                    ValueOfTransactions = 1000.00m,
+                                                                    NumberOfTransactions = 50
+                                                                };
+
+
     }
 }

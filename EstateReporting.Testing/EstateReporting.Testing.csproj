@@ -2,20 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DebugType>None</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.3.3" />
     <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.3.3" />
     <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.3.3" />
-    <PackageReference Include="Shared.DomainDrivenDesign" Version="0.0.15.9" />
-    <PackageReference Include="Shared.EventStore" Version="0.0.15.9" />
     <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.3" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.3.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EstateReporting.Models\EstateReporting.Models.csproj" />
-    <ProjectReference Include="..\EstateReporting.Repository\EstateReporting.Repository.csproj" />
   </ItemGroup>
 
 </Project>

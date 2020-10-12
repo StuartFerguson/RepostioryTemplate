@@ -1,13 +1,19 @@
 ﻿namespace EstateReporting.Database
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Entities;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Shared.General;
+    using Shared.Logger;
+    using ViewEntities;
 
     /// <summary>
     /// 
@@ -57,6 +63,8 @@
         #endregion
 
         #region Properties
+
+        public virtual DbSet<TransactionsView> TransactionsView { get; set; }
 
         /// <summary>
         /// Gets or sets the estate operators.
@@ -205,6 +213,8 @@
             {
                 await this.SetIgnoreDuplicates(cancellationToken);
             }
+
+            await this.CreateViews(cancellationToken);
         }
 
         /// <summary>
@@ -354,6 +364,8 @@
                                                                t.TransactionId
                                                            });
 
+            modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -391,6 +403,38 @@
         }
 
         #endregion
+
+        public async Task CreateViews(CancellationToken cancellationToken)
+        {
+            String executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            String executingAssemblyFolder = Path.GetDirectoryName(executingAssemblyLocation);
+
+            String scriptsFolder = $@"{executingAssemblyFolder}/Views";
+
+            var directiories = Directory.GetDirectories(scriptsFolder);
+            directiories = directiories.OrderBy(d => d).ToArray();
+
+            foreach (String directiory in directiories)
+            {
+                String[] sqlFiles = Directory.GetFiles(directiory, "*View.sql");
+                foreach (String sqlFile in sqlFiles.OrderBy(x => x))
+                {
+                    Logger.LogDebug($"About to create View [{sqlFile}]");
+                    String sql = File.ReadAllText(sqlFile);
+
+                    // Check here is we need to replace a Database Name
+                    if (sql.Contains("{DatabaseName}"))
+                    {
+                        sql = sql.Replace("{DatabaseName}", this.Database.GetDbConnection().Database);
+                    }
+
+                    // Create the new view using the original sql from file
+                    await this.Database.ExecuteSqlCommandAsync(sql, cancellationToken);
+
+                    Logger.LogDebug($"Created View [{sqlFile}] successfully.");
+                }
+            }
+        }
     }
 
     public static class Extensions

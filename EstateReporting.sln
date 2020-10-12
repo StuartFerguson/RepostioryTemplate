@@ -13,13 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.BusinessLog
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.BusinessLogic.Tests", "EstateReporting.BusinessLogic.Tests\EstateReporting.BusinessLogic.Tests.csproj", "{3039BBE0-3310-41C9-BA4F-9CE901123AEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Repository", "EstateReporting.Repository\EstateReporting.Repository.csproj", "{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.Repository", "EstateReporting.Repository\EstateReporting.Repository.csproj", "{4B3B22C6-8A68-4B01-B008-2F228FF4A8E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Database", "EstateReporting.Database\EstateReporting.Database.csproj", "{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.Database", "EstateReporting.Database\EstateReporting.Database.csproj", "{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Repository.Tests", "EstateReporting.Repository.Tests\EstateReporting.Repository.Tests.csproj", "{69C591C3-4632-4C82-9631-706215655714}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.Repository.Tests", "EstateReporting.Repository.Tests\EstateReporting.Repository.Tests.csproj", "{69C591C3-4632-4C82-9631-706215655714}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Tests", "EstateReporting.Tests\EstateReporting.Tests.csproj", "{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstateReporting.Testing", "EstateReporting.Testing\EstateReporting.Testing.csproj", "{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.DataTransferObjects", "EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj", "{7B9DCCAC-8964-40A7-83B9-0E3E7758581D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Models", "EstateReporting.Models\EstateReporting.Models.csproj", "{AE5966DF-75DD-452F-873F-C0BB080180EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstateReporting.Tests", "EstateReporting.Tests\EstateReporting.Tests.csproj", "{6E43470B-F9FA-40AE-A307-2EF94A9762FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +61,18 @@ Global
 		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B9DCCAC-8964-40A7-83B9-0E3E7758581D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9DCCAC-8964-40A7-83B9-0E3E7758581D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9DCCAC-8964-40A7-83B9-0E3E7758581D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9DCCAC-8964-40A7-83B9-0E3E7758581D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5966DF-75DD-452F-873F-C0BB080180EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5966DF-75DD-452F-873F-C0BB080180EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5966DF-75DD-452F-873F-C0BB080180EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5966DF-75DD-452F-873F-C0BB080180EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E43470B-F9FA-40AE-A307-2EF94A9762FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E43470B-F9FA-40AE-A307-2EF94A9762FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E43470B-F9FA-40AE-A307-2EF94A9762FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E43470B-F9FA-40AE-A307-2EF94A9762FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +85,9 @@ Global
 		{BFFC72F4-911C-4BE2-ADBB-36B264A03A5C} = {EFE4B683-720B-453D-84B7-8955A5648620}
 		{69C591C3-4632-4C82-9631-706215655714} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
 		{3BEA0B96-19CA-4FC1-8AEB-58C31F99CB79} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
+		{7B9DCCAC-8964-40A7-83B9-0E3E7758581D} = {EFE4B683-720B-453D-84B7-8955A5648620}
+		{AE5966DF-75DD-452F-873F-C0BB080180EC} = {EFE4B683-720B-453D-84B7-8955A5648620}
+		{6E43470B-F9FA-40AE-A307-2EF94A9762FD} = {3DAECF53-D7C1-4473-8BC2-296BDFD906A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {977E9A6E-2332-4BC9-B774-75F089C6DB46}

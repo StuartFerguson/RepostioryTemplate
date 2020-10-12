@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,6 +13,7 @@
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using Microsoft.EntityFrameworkCore;
+    using Models;
     using Shared.EntityFramework;
     using Shared.Exceptions;
     using Shared.Logger;
@@ -535,6 +538,51 @@
             await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the transactions for estate by date.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByDayModel> GetTransactionsForEstateByDate(Guid estateId,
+                                                                                 String startDate,
+                                                                                 String endDate,
+                                                                                 CancellationToken cancellationToken)
+        {
+            TransactionsByDayModel model = new TransactionsByDayModel
+                                           {
+                                               TransactionDayModels = new List<TransactionDayModel>()
+                                           };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                             t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate,
+                                                                                                  (txndate,
+                                                                                                   txns) => new
+                                                                                                            {
+                                                                                                                Key = txndate,
+                                                                                                                NumberofTransactions = txns.Count(),
+                                                                                                                ValueOfTransactions = txns.Sum(t => t.Amount)
+                                                                                                            }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionDayModels.Add(new TransactionDayModel
+                                                               {
+                                                                   CurrencyCode = "",
+                                                                   Date = r.Key,
+                                                                   NumberOfTransactions = r.NumberofTransactions,
+                                                                   ValueOfTransactions = r.ValueOfTransactions
+                                                               }));
+
+            return model;
         }
 
         /// <summary>
