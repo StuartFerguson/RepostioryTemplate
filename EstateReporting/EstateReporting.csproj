@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EstateReporting.BusinessLogic\EstateReporting.BusinessLogic.csproj" />
+    <ProjectReference Include="..\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj" />
   </ItemGroup>
 
 </Project>

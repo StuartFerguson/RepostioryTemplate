@@ -14,5 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EstateReporting.Database\EstateReporting.Database.csproj" />
+    <ProjectReference Include="..\EstateReporting.Models\EstateReporting.Models.csproj" />
   </ItemGroup>
 </Project>

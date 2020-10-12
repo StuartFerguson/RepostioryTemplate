@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 namespace EstateReporting
 {
     using System.Data.Common;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Http;
     using System.Reflection;
@@ -19,6 +20,7 @@ namespace EstateReporting
     using BusinessLogic;
     using Common;
     using Database;
+    using Factories;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -46,6 +48,7 @@ namespace EstateReporting
     using ConnectionStringType = Shared.Repositories.ConnectionStringType;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public static IConfigurationRoot Configuration { get; set; }
@@ -119,15 +122,9 @@ namespace EstateReporting
             services.AddSingleton<TransactionDomainEventHandler>();
             services.AddSingleton<ContractDomainEventHandler>();
             services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
+            services.AddSingleton<IReportingManager, ReportingManager>();
+            services.AddSingleton<IModelFactory,ModelFactory>();
 
-            //    //builder.RegisterType<ModelFactory>().As<IModelFactory>().SingleInstance();
-            //    //builder.RegisterType<Factories.ModelFactory>().As<Factories.IModelFactory>().SingleInstance();
-            //    //builder.RegisterType<SecurityServiceClient>().As<ISecurityServiceClient>().SingleInstance();
-
-            //Func <String, String> apiAddressResolver = (serviceName) => { return ConfigurationReader.GetBaseServerUri(serviceName).OriginalString; };
-
-            //    builder.RegisterInstance<Func<String, String>>(apiAddressResolver);
-            //    builder.RegisterType<HttpClient>().SingleInstance();
         }
 
         private void ConfigureMiddlewareServices(IServiceCollection services)

@@ -7,8 +7,8 @@ namespace EstateReporting.Repository.Tests
     using System.Threading.Tasks;
     using Database;
     using Database.Entities;
+    using Database.ViewEntities;
     using EstateManagement.Estate.DomainEvents;
-    using EstateReporting.Tests;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -17,6 +17,7 @@ namespace EstateReporting.Repository.Tests
     using Shared.Exceptions;
     using Shared.Logger;
     using Shouldly;
+    using Testing;
 
     public class EstateReportingRepositoryTests
     {
@@ -786,7 +787,7 @@ namespace EstateReporting.Repository.Tests
                                                                                                                CancellationToken.None);
                                             });
         }
-
+        
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
