@@ -197,7 +197,7 @@
         #endregion
 
         #region Methods
-
+        
         /// <summary>
         /// Migrates the asynchronous.
         /// </summary>
@@ -207,14 +207,9 @@
             if (this.Database.IsSqlServer())
             {
                 await this.Database.MigrateAsync(cancellationToken);
-            }
-
-            if (this.Database.IsSqlServer())
-            {
                 await this.SetIgnoreDuplicates(cancellationToken);
+                await this.CreateViews(cancellationToken);
             }
-
-            await this.CreateViews(cancellationToken);
         }
 
         /// <summary>

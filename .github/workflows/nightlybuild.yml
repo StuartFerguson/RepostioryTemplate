@@ -49,5 +49,5 @@ jobs:
     - name: Build Docker Image
       run: docker build . --file EstateReporting/Dockerfile --tag estatereporting:latest
 
-    #- name: Run Integration Tests
-      #run: dotnet test "EstateManagement.IntegrationTests\EstateManagement.IntegrationTests.csproj"
+    - name: Run Integration Tests
+      run: dotnet test "EstateReporting.IntegrationTests\EstateReporting.IntegrationTests.csproj" --filter Category=PRTest
