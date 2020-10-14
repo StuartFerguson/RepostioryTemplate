@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views\uvwMerchants.View.sql">
+    <None Update="Views\Priority1\uvwMerchants.View.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Views\uvwTransactions.View.sql">
+    <None Update="Views\Priority1\uvwTransactions.View.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

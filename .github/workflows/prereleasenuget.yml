@@ -35,3 +35,5 @@ jobs:
       run: |
         dotnet pack "EstateReporting.Database\EstateReporting.Database.csproj" /p:PackageVersion=${{ steps.next_version.outputs.VERSION }} --output Nugets -c Release            
         dotnet nuget push Nugets/EstateReporting.Database.${{ steps.next_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package      
+        dotnet pack "EstateReporting.Client\EstateReporting.Client.csproj" /p:PackageVersion=${{ steps.next_version.outputs.VERSION }} --output Nugets -c Release            
+        dotnet nuget push Nugets/EstateReporting.Client.${{ steps.next_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package      
