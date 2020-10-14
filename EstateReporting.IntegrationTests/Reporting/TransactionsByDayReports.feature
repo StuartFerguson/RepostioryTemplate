@@ -102,13 +102,17 @@ Scenario: Sales Transactions By Day for Estate - Transactions All On Same Day
 
 	| Test Estate 2 | Test Merchant 3 | 1                 | 0000         | SUCCESS |
 
-	When I get the Transactions By Report for 'Test Estate 1' with the Start Date "Today" and the End Date "Today" the following data is returned
+	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
 	| Today | 9                    | 30000.00            |
 
-	When I get the Transactions By Report for 'Test Estate 2' with the Start Date "Today" and the End Date "Today" the following data is returned
+	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
 	| Today | 1                    | 10000.00            |
+
+	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
+	| Date  | NumberOfTransactions | ValueOfTransactions |
+	| Today | 3                    | 5000.00              |
 
 @PRTest
 Scenario: Sales Transactions By Day for Estate - Transactions On Mutiple Days
@@ -154,16 +158,20 @@ Scenario: Sales Transactions By Day for Estate - Transactions On Mutiple Days
 	| Test Estate 2 | Test Merchant 3 | 3 | 0000 | SUCCESS |
 	| Test Estate 2 | Test Merchant 3 | 4 | 0000 | SUCCESS |
 
-	When I get the Transactions By Report for 'Test Estate 1' with the Start Date "LastMonth" and the End Date "Today" the following data is returned
+	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
 	| Date      | NumberOfTransactions | ValueOfTransactions |
 	| Today     | 6                    | 25000.00            |
 	| Yesterday | 1                    | 1500.00             |
 	| LastWeek  | 1                    | 2500.00             |
 	| LastMonth | 1                    | 1000.00             |
 
-	When I get the Transactions By Report for 'Test Estate 2' with the Start Date "LastMonth" and the End Date "Today" the following data is returned
+	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
 	| Date      | NumberOfTransactions | ValueOfTransactions |
 	| Today     | 1                    | 1000.00             |
 	| Yesterday | 1                    | 1000.00             |
 	| LastWeek  | 1                    | 2000.00             |
 	| LastMonth | 1                    | 1000.00             |
+
+	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
+	| Date  | NumberOfTransactions | ValueOfTransactions |
+	| Today | 3                    | 5000.00            |

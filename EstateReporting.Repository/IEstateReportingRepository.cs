@@ -37,24 +37,6 @@
                                 CancellationToken cancellationToken);
 
         /// <summary>
-        /// Adds the contract product transaction fee.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task AddContractProductTransactionFee(TransactionFeeForProductAddedToContractEvent domainEvent,
-                                              CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Disables the contract product transaction fee.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
-                                                  CancellationToken cancellationToken);
-
-        /// <summary>
         /// Adds the contract product.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -62,6 +44,15 @@
         /// <returns></returns>
         Task AddContractProduct(FixedValueProductAddedToContractEvent domainEvent,
                                 CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddContractProductTransactionFee(TransactionFeeForProductAddedToContractEvent domainEvent,
+                                              CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the estate.
@@ -89,6 +80,24 @@
         /// <returns></returns>
         Task AddEstateSecurityUser(EstateSecurityUserAddedEvent domainEvent,
                                    CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
+                                        CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
+                                        CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the merchant.
@@ -145,6 +154,15 @@
                                      CancellationToken cancellationToken);
 
         /// <summary>
+        /// Adds the product details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
+        /// <summary>
         /// Completes the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -161,6 +179,43 @@
         /// <returns></returns>
         Task CreateReadModel(EstateCreatedEvent domainEvent,
                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Disables the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
+                                                  CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for estate by date.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByDayModel> GetTransactionsForEstateByDate(Guid estateId,
+                                                                    String startDate,
+                                                                    String endDate,
+                                                                    CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for merchant by date.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByDayModel> GetTransactionsForMerchantByDate(Guid estateId,
+                                                                      Guid merchantId,
+                                                                      String startDate,
+                                                                      String endDate,
+                                                                      CancellationToken cancellationToken);
 
         /// <summary>
         /// Records the transaction additional request data.
@@ -224,46 +279,6 @@
         /// <returns></returns>
         Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                             CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds the product details to transaction.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
-                                            CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds the fee details to transaction.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
-                                        CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds the fee details to transaction.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
-                                        CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the transactions for estate by date.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<TransactionsByDayModel> GetTransactionsForEstateByDate(Guid estateId,
-                                                                    String startDate,
-                                                                    String endDate,
-                                                                    CancellationToken cancellationToken);
 
         #endregion
     }

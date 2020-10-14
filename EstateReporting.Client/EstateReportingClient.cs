@@ -68,9 +68,11 @@
         /// </summary>
         /// <param name="accessToken">The access token.</param>
         /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public async Task<TransactionsByDayResponse> GetTransactionsByDate(String accessToken,
+        public async Task<TransactionsByDayResponse> GetTransactionsForEstateByDate(String accessToken,
                                                                            Guid estateId,
                                                                            String startDate,
                                                                            String endDate,
@@ -78,7 +80,7 @@
         {
             TransactionsByDayResponse response = null;
 
-            String requestUri = this.BuildRequestUrl($"/api/reporting/estate/{estateId}/transactions/bydate?start_date={startDate}&end_date={endDate}");
+            String requestUri = this.BuildRequestUrl($"/api/reporting/estates/{estateId}/transactions/bydate?start_date={startDate}&end_date={endDate}");
 
             try
             {
@@ -99,7 +101,55 @@
             catch (Exception ex)
             {
                 // An exception has occurred, add some additional information to the message
-                Exception exception = new Exception(); //$"Error adding device to merchant Id {merchantId} in estate {estateId}.", ex);
+                Exception exception = new Exception($"Error getting transactions by date for estate [{estateId}]");
+
+                throw exception;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Gets the transactions by date.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByDayResponse> GetTransactionsForMerchantByDate(String accessToken,
+                                                                           Guid estateId,
+                                                                           Guid merchantId,
+                                                                           String startDate,
+                                                                           String endDate,
+                                                                           CancellationToken cancellationToken)
+        {
+            TransactionsByDayResponse response = null;
+
+            String requestUri = this.BuildRequestUrl($"/api/reporting/estates/{estateId}/merchants/{merchantId}/transactions/bydate?start_date={startDate}&end_date={endDate}");
+
+            try
+            {
+                StringContent httpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
+
+                // Add the access token to the client headers
+                this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Make the Http Call here
+                HttpResponseMessage httpResponse = await this.HttpClient.GetAsync(requestUri, cancellationToken);
+
+                // Process the response
+                String content = await this.HandleResponse(httpResponse, cancellationToken);
+
+                // call was successful so now deserialise the body to the response object
+                response = JsonConvert.DeserializeObject<TransactionsByDayResponse>(content);
+            }
+            catch (Exception ex)
+            {
+                // An exception has occurred, add some additional information to the message
+                Exception exception = new Exception($"Error getting transactions by date for merchant [{merchantId}] estate [{estateId}]");
 
                 throw exception;
             }
