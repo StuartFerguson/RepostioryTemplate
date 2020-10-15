@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using BusinessLogic;
     using DataTransferObjects;
     using Models;
 
@@ -12,6 +11,8 @@
     /// <seealso cref="EstateReporting.Factories.IModelFactory" />
     public class ModelFactory : IModelFactory
     {
+        #region Methods
+
         /// <summary>
         /// Converts from.
         /// </summary>
@@ -39,6 +40,45 @@
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
+        public TransactionsByWeekResponse ConvertFrom(TransactionsByWeekModel model)
+        {
+            if (model.TransactionWeekModels == null || model.TransactionWeekModels.Any() == false)
+            {
+                return null;
+            }
+
+            TransactionsByWeekResponse response = new TransactionsByWeekResponse
+            {
+                                                      TransactionWeekResponses = new List<TransactionWeekResponse>()
+                                                  };
+
+            model.TransactionWeekModels.ForEach(m => response.TransactionWeekResponses.Add(this.ConvertFrom(m)));
+
+            return response;
+        }
+
+        public TransactionWeekResponse ConvertFrom(TransactionWeekModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionWeekResponse
+                   {
+                       ValueOfTransactions = model.ValueOfTransactions,
+                       WeekNumber = model.WeekNumber,
+                       CurrencyCode = model.CurrencyCode,
+                       NumberOfTransactions = model.NumberOfTransactions,
+                       Year = model.Year
+                   };
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public TransactionDayResponse ConvertFrom(TransactionDayModel model)
         {
             if (model == null)
@@ -53,7 +93,8 @@
                        NumberOfTransactions = model.NumberOfTransactions,
                        ValueOfTransactions = model.ValueOfTransactions
                    };
-
         }
+
+        #endregion
     }
 }

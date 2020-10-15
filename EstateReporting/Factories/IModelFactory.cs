@@ -18,6 +18,27 @@
         /// <returns></returns>
         TransactionsByDayResponse ConvertFrom(TransactionsByDayModel model);
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionsByWeekResponse ConvertFrom(TransactionsByWeekModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionWeekResponse ConvertFrom(TransactionWeekModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionDayResponse ConvertFrom(TransactionDayModel model);
+
         #endregion
     }
 }

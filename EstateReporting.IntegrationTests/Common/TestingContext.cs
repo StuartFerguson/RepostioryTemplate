@@ -14,6 +14,8 @@
     {
         #region Fields
 
+        public DateTime DateToUseForToday;
+
         /// <summary>
         /// The clients
         /// </summary>
@@ -35,6 +37,7 @@
         {
             this.Estates = new List<EstateDetails>();
             this.Clients = new List<ClientDetails>();
+            this.DateToUseForToday = DateTime.Now;
         }
 
         #endregion

@@ -427,7 +427,40 @@
                                                                                                      }
                                                                                                  }
                                                                       };
-        
+
+        public static TransactionsByWeekModel TransactionsByWeekModel = new TransactionsByWeekModel
+        {
+            TransactionWeekModels = new List<TransactionWeekModel>
+                                                                                                 {
+                                                                                                     new TransactionWeekModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         WeekNumber = 1,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfTransactions = 1000.00m,
+                                                                                                         NumberOfTransactions = 50
+                                                                                                     },
+                                                                                                     new TransactionWeekModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         WeekNumber = 2,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfTransactions = 1510.00m,
+                                                                                                         NumberOfTransactions = 65
+                                                                                                     }
+                                                                                                 }
+        };
+
+        public static TransactionsByWeekModel TransactionsByWeekModelNullTransactionWeekModelList = new TransactionsByWeekModel
+        {
+                                                                                                     TransactionWeekModels = null
+                                                                                                 };
+
+        public static TransactionsByWeekModel TransactionsByWeekModelEmptyTransactionWeekModelList = new TransactionsByWeekModel
+        {
+                                                                                                        TransactionWeekModels = new List<TransactionWeekModel>()
+                                                                                                    };
+
         public static TransactionDayModel TransactionDayModel = new TransactionDayModel
                                                                 {
                                                                     CurrencyCode = TestData.CurrencyCode,
@@ -435,6 +468,15 @@
                                                                     ValueOfTransactions = 1000.00m,
                                                                     NumberOfTransactions = 50
                                                                 };
+
+        public static TransactionWeekModel TransactionWeekModel = new TransactionWeekModel
+        {
+                                                                      CurrencyCode = TestData.CurrencyCode,
+                                                                      WeekNumber = 1,
+                                                                      Year = 2020,
+                                                                      ValueOfTransactions = 1000.00m,
+                                                                      NumberOfTransactions = 50
+                                                                  };
 
 
     }

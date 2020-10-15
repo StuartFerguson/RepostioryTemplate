@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\TransactionsByDayReports - Copy.feature.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClientProxyBase" Version="1.0.1" />
     <PackageReference Include="Ductus.FluentDocker" Version="2.7.3" />
     <PackageReference Include="EstateManagement.Client" Version="1.0.5" />
@@ -51,6 +55,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LogonTransaction.feature</DependentUpon>
     </Compile>
+    <Compile Update="Reporting\TransactionsByWeekReports.feature.cs">
+      <DependentUpon>TransactionsByWeekReports.feature</DependentUpon>
+    </Compile>
     <Compile Update="Reporting\TransactionsByDayReports.feature.cs">
       <DesignTime>True</DesignTime>
     </Compile>
@@ -66,6 +73,12 @@
     <SpecFlowFeatureFiles Update="LogonTransaction\LogonTransaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>LogonTransaction.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\TransactionsByWeekReports.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+      <LastGenOutput>TransactionsByDayReports.feature.cs</LastGenOutput>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Reporting\TransactionsByDayReports.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

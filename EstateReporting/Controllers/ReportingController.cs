@@ -70,7 +70,7 @@ namespace EstateReporting.Controllers
         public async Task<IActionResult> GetTransactionForEstateByDate([FromRoute] Guid estateId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
         {
             // Get the data grouped as requested
-            TransactionsByDayModel transactionsByDay = await this.ReportingManager.GetTransactionsForEstate(estateId, startDate, endDate, GroupingType.ByDate, cancellationToken);
+            TransactionsByDayModel transactionsByDay = await this.ReportingManager.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
 
             // Convert to a dto
             TransactionsByDayResponse response = this.ModelFactory.ConvertFrom(transactionsByDay);
@@ -92,10 +92,36 @@ namespace EstateReporting.Controllers
         public async Task<IActionResult> GetTransactionForMerchantByDate([FromRoute] Guid estateId, [FromRoute] Guid merchantId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
         {
             // Get the data grouped as requested
-            TransactionsByDayModel transactionsByDay = await this.ReportingManager.GetTransactionsForMerchant(estateId, merchantId, startDate, endDate, GroupingType.ByDate, cancellationToken);
+            TransactionsByDayModel transactionsByDay = await this.ReportingManager.GetTransactionsForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
 
             // Convert to a dto
             TransactionsByDayResponse response = this.ModelFactory.ConvertFrom(transactionsByDay);
+
+            return this.Ok(response);
+        }
+
+        [HttpGet]
+        [Route("estates/{estateId}/transactions/byweek")]
+        public async Task<IActionResult> GetTransactionForEstateByWeek([FromRoute] Guid estateId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
+        {
+            // Get the data grouped as requested
+            TransactionsByWeekModel transactionsByWeek = await this.ReportingManager.GetTransactionsForEstateByWeek(estateId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByWeekResponse response = this.ModelFactory.ConvertFrom(transactionsByWeek);
+
+            return this.Ok(response);
+        }
+
+        [HttpGet]
+        [Route("estates/{estateId}/merchants/{merchantId}/transactions/byweek")]
+        public async Task<IActionResult> GetTransactionForMerchantByWeek([FromRoute] Guid estateId, [FromRoute] Guid merchantId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
+        {
+            // Get the data grouped as requested
+            TransactionsByWeekModel transactionsByWeek = await this.ReportingManager.GetTransactionsForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByWeekResponse response = this.ModelFactory.ConvertFrom(transactionsByWeek);
 
             return this.Ok(response);
         }

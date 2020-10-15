@@ -109,6 +109,43 @@
             return response;
         }
 
+        public async Task<TransactionsByWeekResponse> GetTransactionsForEstateByWeek(String accessToken,
+                                                                                     Guid estateId,
+                                                                                     String startDate,
+                                                                                     String endDate,
+                                                                                     CancellationToken cancellationToken)
+        {
+            TransactionsByWeekResponse response = null;
+
+            String requestUri = this.BuildRequestUrl($"/api/reporting/estates/{estateId}/transactions/byweek?start_date={startDate}&end_date={endDate}");
+
+            try
+            {
+                StringContent httpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
+
+                // Add the access token to the client headers
+                this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Make the Http Call here
+                HttpResponseMessage httpResponse = await this.HttpClient.GetAsync(requestUri, cancellationToken);
+
+                // Process the response
+                String content = await this.HandleResponse(httpResponse, cancellationToken);
+
+                // call was successful so now deserialise the body to the response object
+                response = JsonConvert.DeserializeObject<TransactionsByWeekResponse>(content);
+            }
+            catch (Exception ex)
+            {
+                // An exception has occurred, add some additional information to the message
+                Exception exception = new Exception($"Error getting transactions by week for estate [{estateId}]");
+
+                throw exception;
+            }
+
+            return response;
+        }
+
         /// <summary>
         /// Gets the transactions by date.
         /// </summary>
@@ -150,6 +187,44 @@
             {
                 // An exception has occurred, add some additional information to the message
                 Exception exception = new Exception($"Error getting transactions by date for merchant [{merchantId}] estate [{estateId}]");
+
+                throw exception;
+            }
+
+            return response;
+        }
+
+        public async Task<TransactionsByWeekResponse> GetTransactionsForMerchantByWeek(String accessToken,
+                                                                                       Guid estateId,
+                                                                                       Guid merchantId,
+                                                                                       String startDate,
+                                                                                       String endDate,
+                                                                                       CancellationToken cancellationToken)
+        {
+            TransactionsByWeekResponse response = null;
+
+            String requestUri = this.BuildRequestUrl($"/api/reporting/estates/{estateId}/merchants/{merchantId}/transactions/byweek?start_date={startDate}&end_date={endDate}");
+
+            try
+            {
+                StringContent httpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
+
+                // Add the access token to the client headers
+                this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Make the Http Call here
+                HttpResponseMessage httpResponse = await this.HttpClient.GetAsync(requestUri, cancellationToken);
+
+                // Process the response
+                String content = await this.HandleResponse(httpResponse, cancellationToken);
+
+                // call was successful so now deserialise the body to the response object
+                response = JsonConvert.DeserializeObject<TransactionsByWeekResponse>(content);
+            }
+            catch (Exception ex)
+            {
+                // An exception has occurred, add some additional information to the message
+                Exception exception = new Exception($"Error getting transactions by week for merchant [{merchantId}] estate [{estateId}]");
 
                 throw exception;
             }

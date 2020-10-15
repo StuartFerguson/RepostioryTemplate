@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -565,19 +566,18 @@
 
             var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
                                                              t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
-                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate,
-                                                                                                  (txndate,
-                                                                                                   txns) => new
-                                                                                                            {
-                                                                                                                Key = txndate,
-                                                                                                                NumberofTransactions = txns.Count(),
-                                                                                                                ValueOfTransactions = txns.Sum(t => t.Amount)
-                                                                                                            }).ToListAsync(cancellationToken);
+                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate)
+                                      .Select(txns => new
+                                                      {
+                                                            Date = txns.Key,
+                                                            NumberofTransactions = txns.Count(),
+                                                            ValueOfTransactions = txns.Sum(t => t.Amount)
+                                      }).ToListAsync(cancellationToken);
 
             result.ForEach(r => model.TransactionDayModels.Add(new TransactionDayModel
                                                                {
                                                                    CurrencyCode = "",
-                                                                   Date = r.Key,
+                                                                   Date = r.Date,
                                                                    NumberOfTransactions = r.NumberofTransactions,
                                                                    ValueOfTransactions = r.ValueOfTransactions
                                                                }));
@@ -613,22 +613,21 @@
             var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
                                                                    t.MerchantId == merchantId &&
                                                              t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
-                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate,
-                                                                                                  (txndate,
-                                                                                                   txns) => new
-                                                                                                   {
-                                                                                                       Key = txndate,
-                                                                                                       NumberofTransactions = txns.Count(),
-                                                                                                       ValueOfTransactions = txns.Sum(t => t.Amount)
-                                                                                                   }).ToListAsync(cancellationToken);
+                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate)
+                                      .Select(txns => new
+                                                      {
+                                                          Date = txns.Key,
+                                                          NumberofTransactions = txns.Count(),
+                                                          ValueOfTransactions = txns.Sum(t => t.Amount)
+                                                      }).ToListAsync(cancellationToken);
 
             result.ForEach(r => model.TransactionDayModels.Add(new TransactionDayModel
-            {
-                CurrencyCode = "",
-                Date = r.Key,
-                NumberOfTransactions = r.NumberofTransactions,
-                ValueOfTransactions = r.ValueOfTransactions
-            }));
+                                                               {
+                                                                   CurrencyCode = "",
+                                                                   Date = r.Date,
+                                                                   NumberOfTransactions = r.NumberofTransactions,
+                                                                   ValueOfTransactions = r.ValueOfTransactions
+                                                               }));
 
             return model;
         }
@@ -900,6 +899,111 @@
             transaction.OperatorIdentifier = domainEvent.OperatorIdentifier;
 
             await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the transactions for estate by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByWeekModel> GetTransactionsForEstateByWeek(Guid estateId,
+                                                                            String startDate,
+                                                                            String endDate,
+                                                                            CancellationToken cancellationToken)
+        {
+            TransactionsByWeekModel model = new TransactionsByWeekModel
+                                            {
+                                                TransactionWeekModels = new List<TransactionWeekModel>()
+                                            };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                                   t.TransactionType == "Sale")
+                                      .GroupBy(txn => new
+                                       {
+                                           WeekNumber = txn.WeekNumber,
+                                           Year = txn.YearNumber
+                                       })
+                                      .Select(txns => new
+                                                      {
+                                                              WeekNumber = txns.Key.WeekNumber,
+                                                              Year = txns.Key.Year,
+                                                              NumberofTransactions = txns.Count(),
+                                                              ValueOfTransactions = txns.Sum(t => t.Amount)
+                                                          }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionWeekModels.Add(new TransactionWeekModel
+            {
+                CurrencyCode = "",
+                WeekNumber = r.WeekNumber,
+                Year = r.Year,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
+        /// <summary>
+        /// Gets the transactions for merchant by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByWeekModel> GetTransactionsForMerchantByWeek(Guid estateId,
+                                                                                    Guid merchantId,
+                                                                            String startDate,
+                                                                            String endDate,
+                                                                            CancellationToken cancellationToken)
+        {
+            TransactionsByWeekModel model = new TransactionsByWeekModel
+            {
+                TransactionWeekModels = new List<TransactionWeekModel>()
+            };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.MerchantId == merchantId &&
+                                                                   t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                                   t.TransactionType == "Sale")
+                                      .GroupBy(txn => new
+                                      {
+                                          WeekNumber = txn.WeekNumber,
+                                          Year = txn.YearNumber
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          WeekNumber = txns.Key.WeekNumber,
+                                          Year = txns.Key.Year,
+                                          NumberofTransactions = txns.Count(),
+                                          ValueOfTransactions = txns.Sum(t => t.Amount)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionWeekModels.Add(new TransactionWeekModel
+            {
+                CurrencyCode = "",
+                WeekNumber = r.WeekNumber,
+                Year = r.Year,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
         }
 
         #endregion

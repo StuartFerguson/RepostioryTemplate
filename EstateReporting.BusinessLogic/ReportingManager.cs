@@ -42,21 +42,16 @@
         /// <param name="estateId">The estate identifier.</param>
         /// <param name="startDate">The start date.</param>
         /// <param name="endDate">The end date.</param>
-        /// <param name="groupingType">Type of the grouping.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public async Task<TransactionsByDayModel> GetTransactionsForEstate(Guid estateId,
+        public async Task<TransactionsByDayModel> GetTransactionsForEstateByDate(Guid estateId,
                                                                            String startDate,
                                                                            String endDate,
-                                                                           GroupingType groupingType,
                                                                            CancellationToken cancellationToken)
         {
             TransactionsByDayModel model = null;
 
-            if (groupingType == GroupingType.ByDate)
-            {
-                model = await this.Repository.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
-            }
+            model = await this.Repository.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -68,22 +63,59 @@
         /// <param name="merchantId">The merchant identifier.</param>
         /// <param name="startDate">The start date.</param>
         /// <param name="endDate">The end date.</param>
-        /// <param name="groupingType">Type of the grouping.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public async Task<TransactionsByDayModel> GetTransactionsForMerchant(Guid estateId,
-                                                                             Guid merchantId,
-                                                                             String startDate,
-                                                                             String endDate,
-                                                                             GroupingType groupingType,
-                                                                             CancellationToken cancellationToken)
+        public async Task<TransactionsByDayModel> GetTransactionsForMerchantByDate(Guid estateId,
+                                                                                   Guid merchantId,
+                                                                                   String startDate,
+                                                                                   String endDate,
+                                                                                   CancellationToken cancellationToken)
         {
             TransactionsByDayModel model = null;
 
-            if (groupingType == GroupingType.ByDate)
-            {
-                model = await this.Repository.GetTransactionsForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
-            }
+            model = await this.Repository.GetTransactionsForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Gets the transactions for estate by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByWeekModel> GetTransactionsForEstateByWeek(Guid estateId,
+                                                                                  String startDate,
+                                                                                  String endDate,
+                                                                                  CancellationToken cancellationToken)
+        {
+            TransactionsByWeekModel model = null;
+
+            model = await this.Repository.GetTransactionsForEstateByWeek(estateId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Gets the transactions for merchant by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByWeekModel> GetTransactionsForMerchantByWeek(Guid estateId,
+                                                                                    Guid merchantId,
+                                                                                    String startDate,
+                                                                                    String endDate,
+                                                                                    CancellationToken cancellationToken)
+        {
+            TransactionsByWeekModel model = null;
+
+            model = await this.Repository.GetTransactionsForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
 
             return model;
         }
