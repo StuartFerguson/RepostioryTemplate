@@ -702,8 +702,8 @@
             }
         }
 
-        [When(@"I get the Transactions By Report for '(.*)' with the Start Date ""(.*)"" and the End Date ""(.*)"" the following data is returned")]
-        public async Task WhenIGetTheTransactionsByReportForWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        [When(@"I get the Estate Transactions By Date Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheEstateTransactionsByDateReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
 
@@ -719,7 +719,7 @@
             await Retry.For(async () =>
                             {
                                 TransactionsByDayResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                               .GetTransactionsByDate(token,
+                                                                               .GetTransactionsForEstateByDate(token,
                                                                                                       estateDetails.EstateId,
                                                                                                       startDate,
                                                                                                       endDate,
@@ -742,6 +742,49 @@
                                     transactionDayResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
                                 }
                             });
+        }
+
+        [When(@"I get the Merchant Transactions By Date Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheMerchantTransactionsByDateReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String merchantName, String startDateString, String endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            Guid merchantId = estateDetails.GetMerchantId(merchantName);
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.Now).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.Now).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByDayResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                               .GetTransactionsForMerchantByDate(token,
+                                                                                      estateDetails.EstateId,
+                                                                                      merchantId,
+                                                                                      startDate,
+                                                                                      endDate,
+                                                                                      CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionDayResponses.ShouldNotBeNull();
+                response.TransactionDayResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], DateTime.Now);
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionDayResponse transactionDayResponse = response.TransactionDayResponses.SingleOrDefault(t => t.Date == date);
+
+                    transactionDayResponse.ShouldNotBeNull();
+                    transactionDayResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionDayResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
         }
 
 

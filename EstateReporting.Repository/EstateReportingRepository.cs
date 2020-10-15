@@ -586,6 +586,54 @@
         }
 
         /// <summary>
+        /// Gets the transactions for merchant by date.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByDayModel> GetTransactionsForMerchantByDate(Guid estateId,
+                                                                                   Guid merchantId,
+                                                                                   String startDate,
+                                                                                   String endDate,
+                                                                                   CancellationToken cancellationToken)
+        {
+            TransactionsByDayModel model = new TransactionsByDayModel
+            {
+                TransactionDayModels = new List<TransactionDayModel>()
+            };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.MerchantId == merchantId &&
+                                                             t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                             t.TransactionType == "Sale").GroupBy(txn => txn.TransactionDate,
+                                                                                                  (txndate,
+                                                                                                   txns) => new
+                                                                                                   {
+                                                                                                       Key = txndate,
+                                                                                                       NumberofTransactions = txns.Count(),
+                                                                                                       ValueOfTransactions = txns.Sum(t => t.Amount)
+                                                                                                   }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionDayModels.Add(new TransactionDayModel
+            {
+                CurrencyCode = "",
+                Date = r.Key,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
+        /// <summary>
         /// Completes the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
