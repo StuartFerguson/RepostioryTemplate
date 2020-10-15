@@ -225,7 +225,7 @@
             {
                 String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
                 String dateString = SpecflowTableHelper.GetStringRowValue(tableRow, "DateTime");
-                DateTime transactionDateTime = SpecflowTableHelper.GetDateForDateString(dateString, DateTime.Now);
+                DateTime transactionDateTime = SpecflowTableHelper.GetDateForDateString(dateString, this.TestingContext.DateToUseForToday);
                 // hack for UTC :|
                 transactionDateTime = transactionDateTime.AddHours(1);
                 String transactionNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "TransactionNumber");
@@ -680,7 +680,7 @@
                 
                 MakeMerchantDepositRequest makeMerchantDepositRequest = new MakeMerchantDepositRequest
                                                                         {
-                                                                            DepositDateTime = SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "DateTime"), DateTime.Now),
+                                                                            DepositDateTime = SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "DateTime"), this.TestingContext.DateToUseForToday),
                                                                             Source = MerchantDepositSource.Manual,
                                                                             Reference = SpecflowTableHelper.GetStringRowValue(tableRow, "Reference"),
                                                                             Amount = SpecflowTableHelper.GetDecimalValue(tableRow, "Amount")
@@ -713,8 +713,8 @@
                 token = estateDetails.AccessToken;
             }
 
-            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.Now).ToString("yyyyMMdd");
-            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.Now).ToString("yyyyMMdd");
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
                             {
@@ -731,7 +731,7 @@
 
                                 foreach (TableRow tableRow in table.Rows)
                                 {
-                                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], DateTime.Now);
+                                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], this.TestingContext.DateToUseForToday);
                                     Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
                                     Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
@@ -755,8 +755,8 @@
                 token = estateDetails.AccessToken;
             }
 
-            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.Now).ToString("yyyyMMdd");
-            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.Now).ToString("yyyyMMdd");
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
             {
@@ -774,7 +774,7 @@
 
                 foreach (TableRow tableRow in table.Rows)
                 {
-                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], DateTime.Now);
+                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], this.TestingContext.DateToUseForToday);
                     Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
                     Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
@@ -783,6 +783,107 @@
                     transactionDayResponse.ShouldNotBeNull();
                     transactionDayResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
                     transactionDayResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
+        [Given(@"I set the date for today to ""(.*)""")]
+        public void GivenISetTheDateForTodayTo(String dateForToday)
+        {
+            if (dateForToday.ToUpper() == "TODAY")
+            {
+                this.TestingContext.DateToUseForToday = DateTime.UtcNow.Date;
+
+            }
+            else
+            {
+                // Just use parse so that an exception is thrown if an incorrect date format us used.
+                this.TestingContext.DateToUseForToday = DateTime.ParseExact(dateForToday,"dd/MM/yyyy", null);
+            }
+        }
+
+        [When(@"I get the Estate Transactions By Week Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheEstateTransactionsByWeekReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                               .GetTransactionsForEstateByWeek(token,
+                                                                                      estateDetails.EstateId,
+                                                                                      startDate,
+                                                                                      endDate,
+                                                                                      CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionWeekResponses.ShouldNotBeNull();
+                response.TransactionWeekResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
+                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionWeekResponse transactionWeekResponse = response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
+
+                    transactionWeekResponse.ShouldNotBeNull();
+                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
+        [When(@"I get the Merchant Transactions By Week Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheMerchantTransactionsByWeekReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string merchantName, string startDateString, string endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            Guid merchantId = estateDetails.GetMerchantId(merchantName);
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                .GetTransactionsForMerchantByWeek(token,
+                                                                                                estateDetails.EstateId,
+                                                                                                merchantId,
+                                                                                                startDate,
+                                                                                                endDate,
+                                                                                                CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionWeekResponses.ShouldNotBeNull();
+                response.TransactionWeekResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
+                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionWeekResponse transactionWeekResponse = response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
+
+                    transactionWeekResponse.ShouldNotBeNull();
+                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
                 }
             });
         }
