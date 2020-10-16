@@ -65,7 +65,7 @@ Background:
 	| Deposit1  | 10000.00 | Today    | Test Merchant 2 | Test Estate 1 |
 	| Deposit1  | 10000.00 | Today    | Test Merchant 3 | Test Estate 2 |
 
-Scenario: Sales Transactions By Week for Estate - Transactions All On Same Day
+Scenario: Sales Transactions By Week - Transactions All On Same Day
 
 	Given I set the date for today to "15/10/2020"
 
@@ -118,7 +118,7 @@ Scenario: Sales Transactions By Week for Estate - Transactions All On Same Day
 	| 42         | 2020 | 3                    | 5000.00             |
 
 @PRTest
-Scenario: Sales Transactions By Week for Estate - Transactions On Mutiple Days
+Scenario: Sales Transactions By Week - Transactions On Mutiple Days
 
 	Given I set the date for today to "15/10/2020"
 

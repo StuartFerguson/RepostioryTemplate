@@ -1006,6 +1006,94 @@
             return model;
         }
 
+        public async Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
+                                                                                    String startDate,
+                                                                                    String endDate,
+                                                                                    CancellationToken cancellationToken)
+        {
+            TransactionsByMonthModel model = new TransactionsByMonthModel
+            {
+                                                 TransactionMonthModels = new List<TransactionMonthModel>()
+                                             };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                                   t.TransactionType == "Sale")
+                                      .GroupBy(txn => new
+                                      {
+                                          MonthNumber = txn.MonthNumber,
+                                          Year = txn.YearNumber
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          MonthNumber = txns.Key.MonthNumber,
+                                          Year = txns.Key.Year,
+                                          NumberofTransactions = txns.Count(),
+                                          ValueOfTransactions = txns.Sum(t => t.Amount)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionMonthModels.Add(new TransactionMonthModel
+            {
+                CurrencyCode = "",
+                MonthNumber = r.MonthNumber,
+                Year = r.Year,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
+        public async Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
+                                                                                      Guid merchantId,
+                                                                                      String startDate,
+                                                                                      String endDate,
+                                                                                      CancellationToken cancellationToken)
+        {
+            TransactionsByMonthModel model = new TransactionsByMonthModel
+            {
+                                                 TransactionMonthModels = new List<TransactionMonthModel>()
+                                             };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.MerchantId == merchantId &&
+                                                                   t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                                   t.TransactionType == "Sale")
+                                      .GroupBy(txn => new
+                                      {
+                                          MonthNumber = txn.MonthNumber,
+                                          Year = txn.YearNumber
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          MonthNumber = txns.Key.MonthNumber,
+                                          Year = txns.Key.Year,
+                                          NumberofTransactions = txns.Count(),
+                                          ValueOfTransactions = txns.Sum(t => t.Amount)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.TransactionMonthModels.Add(new TransactionMonthModel
+            {
+                CurrencyCode = "",
+                MonthNumber = r.MonthNumber,
+                Year = r.Year,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
         #endregion
     }
 }

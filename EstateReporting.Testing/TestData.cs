@@ -478,6 +478,47 @@
                                                                       NumberOfTransactions = 50
                                                                   };
 
+        public static TransactionMonthModel TransactionMonthModel = new TransactionMonthModel
+        {
+                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                    MonthNumber = 1,
+                                                                    Year = 2020,
+                                                                    ValueOfTransactions = 1000.00m,
+                                                                    NumberOfTransactions = 50
+                                                                };
+
+        public static TransactionsByMonthModel TransactionsByMonthModel = new TransactionsByMonthModel
+        {
+            TransactionMonthModels = new List<TransactionMonthModel>
+                                                                                                 {
+                                                                                                     new TransactionMonthModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         MonthNumber = 1,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfTransactions = 1000.00m,
+                                                                                                         NumberOfTransactions = 50
+                                                                                                     },
+                                                                                                     new TransactionMonthModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         MonthNumber = 2,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfTransactions = 1510.00m,
+                                                                                                         NumberOfTransactions = 65
+                                                                                                     }
+                                                                                                 }
+        };
+
+        public static TransactionsByMonthModel TransactionsByMonthModelNullTransactionMonthModelList = new TransactionsByMonthModel
+                                                                                                    {
+                                                                                                        TransactionMonthModels = null
+                                                                                                    };
+
+        public static TransactionsByMonthModel TransactionsByMonthModelEmptyTransactionMonthModelList = new TransactionsByMonthModel
+                                                                                                        {
+                                                                                                            TransactionMonthModels = new List<TransactionMonthModel>()
+                                                                                                        };
 
     }
 }

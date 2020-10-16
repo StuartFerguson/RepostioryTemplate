@@ -43,6 +43,8 @@
                     return today.AddDays(-7).Date;
                 case "LASTMONTH":
                     return today.AddMonths(-1).Date;
+                case "TWOMONTHSAGO":
+                    return today.AddMonths(-2).Date;
                 case "LASTYEAR":
                     return today.AddYears(-1).Date;
                 case "TOMORROW":

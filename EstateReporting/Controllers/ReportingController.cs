@@ -125,5 +125,31 @@ namespace EstateReporting.Controllers
 
             return this.Ok(response);
         }
+
+        [HttpGet]
+        [Route("estates/{estateId}/transactions/bymonth")]
+        public async Task<IActionResult> GetTransactionForEstateByMonth([FromRoute] Guid estateId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
+        {
+            // Get the data grouped as requested
+            TransactionsByMonthModel transactionsByMonth = await this.ReportingManager.GetTransactionsForEstateByMonth(estateId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByMonthResponse response = this.ModelFactory.ConvertFrom(transactionsByMonth);
+
+            return this.Ok(response);
+        }
+
+        [HttpGet]
+        [Route("estates/{estateId}/merchants/{merchantId}/transactions/bymonth")]
+        public async Task<IActionResult> GetTransactionForMerchantByMonth([FromRoute] Guid estateId, [FromRoute] Guid merchantId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, CancellationToken cancellationToken)
+        {
+            // Get the data grouped as requested
+            TransactionsByMonthModel transactionsByMonth = await this.ReportingManager.GetTransactionsForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByMonthResponse response = this.ModelFactory.ConvertFrom(transactionsByMonth);
+
+            return this.Ok(response);
+        }
     }
 }

@@ -156,5 +156,78 @@ namespace EstateReporting.Tests
 
             response.ShouldBeNull();
         }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionMonthModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionMonthModel model = TestData.TransactionMonthModel;
+
+            TransactionMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.MonthNumber.ShouldBe(model.MonthNumber);
+            response.Year.ShouldBe(model.Year);
+            response.ValueOfTransactions.ShouldBe(model.ValueOfTransactions);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactions.ShouldBe(model.NumberOfTransactions);
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionMonthModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionMonthModel model = null;
+
+            TransactionMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMonthModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMonthModel model = TestData.TransactionsByMonthModel;
+
+            TransactionsByMonthResponse response = factory.ConvertFrom(model);
+
+            response.TransactionMonthResponses.ShouldNotBeNull();
+            response.TransactionMonthResponses.ShouldNotBeEmpty();
+
+            foreach (TransactionMonthResponse translated in response.TransactionMonthResponses)
+            {
+                // Find the original record
+                TransactionMonthModel original = model.TransactionMonthModels.SingleOrDefault(m => m.MonthNumber == translated.MonthNumber && m.Year == translated.Year);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfTransactions.ShouldBe(original.ValueOfTransactions);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactions.ShouldBe(original.NumberOfTransactions);
+            }
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMonthModel_NullTransactionMonthModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMonthModel model = TestData.TransactionsByMonthModelNullTransactionMonthModelList;
+
+            TransactionsByMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMonthModel_EmptyTransactionMonthModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMonthModel model = TestData.TransactionsByMonthModelEmptyTransactionMonthModelList;
+
+            TransactionsByMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
     }
 }

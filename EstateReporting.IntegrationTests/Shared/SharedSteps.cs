@@ -888,6 +888,93 @@
             });
         }
 
+        [When(@"I get the Estate Transactions By Month Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheEstateTransactionsByMonthReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string startDateString, string endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                .GetTransactionsForEstateByMonth(token,
+                                                                                                estateDetails.EstateId,
+                                                                                                startDate,
+                                                                                                endDate,
+                                                                                                CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionMonthResponses.ShouldNotBeNull();
+                response.TransactionMonthResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
+                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionMonthResponse transactionMonthResponse = response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber== monthNumber && t.Year == year);
+
+                    transactionMonthResponse.ShouldNotBeNull();
+                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
+        [When(@"I get the Merchant Transactions By Month Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheMerchantTransactionsByMonthReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string merchantName, string startDateString, string endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            Guid merchantId = estateDetails.GetMerchantId(merchantName);
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                .GetTransactionsForMerchantByMonth(token,
+                                                                                                estateDetails.EstateId,
+                                                                                                merchantId,
+                                                                                                startDate,
+                                                                                                endDate,
+                                                                                                CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionMonthResponses.ShouldNotBeNull();
+                response.TransactionMonthResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
+                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionMonthResponse transactionMonthResponse = response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber == monthNumber && t.Year == year);
+
+                    transactionMonthResponse.ShouldNotBeNull();
+                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
+
 
     }
 }

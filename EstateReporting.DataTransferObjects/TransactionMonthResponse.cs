@@ -3,7 +3,7 @@
     using System;
     using Newtonsoft.Json;
 
-    public class TransactionWeekResponse
+    public class TransactionMonthResponse
     {
         /// <summary>
         /// Gets or sets the year.
@@ -15,13 +15,13 @@
         public Int32 Year { get; set; }
 
         /// <summary>
-        /// Gets or sets the week number.
+        /// Gets or sets the month number.
         /// </summary>
         /// <value>
         /// The week number.
         /// </value>
-        [JsonProperty("week_number")]
-        public Int32 WeekNumber { get; set; }
+        [JsonProperty("month_number")]
+        public Int32 MonthNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the number of transactions.
