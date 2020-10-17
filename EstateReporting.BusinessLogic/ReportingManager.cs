@@ -120,6 +120,48 @@
             return model;
         }
 
+        /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
+                                                                                    String startDate,
+                                                                                    String endDate,
+                                                                                    CancellationToken cancellationToken)
+        {
+            TransactionsByMonthModel model = null;
+
+            model = await this.Repository.GetTransactionsForEstateByMonth(estateId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
+                                                                                      Guid merchantId,
+                                                                                      String startDate,
+                                                                                      String endDate,
+                                                                                      CancellationToken cancellationToken)
+        {
+            TransactionsByMonthModel model = null;
+
+            model = await this.Repository.GetTransactionsForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
         #endregion
     }
 }

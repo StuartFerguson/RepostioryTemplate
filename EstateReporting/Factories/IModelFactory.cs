@@ -30,7 +30,16 @@
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
+        TransactionsByMonthResponse ConvertFrom(TransactionsByMonthModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         TransactionWeekResponse ConvertFrom(TransactionWeekModel model);
+
+        TransactionMonthResponse ConvertFrom(TransactionMonthModel model);
 
         /// <summary>
         /// Converts from.

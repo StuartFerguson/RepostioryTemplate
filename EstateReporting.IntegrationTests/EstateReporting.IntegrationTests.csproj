@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\TransactionsByDayReports - Copy.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\TransactionsByWeekReports - Copy.feature.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +56,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LogonTransaction.feature</DependentUpon>
     </Compile>
+    <Compile Update="Reporting\TransactionsByMonthReports.feature.cs">
+      <DependentUpon>TransactionsByMonthReports.feature</DependentUpon>
+    </Compile>
     <Compile Update="Reporting\TransactionsByWeekReports.feature.cs">
       <DependentUpon>TransactionsByWeekReports.feature</DependentUpon>
     </Compile>
@@ -73,6 +77,12 @@
     <SpecFlowFeatureFiles Update="LogonTransaction\LogonTransaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>LogonTransaction.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\TransactionsByMonthReports.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+      <LastGenOutput>TransactionsByDayReports.feature.cs</LastGenOutput>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Reporting\TransactionsByWeekReports.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>

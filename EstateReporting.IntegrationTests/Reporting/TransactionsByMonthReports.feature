@@ -1,5 +1,5 @@
 ﻿@base @shared
-Feature: TransactionsByDayReports
+Feature: TransactionsByMonthReports
 
 Background: 
 
@@ -65,7 +65,10 @@ Background:
 	| Deposit1  | 10000.00 | Today    | Test Merchant 2 | Test Estate 1 |
 	| Deposit1  | 10000.00 | Today    | Test Merchant 3 | Test Estate 2 |
 
-Scenario: Sales Transactions By Day - Transactions All On Same Day
+Scenario: Sales Transactions By Month - Transactions All On Same Day
+
+	Given I set the date for today to "15/10/2020"
+
 	When I perform the following transactions
 	| DateTime | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress        | ContractDescription | ProductName    |
 	| Today    | 1                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 1000.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
@@ -102,20 +105,23 @@ Scenario: Sales Transactions By Day - Transactions All On Same Day
 
 	| Test Estate 2 | Test Merchant 3 | 1                 | 0000         | SUCCESS |
 
-	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
-	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 9                    | 30000.00            |
+	When I get the Estate Transactions By Month Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 10         | 2020 | 9                    | 30000.00            |
 
-	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
-	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 1                    | 10000.00            |
+	When I get the Estate Transactions By Month Report for Estate 'Test Estate 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 10         | 2020 | 1                    | 10000.00            |
 
-	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
-	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 3                    | 5000.00              |
+	When I get the Merchant Transactions By Month Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 10         | 2020 | 3                    | 5000.00             |
 
 @PRTest
-Scenario: Sales Transactions By Day - Transactions On Mutiple Days
+Scenario: Sales Transactions By Month - Transactions On Mutiple Days
+
+	Given I set the date for today to "05/10/2020"
+
 	When I perform the following transactions
 	| DateTime  | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress | ContractDescription | ProductName    |
 	| LastMonth | 1                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 1000.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
@@ -158,20 +164,16 @@ Scenario: Sales Transactions By Day - Transactions On Mutiple Days
 	| Test Estate 2 | Test Merchant 3 | 3 | 0000 | SUCCESS |
 	| Test Estate 2 | Test Merchant 3 | 4 | 0000 | SUCCESS |
 
-	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
-	| Date      | NumberOfTransactions | ValueOfTransactions |
-	| Today     | 6                    | 25000.00            |
-	| Yesterday | 1                    | 1500.00             |
-	| LastWeek  | 1                    | 2500.00             |
-	| LastMonth | 1                    | 1000.00             |
+	When I get the Estate Transactions By Month Report for Estate 'Test Estate 1' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 9           | 2020 | 2                    | 3500.00             |
+	| 10          | 2020 | 7                    | 26500.00            |
 
-	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
-	| Date      | NumberOfTransactions | ValueOfTransactions |
-	| Today     | 1                    | 1000.00             |
-	| Yesterday | 1                    | 1000.00             |
-	| LastWeek  | 1                    | 2000.00             |
-	| LastMonth | 1                    | 1000.00             |
+	When I get the Estate Transactions By Month Report for Estate 'Test Estate 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 9           | 2020 | 2                    | 3000.00             |
+	| 10          | 2020 | 2                    | 2000.00             |
 
-	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
-	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 3                    | 5000.00            |
+	When I get the Merchant Transactions By Month Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
+	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
+	| 10         | 2020 | 3                    | 5000.00            |

@@ -57,6 +57,23 @@
             return response;
         }
 
+        public TransactionsByMonthResponse ConvertFrom(TransactionsByMonthModel model)
+        {
+            if (model.TransactionMonthModels == null || model.TransactionMonthModels.Any() == false)
+            {
+                return null;
+            }
+
+            TransactionsByMonthResponse response = new TransactionsByMonthResponse
+                                                  {
+                                                      TransactionMonthResponses = new List<TransactionMonthResponse>()
+                                                  };
+
+            model.TransactionMonthModels.ForEach(m => response.TransactionMonthResponses.Add(this.ConvertFrom(m)));
+
+            return response;
+        }
+
         public TransactionWeekResponse ConvertFrom(TransactionWeekModel model)
         {
             if (model == null)
@@ -70,6 +87,23 @@
                        WeekNumber = model.WeekNumber,
                        CurrencyCode = model.CurrencyCode,
                        NumberOfTransactions = model.NumberOfTransactions,
+                       Year = model.Year
+                   };
+        }
+
+        public TransactionMonthResponse ConvertFrom(TransactionMonthModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionMonthResponse
+                   {
+                       CurrencyCode = model.CurrencyCode,
+                       MonthNumber = model.MonthNumber,
+                       NumberOfTransactions = model.NumberOfTransactions,
+                       ValueOfTransactions = model.ValueOfTransactions,
                        Year = model.Year
                    };
         }

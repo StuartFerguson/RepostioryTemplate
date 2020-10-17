@@ -68,6 +68,34 @@
                                                                        String endDate,
                                                                        CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
+                                                                     String startDate,
+                                                                     String endDate,
+                                                                     CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
+                                                                        Guid merchantId,
+                                                                        String startDate,
+                                                                        String endDate,
+                                                                        CancellationToken cancellationToken);
+
         #endregion
     }
 }

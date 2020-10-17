@@ -43,6 +43,21 @@
                                                                         CancellationToken cancellationToken);
 
         /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthResponse> GetTransactionsForEstateByMonth(String accessToken,
+                                                                        Guid estateId,
+                                                                        String startDate,
+                                                                        String endDate,
+                                                                        CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the transactions for merchant by date.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
@@ -70,6 +85,23 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByWeekResponse> GetTransactionsForMerchantByWeek(String accessToken,
+                                                                          Guid estateId,
+                                                                          Guid merchantId,
+                                                                          String startDate,
+                                                                          String endDate,
+                                                                          CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthResponse> GetTransactionsForMerchantByMonth(String accessToken,
                                                                           Guid estateId,
                                                                           Guid merchantId,
                                                                           String startDate,
