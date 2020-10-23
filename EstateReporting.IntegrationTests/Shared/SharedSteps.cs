@@ -6,10 +6,10 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Common;
-    using DataTransferObjects;
     using EstateManagement.DataTransferObjects;
     using EstateManagement.DataTransferObjects.Requests;
     using EstateManagement.DataTransferObjects.Responses;
+    using EstateReporting.DataTransferObjects;
     using Newtonsoft.Json;
     using SecurityService.DataTransferObjects;
     using SecurityService.DataTransferObjects.Requests;
