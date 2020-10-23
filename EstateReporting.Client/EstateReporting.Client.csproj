@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeP2PAssets</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,7 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj" />
+    <ProjectReference Include="..\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj" PrivateAssets="All" />
   </ItemGroup>
 
+	<Target Name="IncludeP2PAssets">
+		<ItemGroup>
+			<BuildOutputInPackage Include="$(OutputPath)EstateReporting.DataTransferObjects.dll" />
+		</ItemGroup>
+	</Target>
 </Project>
