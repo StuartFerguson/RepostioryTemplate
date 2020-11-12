@@ -107,7 +107,7 @@ Scenario: Sales Transactions By Month - Transactions All On Same Day
 
 	When I get the Estate Transactions By Month Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
-	| 10         | 2020 | 9                    | 475.00            |
+	| 10         | 2020 | 9                    | 615.00            |
 
 	When I get the Estate Transactions By Month Report for Estate 'Test Estate 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
