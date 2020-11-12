@@ -315,19 +315,19 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "EstateName"});
             table56.AddRow(new string[] {
                         "Deposit1",
-                        "30000.00",
+                        "3000.00",
                         "Today",
                         "Test Merchant 1",
                         "Test Estate 1"});
             table56.AddRow(new string[] {
                         "Deposit1",
-                        "10000.00",
+                        "1000.00",
                         "Today",
                         "Test Merchant 2",
                         "Test Estate 1"});
             table56.AddRow(new string[] {
                         "Deposit1",
-                        "10000.00",
+                        "1000.00",
                         "Today",
                         "Test Merchant 3",
                         "Test Estate 2"});
@@ -396,7 +396,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -409,7 +409,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "500.00",
+                            "5.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -422,7 +422,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "2500.00",
+                            "25.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -435,7 +435,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "1500.00",
+                            "150.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -448,7 +448,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "300.00",
+                            "3.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -461,7 +461,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "4000.00",
+                            "40.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -474,7 +474,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "6000.00",
+                            "60.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -487,7 +487,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "10000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -500,7 +500,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -513,7 +513,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "500.00",
+                            "5.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -526,7 +526,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "2500.00",
+                            "25.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -539,7 +539,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "1500.00",
+                            "15.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -552,7 +552,7 @@ this.FeatureBackground();
                             "123456782",
                             "Test Estate 2",
                             "Safaricom",
-                            "10000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -644,7 +644,7 @@ this.FeatureBackground();
                             "1",
                             "0000",
                             "SUCCESS"});
-#line 90
+#line 89
  testRunner.Then("transaction response should contain the following information", ((string)(null)), table58, "Then ");
 #line hidden
                 TechTalk.SpecFlow.Table table59 = new TechTalk.SpecFlow.Table(new string[] {
@@ -656,8 +656,8 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "9",
-                            "30000.00"});
-#line 108
+                            "615.00"});
+#line 107
  testRunner.When("I get the Estate Transactions By Week Report for Estate \'Test Estate 1\' with the " +
                         "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table59, "When ");
 #line hidden
@@ -670,8 +670,8 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "1",
-                            "10000.00"});
-#line 112
+                            "100.00"});
+#line 111
  testRunner.When("I get the Estate Transactions By Week Report for Estate \'Test Estate 2\' with the " +
                         "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table60, "When ");
 #line hidden
@@ -684,8 +684,8 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "3",
-                            "5000.00"});
-#line 116
+                            "14.00"});
+#line 115
  testRunner.When("I get the Merchant Transactions By Week Report for Estate \'Test Estate 1\' and Mer" +
                         "chant \'Test Merchant 2\' with the Start Date \'Today\' and the End Date \'Today\' the" +
                         " following data is returned", ((string)(null)), table61, "When ");
@@ -704,7 +704,7 @@ this.FeatureBackground();
                     "PRTest"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Sales Transactions By Week - Transactions On Mutiple Days", null, tagsOfScenario, argumentsOfScenario);
-#line 121
+#line 120
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -727,7 +727,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-#line 123
+#line 122
  testRunner.Given("I set the date for today to \"15/10/2020\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
                 TechTalk.SpecFlow.Table table62 = new TechTalk.SpecFlow.Table(new string[] {
@@ -751,7 +751,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "1000.00",
+                            "10.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -764,7 +764,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "500.00",
+                            "5.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -777,7 +777,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "2500.00",
+                            "25.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -790,7 +790,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "1500.00",
+                            "15.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -803,7 +803,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "300.00",
+                            "3.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -816,7 +816,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "4000.00",
+                            "40.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -829,7 +829,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "6000.00",
+                            "60.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -842,7 +842,7 @@ this.FeatureBackground();
                             "123456780",
                             "Test Estate 1",
                             "Safaricom",
-                            "10000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -855,7 +855,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -868,7 +868,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "500.00",
+                            "5.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -881,7 +881,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "2500.00",
+                            "25.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -894,7 +894,7 @@ this.FeatureBackground();
                             "123456781",
                             "Test Estate 1",
                             "Safaricom",
-                            "1500.00",
+                            "150.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -907,7 +907,7 @@ this.FeatureBackground();
                             "123456782",
                             "Test Estate 2",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -920,7 +920,7 @@ this.FeatureBackground();
                             "123456782",
                             "Test Estate 2",
                             "Safaricom",
-                            "2000.00",
+                            "200.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -933,7 +933,7 @@ this.FeatureBackground();
                             "123456782",
                             "Test Estate 2",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
@@ -946,12 +946,12 @@ this.FeatureBackground();
                             "123456782",
                             "Test Estate 2",
                             "Safaricom",
-                            "1000.00",
+                            "100.00",
                             "123456789",
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-#line 125
+#line 124
  testRunner.When("I perform the following transactions", ((string)(null)), table62, "When ");
 #line hidden
                 TechTalk.SpecFlow.Table table63 = new TechTalk.SpecFlow.Table(new string[] {
@@ -1056,7 +1056,7 @@ this.FeatureBackground();
                             "4",
                             "0000",
                             "SUCCESS"});
-#line 146
+#line 145
  testRunner.Then("transaction response should contain the following information", ((string)(null)), table63, "Then ");
 #line hidden
                 TechTalk.SpecFlow.Table table64 = new TechTalk.SpecFlow.Table(new string[] {
@@ -1068,18 +1068,18 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "7",
-                            "26500.00"});
+                            "490.00"});
                 table64.AddRow(new string[] {
                             "41",
                             "2020",
                             "1",
-                            "2500.00"});
+                            "25.00"});
                 table64.AddRow(new string[] {
                             "38",
                             "2020",
                             "1",
-                            "1000.00"});
-#line 167
+                            "10.00"});
+#line 166
  testRunner.When("I get the Estate Transactions By Week Report for Estate \'Test Estate 1\' with the " +
                         "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table64, "When ");
 #line hidden
@@ -1092,18 +1092,18 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "2",
-                            "2000.00"});
+                            "200.00"});
                 table65.AddRow(new string[] {
                             "41",
                             "2020",
                             "1",
-                            "2000.00"});
+                            "200.00"});
                 table65.AddRow(new string[] {
                             "38",
                             "2020",
                             "1",
-                            "1000.00"});
-#line 173
+                            "100.00"});
+#line 172
  testRunner.When("I get the Estate Transactions By Week Report for Estate \'Test Estate 2\' with the " +
                         "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table65, "When ");
 #line hidden
@@ -1116,8 +1116,8 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "3",
-                            "5000.00"});
-#line 179
+                            "275.00"});
+#line 178
  testRunner.When("I get the Merchant Transactions By Week Report for Estate \'Test Estate 1\' and Mer" +
                         "chant \'Test Merchant 2\' with the Start Date \'LastMonth\' and the End Date \'Today\'" +
                         " the following data is returned", ((string)(null)), table66, "When ");
