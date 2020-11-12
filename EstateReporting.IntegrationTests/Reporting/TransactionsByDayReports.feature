@@ -69,20 +69,20 @@ Scenario: Sales Transactions By Day - Transactions All On Same Day
 	When I perform the following transactions
 	| DateTime | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress        | ContractDescription | ProductName    |
 	| Today    | 1                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 100.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 2                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 50.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 3                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 250.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 2                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 5.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 3                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 25.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
 	| Today    | 4                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 150.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 5                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 30.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 6                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 400.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 7                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 600.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 8                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 1000.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 5                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 3.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 6                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 40.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 7                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 60.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 8                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 100.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
 	
 	| Today    | 1                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 100.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 2                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 50.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 3                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 250.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
-	| Today    | 4                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 150.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 2                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 5.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 3                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 25.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 4                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 15.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
 	
-	| Today    | 1                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 1000.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
+	| Today    | 1                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 100.00           | 123456789             |                             | Safaricom Contract   | Variable Topup |
 
 	Then transaction response should contain the following information
 	| EstateName    | MerchantName    | TransactionNumber | ResponseCode | ResponseMessage |
@@ -104,32 +104,32 @@ Scenario: Sales Transactions By Day - Transactions All On Same Day
 
 	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 9                    | 3000.00            |
+	| Today | 9                    | 615.00            |
 
 	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 1                    | 1000.00            |
+	| Today | 1                    | 100.00            |
 
 	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 3                    | 500.00              |
+	| Today | 3                    | 140.00              |
 
 @PRTest
 Scenario: Sales Transactions By Day - Transactions On Mutiple Days
 	When I perform the following transactions
 	| DateTime  | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress | ContractDescription | ProductName    |
-	| LastMonth | 1                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 100.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| LastWeek  | 2                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 50.00            | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| LastWeek  | 3                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 250.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| Yesterday | 4                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 150.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| Yesterday | 5                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 30.00            | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| Today     | 6                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 400.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| Today     | 7                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 600.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
-	| Today     | 8                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 1000.00          | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| LastMonth | 1                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 10.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| LastWeek  | 2                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 5.00            | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| LastWeek  | 3                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 25.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| Yesterday | 4                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 15.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| Yesterday | 5                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 3.00            | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| Today     | 6                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 40.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| Today     | 7                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 60.00           | 123456789             |                      | Safaricom Contract  | Variable Topup |
+	| Today     | 8                 | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Safaricom    | 100.00          | 123456789             |                      | Safaricom Contract  | Variable Topup |
 	
 	| Today | 1 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract | Variable Topup |
-	| Today | 2 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 50.00  | 123456789 |  | Safaricom Contract | Variable Topup |
-	| Today | 3 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 250.00 | 123456789 |  | Safaricom Contract | Variable Topup |
+	| Today | 2 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 5.00  | 123456789 |  | Safaricom Contract | Variable Topup |
+	| Today | 3 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 25.00 | 123456789 |  | Safaricom Contract | Variable Topup |
 	| Today | 4 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 150.00 | 123456789 |  | Safaricom Contract | Variable Topup |
 	
 	| LastMonth | 1 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract | Variable Topup |
@@ -160,10 +160,10 @@ Scenario: Sales Transactions By Day - Transactions On Mutiple Days
 
 	When I get the Estate Transactions By Date Report for Estate 'Test Estate 1' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
 	| Date      | NumberOfTransactions | ValueOfTransactions |
-	| Today     | 6                    | 2500.00            |
-	| Yesterday | 1                    | 150.00             |
-	| LastWeek  | 1                    | 250.00             |
-	| LastMonth | 1                    | 100.00             |
+	| Today     | 6                    | 475.00            |
+	| Yesterday | 1                    | 15.00             |
+	| LastWeek  | 1                    | 25.00             |
+	| LastMonth | 1                    | 10.00             |
 
 	When I get the Estate Transactions By Date Report for Estate 'Test Estate 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
 	| Date      | NumberOfTransactions | ValueOfTransactions |
@@ -174,4 +174,4 @@ Scenario: Sales Transactions By Day - Transactions On Mutiple Days
 
 	When I get the Merchant Transactions By Date Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'LastMonth' and the End Date 'Today' the following data is returned
 	| Date  | NumberOfTransactions | ValueOfTransactions |
-	| Today | 3                    | 500.00            |
+	| Today | 3                    | 275.00            |
