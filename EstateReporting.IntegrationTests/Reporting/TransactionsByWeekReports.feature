@@ -114,7 +114,7 @@ Scenario: Sales Transactions By Week - Transactions All On Same Day
 
 	When I get the Merchant Transactions By Week Report for Estate 'Test Estate 1' and Merchant 'Test Merchant 2' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| WeekNumber | Year | NumberOfTransactions | ValueOfTransactions |
-	| 42         | 2020 | 3                    | 14.00             |
+	| 42         | 2020 | 3                    | 140.00             |
 
 @PRTest
 Scenario: Sales Transactions By Week - Transactions On Mutiple Days
