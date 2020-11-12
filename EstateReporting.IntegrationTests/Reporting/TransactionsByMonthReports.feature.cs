@@ -656,7 +656,7 @@ this.FeatureBackground();
                             "10",
                             "2020",
                             "9",
-                            "475.00"});
+                            "615.00"});
 #line 108
  testRunner.When("I get the Estate Transactions By Month Report for Estate \'Test Estate 1\' with the" +
                         " Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table37, "When ");
