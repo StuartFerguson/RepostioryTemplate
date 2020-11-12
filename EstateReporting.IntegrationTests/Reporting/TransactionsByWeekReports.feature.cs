@@ -684,7 +684,7 @@ this.FeatureBackground();
                             "42",
                             "2020",
                             "3",
-                            "14.00"});
+                            "140.00"});
 #line 115
  testRunner.When("I get the Merchant Transactions By Week Report for Estate \'Test Estate 1\' and Mer" +
                         "chant \'Test Merchant 2\' with the Start Date \'Today\' and the End Date \'Today\' the" +
