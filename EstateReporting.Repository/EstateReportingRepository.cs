@@ -1128,7 +1128,8 @@
                                                                 EstateId = domainEvent.EstateId,
                                                                 EventId = domainEvent.EventId,
                                                                 MerchantId = domainEvent.MerchantId,
-                                                                Reference = domainEvent.Reference
+                                                                Reference = domainEvent.Reference,
+                                                                EntryDateTime = domainEvent.EventCreatedDateTime
                                                             };
 
             Guid estateId = domainEvent.EstateId;

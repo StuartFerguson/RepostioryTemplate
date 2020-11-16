@@ -1,36 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EstateReporting.Database.Entities
+﻿namespace EstateReporting.Database.Entities
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    /*{
-    "$type": "EstateReporting.BusinessLogic.Events.MerchantBalanceChangedEvent, EstateReporting.BusinessLogic",
-    "aggregateId": "c4c33d75-f011-40e4-9d97-1f428ab563d8",
-    "merchantId": "c4c33d75-f011-40e4-9d97-1f428ab563d8",
-    "estateId": "3bf2dab2-86d6-44e3-bcf8-51bec65cf8bc",
-    "availableBalance": 404000.2300000001,
-    "balance": 404000.2300000001,
-    "changeAmount": 200,
-    "eventId": "670ea920-60b0-4b91-b9fb-c8858a07cf53",
-    "eventCreatedDateTime": "2020-11-16T20:00:42.5879722+00:00",
-    "reference": "Transaction Completed"
-    }*/
-
+    /// <summary>
+    /// 
+    /// </summary>
     [Table("merchantbalancehistory")]
     public class MerchantBalanceHistory
     {
+        /// <summary>
+        /// Gets or sets the event identifier.
+        /// </summary>
+        /// <value>
+        /// The event identifier.
+        /// </value>
         [Key]
         public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the estate identifier.
+        /// </summary>
+        /// <value>
+        /// The estate identifier.
+        /// </value>
         public Guid EstateId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant identifier.
+        /// </summary>
+        /// <value>
+        /// The merchant identifier.
+        /// </value>
         public Guid MerchantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available balance.
+        /// </summary>
+        /// <value>
+        /// The available balance.
+        /// </value>
         public Decimal AvailableBalance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the balance.
+        /// </summary>
+        /// <value>
+        /// The balance.
+        /// </value>
         public Decimal Balance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the change amount.
+        /// </summary>
+        /// <value>
+        /// The change amount.
+        /// </value>
         public Decimal ChangeAmount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reference.
+        /// </summary>
+        /// <value>
+        /// The reference.
+        /// </value>
         public String Reference { get; set; }
 
+        /// <summary>
+        /// Gets or sets the entry date time.
+        /// </summary>
+        /// <value>
+        /// The entry date time.
+        /// </value>
+        public DateTime EntryDateTime { get; set; }
     }
 }
