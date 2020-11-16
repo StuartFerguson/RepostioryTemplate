@@ -787,7 +787,25 @@ namespace EstateReporting.Repository.Tests
                                                                                                                CancellationToken.None);
                                             });
         }
-        
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_InsertMerchantBalanceRecord_BalanceRecordAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent, CancellationToken.None);
+
+            MerchantBalanceHistory balanceHistory= await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EstateId == TestData.EstateId);
+            balanceHistory.ShouldNotBeNull();
+        }
+
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;

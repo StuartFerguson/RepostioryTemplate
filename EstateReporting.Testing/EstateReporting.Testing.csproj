@@ -6,13 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.3.3" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.3.3" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.3" />
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.3.3" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.5.1" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.5.1" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.5" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.5.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EstateReporting.BusinessLogic.Events\EstateReporting.BusinessLogic.Events.csproj" />
     <ProjectReference Include="..\EstateReporting.Models\EstateReporting.Models.csproj" />
   </ItemGroup>
 
