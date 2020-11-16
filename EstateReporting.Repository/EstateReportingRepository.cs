@@ -8,6 +8,7 @@
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using BusinessLogic.Events;
     using Database;
     using Database.Entities;
     using EstateManagement.Contract.DomainEvents;
@@ -1006,6 +1007,14 @@
             return model;
         }
 
+        /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
                                                                                     String startDate,
                                                                                     String endDate,
@@ -1049,6 +1058,15 @@
             return model;
         }
 
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
                                                                                       Guid merchantId,
                                                                                       String startDate,
@@ -1092,6 +1110,35 @@
             }));
 
             return model;
+        }
+
+        /// <summary>
+        /// Inserts the merchant balance record.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
+                                                      CancellationToken cancellationToken)
+        {
+            MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
+                                                            {
+                                                                AvailableBalance = domainEvent.AvailableBalance,
+                                                                Balance = domainEvent.Balance,
+                                                                ChangeAmount = domainEvent.ChangeAmount,
+                                                                EstateId = domainEvent.EstateId,
+                                                                EventId = domainEvent.EventId,
+                                                                MerchantId = domainEvent.MerchantId,
+                                                                Reference = domainEvent.Reference
+                                                            };
+
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+
         }
 
         #endregion
