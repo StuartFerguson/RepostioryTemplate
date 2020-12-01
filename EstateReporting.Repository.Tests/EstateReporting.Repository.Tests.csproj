@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EstateReporting.BusinessLogic.Events\EstateReporting.BusinessLogic.Events.csproj" />
     <ProjectReference Include="..\EstateReporting.Repository\EstateReporting.Repository.csproj" />
     <ProjectReference Include="..\EstateReporting.Testing\EstateReporting.Testing.csproj" />
   </ItemGroup>

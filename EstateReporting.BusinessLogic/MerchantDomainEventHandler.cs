@@ -3,6 +3,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EstateManagement.Merchant.DomainEvents;
+    using Events;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
 
@@ -111,6 +112,17 @@
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.AddMerchantOperator(domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(MerchantBalanceChangedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.InsertMerchantBalanceRecord(domainEvent, cancellationToken);
         }
 
         #endregion

@@ -5,6 +5,7 @@
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateReporting.BusinessLogic.Events;
     using Models;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
@@ -154,10 +155,26 @@
         /// </summary>
         public static String EstateName = "Test Estate 1";
 
+        public static Decimal AvailableBalance = 1000.00m;
+        public static Decimal Balance = 1100.00m;
+        public static Decimal ChangeAmount = 100.00m;
+
+        public static String BalanceRecordReference = "Transaction Completed";
+
         /// <summary>
         /// The estate created event
         /// </summary>
         public static EstateCreatedEvent EstateCreatedEvent = EstateCreatedEvent.Create(TestData.EstateId, TestData.EstateName);
+
+        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent = new MerchantBalanceChangedEvent
+                                                                                {
+                                                                                    AvailableBalance = TestData.AvailableBalance,
+                                                                                    Balance = TestData.Balance,
+                                                                                    ChangeAmount = TestData.ChangeAmount,
+                                                                                    EstateId = TestData.EstateId,
+                                                                                    MerchantId = TestData.MerchantId,
+                                                                                    Reference = TestData.BalanceRecordReference
+                                                                                };
 
         /// <summary>
         /// The security user identifier

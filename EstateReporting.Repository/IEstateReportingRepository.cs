@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using BusinessLogic.Events;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
@@ -381,6 +382,16 @@
         /// <returns></returns>
         Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                             CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Inserts the merchant balance record.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
+                                         CancellationToken cancellationToken);
 
         #endregion
     }

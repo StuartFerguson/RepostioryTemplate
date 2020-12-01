@@ -4,14 +4,16 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20201116212608_AddBalanceHistory")]
+    partial class AddBalanceHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,9 +234,6 @@ namespace EstateReporting.Database.Migrations
                     b.Property<decimal>("ChangeAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("EntryDateTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("EstateId")
                         .HasColumnType("uniqueidentifier");
 
@@ -344,47 +343,6 @@ namespace EstateReporting.Database.Migrations
                     b.HasKey("EstateId", "MerchantId", "SecurityUserId");
 
                     b.ToTable("merchantsecurityuser");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.Reconciliation", b =>
-                {
-                    b.Property<Guid>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DeviceIdentifier")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsAuthorised")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ResponseCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResponseMessage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TransactionDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeSpan>("TransactionTime")
-                        .HasColumnType("time");
-
-                    b.HasKey("TransactionId");
-
-                    b.ToTable("reconciliation");
                 });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Transaction", b =>

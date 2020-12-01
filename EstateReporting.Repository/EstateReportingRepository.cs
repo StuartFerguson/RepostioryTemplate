@@ -8,6 +8,7 @@
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using BusinessLogic.Events;
     using Database;
     using Database.Entities;
     using EstateManagement.Contract.DomainEvents;
@@ -1246,6 +1247,36 @@
             }));
 
             return model;
+        }
+
+        /// <summary>
+        /// Inserts the merchant balance record.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
+                                                      CancellationToken cancellationToken)
+        {
+            MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
+                                                            {
+                                                                AvailableBalance = domainEvent.AvailableBalance,
+                                                                Balance = domainEvent.Balance,
+                                                                ChangeAmount = domainEvent.ChangeAmount,
+                                                                EstateId = domainEvent.EstateId,
+                                                                EventId = domainEvent.EventId,
+                                                                MerchantId = domainEvent.MerchantId,
+                                                                Reference = domainEvent.Reference,
+                                                                EntryDateTime = domainEvent.EventCreatedDateTime
+                                                            };
+
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+
         }
 
         #endregion

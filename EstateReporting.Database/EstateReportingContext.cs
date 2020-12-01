@@ -63,6 +63,22 @@
         #region Properties
 
         /// <summary>
+        /// Gets or sets the merchant balance histories.
+        /// </summary>
+        /// <value>
+        /// The merchant balance histories.
+        /// </value>
+        public virtual DbSet<MerchantBalanceHistory> MerchantBalanceHistories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transactions view.
+        /// </summary>
+        /// <value>
+        /// The transactions view.
+        /// </value>
+        public virtual DbSet<TransactionsView> TransactionsView { get; set; }
+
+        /// <summary>
         /// Gets or sets the contract products.
         /// </summary>
         /// <value>

@@ -5,15 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.3.3" />
-    <PackageReference Include="Shared" Version="0.0.15.9" />
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.3.3" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.3.3" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.5.1" />
+    <PackageReference Include="Shared" Version="1.0.1" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.5.1" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.5.1" />
     <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.6.3" />
     <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.6.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EstateReporting.BusinessLogic.Events\EstateReporting.BusinessLogic.Events.csproj" />
     <ProjectReference Include="..\EstateReporting.Database\EstateReporting.Database.csproj" />
     <ProjectReference Include="..\EstateReporting.Models\EstateReporting.Models.csproj" />
   </ItemGroup>
