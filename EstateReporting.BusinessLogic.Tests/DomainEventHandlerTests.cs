@@ -5,6 +5,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using Events;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;
     using Repository;
@@ -199,6 +200,23 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(operatorAssignedToMerchantEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_MerchantBalanceChangedEvent_EventIsHandled()
+        {
+            MerchantBalanceChangedEvent merchantBalanceChangedEvent = TestData.MerchantBalanceChangedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(merchantBalanceChangedEvent, CancellationToken.None);
                             });
         }
 

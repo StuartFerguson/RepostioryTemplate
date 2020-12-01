@@ -214,8 +214,6 @@
         /// </value>
         public DbSet<TransactionAdditionalResponseData> TransactionsAdditionalResponseData { get; set; }
 
-        public virtual DbSet<TransactionsView> TransactionsView { get; set; }
-
         #endregion
 
         #region Methods
