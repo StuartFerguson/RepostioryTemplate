@@ -791,6 +791,214 @@ namespace EstateReporting.Repository.Tests
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_StartReconciliation_ReconciliationAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.StartReconciliation(TestData.ReconciliationHasStartedEvent, CancellationToken.None);
+
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationOverallTotals_ReconciliationUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Reconciliations.AddAsync(new Reconciliation
+                                                {
+                                                    TransactionId = TestData.TransactionId,
+                                                    MerchantId = TestData.MerchantId,
+                                                    EstateId = TestData.EstateId,
+                                                    TransactionDate = TestData.TransactionDateTime.Date,
+                                                    TransactionDateTime = TestData.TransactionDateTime,
+                                                    TransactionTime = TestData.TransactionDateTime.TimeOfDay
+                                                });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateReconciliationOverallTotals(TestData.OverallTotalsRecordedEvent, CancellationToken.None);
+
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.TransactionCount.ShouldBe(TestData.ReconcilationTransactionCount);
+            reconciliation.TransactionValue.ShouldBe(TestData.ReconcilationTransactionValue);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationOverallTotals_ReconciliationNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateReconciliationOverallTotals(TestData.OverallTotalsRecordedEvent,
+                                                                                              CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationStatus_Authorised_ReconciliationUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Reconciliations.AddAsync(new Reconciliation
+                                                   {
+                                                       TransactionId = TestData.TransactionId,
+                                                       MerchantId = TestData.MerchantId,
+                                                       EstateId = TestData.EstateId,
+                                                       TransactionDate = TestData.TransactionDateTime.Date,
+                                                       TransactionDateTime = TestData.TransactionDateTime,
+                                                       TransactionTime = TestData.TransactionDateTime.TimeOfDay
+                                                   });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.IsAuthorised.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationStatus_Authorised_ReconciliationNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyAuthorisedEvent,
+                                                                                                            CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationStatus_Declined_ReconciliationUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Reconciliations.AddAsync(new Reconciliation
+            {
+                TransactionId = TestData.TransactionId,
+                MerchantId = TestData.MerchantId,
+                EstateId = TestData.EstateId,
+                TransactionDate = TestData.TransactionDateTime.Date,
+                TransactionDateTime = TestData.TransactionDateTime,
+                TransactionTime = TestData.TransactionDateTime.TimeOfDay
+            });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyDeclinedEvent, CancellationToken.None);
+
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.IsAuthorised.ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateReconciliationStatus_Declined_ReconciliationNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyDeclinedEvent,
+                                                                                                     CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_CompleteReconciliation_ReconciliationUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Reconciliations.AddAsync(new Reconciliation
+                                                   {
+                                                       TransactionId = TestData.TransactionId,
+                                                       MerchantId = TestData.MerchantId,
+                                                       EstateId = TestData.EstateId,
+                                                       TransactionDate = TestData.TransactionDateTime.Date,
+                                                       TransactionDateTime = TestData.TransactionDateTime,
+                                                       TransactionTime = TestData.TransactionDateTime.TimeOfDay
+                                                   });
+            await context.SaveChangesAsync();
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.CompleteReconciliation(TestData.ReconciliationHasCompletedEvent, CancellationToken.None);
+
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.IsCompleted.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_CompleteReconciliation_ReconciliationNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.CompleteReconciliation(TestData.ReconciliationHasCompletedEvent,
+                                                                                                     CancellationToken.None);
+                                            });
+        }
+
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
         public async Task EstateReportingRepository_InsertMerchantBalanceRecord_BalanceRecordAdded(TestDatabaseType testDatabaseType)
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);

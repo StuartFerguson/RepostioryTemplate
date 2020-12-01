@@ -1,7 +1,6 @@
 ﻿namespace EstateReporting.Database
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -9,7 +8,6 @@
     using System.Threading.Tasks;
     using Entities;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Shared.General;
     using Shared.Logger;
@@ -81,30 +79,6 @@
         public virtual DbSet<TransactionsView> TransactionsView { get; set; }
 
         /// <summary>
-        /// Gets or sets the estate operators.
-        /// </summary>
-        /// <value>
-        /// The estate operators.
-        /// </value>
-        public DbSet<EstateOperator> EstateOperators { get; set; }
-
-        /// <summary>
-        /// Gets or sets the estates.
-        /// </summary>
-        /// <value>
-        /// The estates.
-        /// </value>
-        public DbSet<Estate> Estates { get; set; }
-
-        /// <summary>
-        /// Gets or sets the contracts.
-        /// </summary>
-        /// <value>
-        /// The contracts.
-        /// </value>
-        public DbSet<Contract> Contracts { get; set; }
-
-        /// <summary>
         /// Gets or sets the contract products.
         /// </summary>
         /// <value>
@@ -119,6 +93,30 @@
         /// The contract product transaction fees.
         /// </value>
         public DbSet<ContractProductTransactionFee> ContractProductTransactionFees { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contracts.
+        /// </summary>
+        /// <value>
+        /// The contracts.
+        /// </value>
+        public DbSet<Contract> Contracts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the estate operators.
+        /// </summary>
+        /// <value>
+        /// The estate operators.
+        /// </value>
+        public DbSet<EstateOperator> EstateOperators { get; set; }
+
+        /// <summary>
+        /// Gets or sets the estates.
+        /// </summary>
+        /// <value>
+        /// The estates.
+        /// </value>
+        public DbSet<Estate> Estates { get; set; }
 
         /// <summary>
         /// Gets or sets the estate security users.
@@ -177,12 +175,12 @@
         public DbSet<MerchantSecurityUser> MerchantSecurityUsers { get; set; }
 
         /// <summary>
-        /// Gets or sets the transactions.
+        /// Gets or sets the reconciliations.
         /// </summary>
         /// <value>
-        /// The transactions.
+        /// The reconciliations.
         /// </value>
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Reconciliation> Reconciliations { get; set; }
 
         /// <summary>
         /// Gets or sets the transaction fees.
@@ -191,6 +189,14 @@
         /// The transaction fees.
         /// </value>
         public DbSet<TransactionFee> TransactionFees { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transactions.
+        /// </summary>
+        /// <value>
+        /// The transactions.
+        /// </value>
+        public DbSet<Transaction> Transactions { get; set; }
 
         /// <summary>
         /// Gets or sets the transaction additional request data.
@@ -211,7 +217,43 @@
         #endregion
 
         #region Methods
-        
+
+        /// <summary>
+        /// Creates the views.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task CreateViews(CancellationToken cancellationToken)
+        {
+            String executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            String executingAssemblyFolder = Path.GetDirectoryName(executingAssemblyLocation);
+
+            String scriptsFolder = $@"{executingAssemblyFolder}/Views";
+
+            var directiories = Directory.GetDirectories(scriptsFolder);
+            directiories = directiories.OrderBy(d => d).ToArray();
+
+            foreach (String directiory in directiories)
+            {
+                String[] sqlFiles = Directory.GetFiles(directiory, "*View.sql");
+                foreach (String sqlFile in sqlFiles.OrderBy(x => x))
+                {
+                    Logger.LogDebug($"About to create View [{sqlFile}]");
+                    String sql = File.ReadAllText(sqlFile);
+
+                    // Check here is we need to replace a Database Name
+                    if (sql.Contains("{DatabaseName}"))
+                    {
+                        sql = sql.Replace("{DatabaseName}", this.Database.GetDbConnection().Database);
+                    }
+
+                    // Create the new view using the original sql from file
+                    await this.Database.ExecuteSqlCommandAsync(sql, cancellationToken);
+
+                    Logger.LogDebug($"Created View [{sqlFile}] successfully.");
+                }
+            }
+        }
+
         /// <summary>
         /// Migrates the asynchronous.
         /// </summary>
@@ -324,17 +366,17 @@
                                                                 });
 
             modelBuilder.Entity<Transaction>().HasKey(t => new
-                                                                {
-                                                                    t.EstateId,
-                                                                    t.MerchantId,
-                                                                    t.TransactionId
-                                                                });
+                                                           {
+                                                               t.EstateId,
+                                                               t.MerchantId,
+                                                               t.TransactionId
+                                                           });
 
             modelBuilder.Entity<TransactionFee>().HasKey(t => new
-                                                           {
-                                                               t.TransactionId,
-                                                               t.FeeId
-                                                           });
+                                                              {
+                                                                  t.TransactionId,
+                                                                  t.FeeId
+                                                              });
 
             modelBuilder.Entity<Contract>().HasKey(c => new
                                                         {
@@ -344,34 +386,34 @@
                                                         });
 
             modelBuilder.Entity<ContractProduct>().HasKey(c => new
-                                                        {
-                                                            c.EstateId,
-                                                            c.ContractId,
-                                                            c.ProductId
-                                                        });
-
-            modelBuilder.Entity<ContractProductTransactionFee>().HasKey(c => new
                                                                {
                                                                    c.EstateId,
                                                                    c.ContractId,
-                                                                   c.ProductId,
-                                                                   c.TransactionFeeId
+                                                                   c.ProductId
                                                                });
+
+            modelBuilder.Entity<ContractProductTransactionFee>().HasKey(c => new
+                                                                             {
+                                                                                 c.EstateId,
+                                                                                 c.ContractId,
+                                                                                 c.ProductId,
+                                                                                 c.TransactionFeeId
+                                                                             });
             modelBuilder.Entity<ContractProductTransactionFee>().Property(p => p.Value).DecimalPrecision(18, 4);
 
             modelBuilder.Entity<TransactionAdditionalRequestData>().HasKey(t => new
-                                                           {
-                                                               t.EstateId,
-                                                               t.MerchantId,
-                                                               t.TransactionId
-                                                           });
+                                                                                {
+                                                                                    t.EstateId,
+                                                                                    t.MerchantId,
+                                                                                    t.TransactionId
+                                                                                });
 
             modelBuilder.Entity<TransactionAdditionalRequestData>().HasKey(t => new
-                                                           {
-                                                               t.EstateId,
-                                                               t.MerchantId,
-                                                               t.TransactionId
-                                                           });
+                                                                                {
+                                                                                    t.EstateId,
+                                                                                    t.MerchantId,
+                                                                                    t.TransactionId
+                                                                                });
 
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
 
@@ -401,7 +443,8 @@
                 nameof(TransactionAdditionalResponseData),
                 nameof(Contract),
                 nameof(ContractProduct),
-                nameof(ContractProductTransactionFee)
+                nameof(ContractProductTransactionFee),
+                nameof(Reconciliation)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();
@@ -412,38 +455,6 @@
         }
 
         #endregion
-
-        public async Task CreateViews(CancellationToken cancellationToken)
-        {
-            String executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            String executingAssemblyFolder = Path.GetDirectoryName(executingAssemblyLocation);
-
-            String scriptsFolder = $@"{executingAssemblyFolder}/Views";
-
-            var directiories = Directory.GetDirectories(scriptsFolder);
-            directiories = directiories.OrderBy(d => d).ToArray();
-
-            foreach (String directiory in directiories)
-            {
-                String[] sqlFiles = Directory.GetFiles(directiory, "*View.sql");
-                foreach (String sqlFile in sqlFiles.OrderBy(x => x))
-                {
-                    Logger.LogDebug($"About to create View [{sqlFile}]");
-                    String sql = File.ReadAllText(sqlFile);
-
-                    // Check here is we need to replace a Database Name
-                    if (sql.Contains("{DatabaseName}"))
-                    {
-                        sql = sql.Replace("{DatabaseName}", this.Database.GetDbConnection().Database);
-                    }
-
-                    // Create the new view using the original sql from file
-                    await this.Database.ExecuteSqlCommandAsync(sql, cancellationToken);
-
-                    Logger.LogDebug($"Created View [{sqlFile}] successfully.");
-                }
-            }
-        }
     }
 
     public static class Extensions

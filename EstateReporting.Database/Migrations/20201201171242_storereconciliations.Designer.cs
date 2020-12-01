@@ -4,14 +4,16 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20201201171242_storereconciliations")]
+    partial class storereconciliations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,38 +217,6 @@ namespace EstateReporting.Database.Migrations
                     b.HasKey("EstateId", "MerchantId", "AddressId");
 
                     b.ToTable("merchantaddress");
-                });
-
-            modelBuilder.Entity("EstateReporting.Database.Entities.MerchantBalanceHistory", b =>
-                {
-                    b.Property<Guid>("EventId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("AvailableBalance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ChangeAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("EntryDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reference")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EventId");
-
-                    b.ToTable("merchantbalancehistory");
                 });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.MerchantContact", b =>

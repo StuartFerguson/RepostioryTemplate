@@ -1,10 +1,12 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
     using TransactionProcessor.Transaction.DomainEvents;
+    using TransactionProcessor.Reconciliation.DomainEvents;
 
     /// <summary>
     /// 
@@ -168,6 +170,60 @@
             await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, cancellationToken);
         }
 
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(ReconciliationHasStartedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.StartReconciliation(domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(OverallTotalsRecordedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateReconciliationOverallTotals(domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(ReconciliationHasBeenLocallyAuthorisedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateReconciliationStatus(domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(ReconciliationHasBeenLocallyDeclinedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateReconciliationStatus(domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(ReconciliationHasCompletedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.CompleteReconciliation(domainEvent, cancellationToken);
+        }
         #endregion
     }
 }

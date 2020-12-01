@@ -19,6 +19,7 @@
     using Shared.EntityFramework;
     using Shared.Exceptions;
     using Shared.Logger;
+    using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -469,6 +470,32 @@
         }
 
         /// <summary>
+        /// Completes the reconciliation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task CompleteReconciliation(ReconciliationHasCompletedEvent domainEvent,
+                                                 CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Reconciliation reconciliation =
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (reconciliation == null)
+            {
+                throw new NotFoundException($"Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            reconciliation.IsCompleted = true;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -756,6 +783,33 @@
         }
 
         /// <summary>
+        /// Starts the reconciliation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task StartReconciliation(ReconciliationHasStartedEvent domainEvent,
+                                              CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Reconciliation reconciliation = new Reconciliation
+                                      {
+                                          EstateId = domainEvent.EstateId,
+                                          MerchantId = domainEvent.MerchantId,
+                                          TransactionDate = domainEvent.TransactionDateTime.Date,
+                                          TransactionDateTime = domainEvent.TransactionDateTime,
+                                          TransactionTime = domainEvent.TransactionDateTime.TimeOfDay,
+                                          TransactionId = domainEvent.TransactionId,
+                                      };
+
+            await context.Reconciliations.AddAsync(reconciliation, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Starts the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -782,6 +836,89 @@
                                       };
 
             await context.Transactions.AddAsync(transaction, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the reconciliation overall totals.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task UpdateReconciliationOverallTotals(OverallTotalsRecordedEvent domainEvent,
+                                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Reconciliation reconciliation =
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (reconciliation == null)
+            {
+                throw new NotFoundException($"Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            reconciliation.TransactionCount = domainEvent.TransactionCount;
+            reconciliation.TransactionValue = domainEvent.TransactionValue;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the reconciliation status.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyAuthorisedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Reconciliation reconciliation =
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (reconciliation == null)
+            {
+                throw new NotFoundException($"Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            reconciliation.IsAuthorised = true;
+            reconciliation.ResponseCode = domainEvent.ResponseCode;
+            reconciliation.ResponseMessage = domainEvent.ResponseMessage;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the reconciliation status.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyDeclinedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Reconciliation reconciliation =
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (reconciliation == null)
+            {
+                throw new NotFoundException($"Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            reconciliation.IsAuthorised = false;
+            reconciliation.ResponseCode = domainEvent.ResponseCode;
+            reconciliation.ResponseMessage = domainEvent.ResponseMessage;
 
             await context.SaveChangesAsync(cancellationToken);
         }
