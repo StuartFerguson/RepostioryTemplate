@@ -11,6 +11,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using Shared.Logger;
     using Shouldly;
     using Testing;
+    using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using Xunit;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
@@ -385,6 +386,91 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(serviceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_ReconciliationHasStartedEvent_EventIsHandled()
+        {
+            ReconciliationHasStartedEvent reconciliationHasStartedEvent = TestData.ReconciliationHasStartedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(reconciliationHasStartedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_OverallTotalsRecordedEvent_EventIsHandled()
+        {
+            OverallTotalsRecordedEvent overallTotalsRecordedEvent = TestData.OverallTotalsRecordedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(overallTotalsRecordedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_ReconciliationHasBeenLocallyAuthorisedEvent_EventIsHandled()
+        {
+            ReconciliationHasBeenLocallyAuthorisedEvent reconciliationHasBeenLocallyAuthorisedEvent = TestData.ReconciliationHasBeenLocallyAuthorisedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(reconciliationHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_ReconciliationHasBeenLocallyDeclinedEvent_EventIsHandled()
+        {
+            ReconciliationHasBeenLocallyDeclinedEvent reconciliationHasBeenLocallyDeclinedEvent = TestData.ReconciliationHasBeenLocallyDeclinedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(reconciliationHasBeenLocallyDeclinedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_ReconciliationHasCompletedEvent_EventIsHandled()
+        {
+            ReconciliationHasCompletedEvent reconciliationHasCompletedEvent = TestData.ReconciliationHasCompletedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(reconciliationHasCompletedEvent, CancellationToken.None);
                             });
         }
 

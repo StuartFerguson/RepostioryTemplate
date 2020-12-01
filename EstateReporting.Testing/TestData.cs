@@ -6,6 +6,7 @@
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using Models;
+    using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -16,6 +17,16 @@
     public class TestData
     {
         #region Fields
+        
+        /// <summary>
+        /// The reconcilation transaction count
+        /// </summary>
+        public static Int32 ReconcilationTransactionCount = 1;
+
+        /// <summary>
+        /// The reconcilation transaction value
+        /// </summary>
+        public static Decimal ReconcilationTransactionValue = 100.00m;
 
         /// <summary>
         /// The address identifier
@@ -308,8 +319,37 @@
                                                                                                                                   TestData.MerchantId,
                                                                                                                                   TestData.ResponseCode,
                                                                                                                                   TestData.ResponseMessage,
-                                                                                                                                  TestData.IsAuthorised);
+                                                                                                                                  TestData.IsAuthorised,
+             TestData.TransactionAmount);
 
+        public static ReconciliationHasStartedEvent ReconciliationHasStartedEvent =
+            ReconciliationHasStartedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.TransactionDateTime);
+
+        public static OverallTotalsRecordedEvent OverallTotalsRecordedEvent =
+            OverallTotalsRecordedEvent.Create(TestData.TransactionId,
+                                              TestData.EstateId,
+                                              TestData.MerchantId,
+                                              TestData.ReconcilationTransactionCount,
+                                              TestData.ReconcilationTransactionValue);
+
+        public static ReconciliationHasBeenLocallyAuthorisedEvent ReconciliationHasBeenLocallyAuthorisedEvent =
+            ReconciliationHasBeenLocallyAuthorisedEvent.Create(TestData.TransactionId,
+                                                               TestData.EstateId,
+                                                               TestData.MerchantId,
+                                                               TestData.ResponseCode,
+                                                               TestData.ResponseMessage);
+
+        public static ReconciliationHasBeenLocallyDeclinedEvent ReconciliationHasBeenLocallyDeclinedEvent =
+            ReconciliationHasBeenLocallyDeclinedEvent.Create(TestData.TransactionId,
+                                                             TestData.EstateId,
+                                                             TestData.MerchantId,
+                                                             TestData.ResponseCode,
+                                                             TestData.ResponseMessage);
+
+        public static ReconciliationHasCompletedEvent ReconciliationHasCompletedEvent = ReconciliationHasCompletedEvent.Create(TestData.TransactionId,
+                 TestData.EstateId,
+                 TestData.MerchantId);
+        
         public static Decimal? TransactionAmount = 100.00m;
 
         public static Guid ContractId = Guid.Parse("D3F17288-2E3C-41F0-BD00-95047DC13BDA");
@@ -519,6 +559,5 @@
                                                                                                         {
                                                                                                             TransactionMonthModels = new List<TransactionMonthModel>()
                                                                                                         };
-
     }
 }

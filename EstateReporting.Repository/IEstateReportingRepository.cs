@@ -7,6 +7,7 @@
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using Models;
+    using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -163,6 +164,15 @@
                                             CancellationToken cancellationToken);
 
         /// <summary>
+        /// Completes the reconciliation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CompleteReconciliation(ReconciliationHasCompletedEvent domainEvent,
+                                    CancellationToken cancellationToken);
+
+        /// <summary>
         /// Completes the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -203,6 +213,32 @@
                                                                     CancellationToken cancellationToken);
 
         /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
+                                                                       String startDate,
+                                                                       String endDate,
+                                                                       CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for estate by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByWeekModel> GetTransactionsForEstateByWeek(Guid estateId,
+                                                                     String startDate,
+                                                                     String endDate,
+                                                                     CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the transactions for merchant by date.
         /// </summary>
         /// <param name="estateId">The estate identifier.</param>
@@ -216,6 +252,36 @@
                                                                       String startDate,
                                                                       String endDate,
                                                                       CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
+                                                                         Guid merchantId,
+                                                                         String startDate,
+                                                                         String endDate,
+                                                                         CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for merchant by week.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByWeekModel> GetTransactionsForMerchantByWeek(Guid estateId,
+                                                                       Guid merchantId,
+                                                                       String startDate,
+                                                                       String endDate,
+                                                                       CancellationToken cancellationToken);
 
         /// <summary>
         /// Records the transaction additional request data.
@@ -236,6 +302,15 @@
                                                      CancellationToken cancellationToken);
 
         /// <summary>
+        /// Starts the reconciliation.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task StartReconciliation(ReconciliationHasStartedEvent domainEvent,
+                                 CancellationToken cancellationToken);
+
+        /// <summary>
         /// Starts the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -243,6 +318,33 @@
         /// <returns></returns>
         Task StartTransaction(TransactionHasStartedEvent domainEvent,
                               CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the reconciliation overall totals.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateReconciliationOverallTotals(OverallTotalsRecordedEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the reconciliation status.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyAuthorisedEvent domainEvent,
+                                        CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the reconciliation status.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyDeclinedEvent domainEvent,
+                                        CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the transaction authorisation.
@@ -279,62 +381,6 @@
         /// <returns></returns>
         Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                             CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the transactions for estate by week.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<TransactionsByWeekModel> GetTransactionsForEstateByWeek(Guid estateId,
-                                                                    String startDate,
-                                                                    String endDate,
-                                                                    CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the transactions for merchant by week.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="merchantId">The merchant identifier.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<TransactionsByWeekModel> GetTransactionsForMerchantByWeek(Guid estateId,
-                                                                       Guid merchantId,
-                                                                     String startDate,
-                                                                     String endDate,
-                                                                     CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the transactions for estate by month.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<TransactionsByMonthModel> GetTransactionsForEstateByMonth(Guid estateId,
-                                                                     String startDate,
-                                                                     String endDate,
-                                                                     CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the transactions for merchant by month.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="merchantId">The merchant identifier.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task<TransactionsByMonthModel> GetTransactionsForMerchantByMonth(Guid estateId,
-                                                                       Guid merchantId,
-                                                                       String startDate,
-                                                                       String endDate,
-                                                                       CancellationToken cancellationToken);
 
         #endregion
     }
