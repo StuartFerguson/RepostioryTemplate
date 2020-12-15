@@ -1257,24 +1257,42 @@
         public async Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
                                                       CancellationToken cancellationToken)
         {
-            MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
-                                                            {
-                                                                AvailableBalance = domainEvent.AvailableBalance,
-                                                                Balance = domainEvent.Balance,
-                                                                ChangeAmount = domainEvent.ChangeAmount,
-                                                                EstateId = domainEvent.EstateId,
-                                                                EventId = domainEvent.EventId,
-                                                                MerchantId = domainEvent.MerchantId,
-                                                                Reference = domainEvent.Reference,
-                                                                EntryDateTime = domainEvent.EventCreatedDateTime
-                                                            };
+            
 
             Guid estateId = domainEvent.EstateId;
 
             EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
+            // Find the existing event
+            MerchantBalanceHistory balanceRecord = await context.MerchantBalanceHistories.SingleOrDefaultAsync(m => m.EventId == domainEvent.EventId, cancellationToken);
 
+            if (balanceRecord == null)
+            {
+                MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
+                                                                {
+                                                                    AvailableBalance = domainEvent.AvailableBalance,
+                                                                    Balance = domainEvent.Balance,
+                                                                    ChangeAmount = domainEvent.ChangeAmount,
+                                                                    EstateId = domainEvent.EstateId,
+                                                                    EventId = domainEvent.EventId,
+                                                                    MerchantId = domainEvent.MerchantId,
+                                                                    Reference = domainEvent.Reference,
+                                                                    EntryDateTime = domainEvent.EventCreatedDateTime,
+                                                                    TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId
+                                                                };
+
+                await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
+            }
+            else
+            {
+                balanceRecord.AvailableBalance = domainEvent.AvailableBalance;
+                balanceRecord.Balance = domainEvent.Balance;
+                balanceRecord.ChangeAmount = domainEvent.ChangeAmount;
+                balanceRecord.Reference = domainEvent.Reference;
+                balanceRecord.EntryDateTime = domainEvent.EventCreatedDateTime;
+                balanceRecord.TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId;
+            }
+            
             await context.SaveChangesAsync(cancellationToken);
 
         }

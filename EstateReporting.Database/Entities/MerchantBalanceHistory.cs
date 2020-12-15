@@ -74,5 +74,14 @@
         /// The entry date time.
         /// </value>
         public DateTime EntryDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transaction identifier.
+        /// </summary>
+        /// <value>
+        /// The transaction identifier.
+        /// </value>
+        public Guid TransactionId { get; set; }
+
     }
 }

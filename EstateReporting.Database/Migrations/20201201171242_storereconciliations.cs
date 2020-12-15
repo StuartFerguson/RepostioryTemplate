@@ -22,8 +22,8 @@ namespace EstateReporting.Database.Migrations
                     TransactionDate = table.Column<DateTime>(nullable: false),
                     TransactionDateTime = table.Column<DateTime>(nullable: false),
                     TransactionTime = table.Column<TimeSpan>(nullable: false),
-                    TransactionCount = table.Column<int>(nullable: true),
-                    TransactionValue = table.Column<decimal>(nullable: true),
+                    TransactionCount = table.Column<int>(nullable: false),
+                    TransactionValue = table.Column<decimal>(nullable: false),
                 },
                 constraints: table =>
                 {

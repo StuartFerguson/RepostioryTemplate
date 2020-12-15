@@ -401,6 +401,10 @@
                                                                              });
             modelBuilder.Entity<ContractProductTransactionFee>().Property(p => p.Value).DecimalPrecision(18, 4);
 
+            modelBuilder.Entity<MerchantBalanceHistory>().Property(p => p.AvailableBalance).DecimalPrecision(18, 4);
+            modelBuilder.Entity<MerchantBalanceHistory>().Property(p => p.Balance).DecimalPrecision(18, 4);
+            modelBuilder.Entity<MerchantBalanceHistory>().Property(p => p.ChangeAmount).DecimalPrecision(18, 4);
+
             modelBuilder.Entity<TransactionAdditionalRequestData>().HasKey(t => new
                                                                                 {
                                                                                     t.EstateId,
