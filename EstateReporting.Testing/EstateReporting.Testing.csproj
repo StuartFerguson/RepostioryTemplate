@@ -11,6 +11,7 @@
     <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.5.1" />
     <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.6.3" />
     <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.6.3" />
+    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="0.0.6" />
   </ItemGroup>
 
   <ItemGroup>

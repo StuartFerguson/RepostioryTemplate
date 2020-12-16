@@ -214,6 +214,14 @@
         /// </value>
         public DbSet<TransactionAdditionalResponseData> TransactionsAdditionalResponseData { get; set; }
 
+        /// <summary>
+        /// Gets or sets the vouchers.
+        /// </summary>
+        /// <value>
+        /// The vouchers.
+        /// </value>
+        public DbSet<Voucher> Vouchers { get; set; }
+
         #endregion
 
         #region Methods
@@ -448,7 +456,8 @@
                 nameof(Contract),
                 nameof(ContractProduct),
                 nameof(ContractProductTransactionFee),
-                nameof(Reconciliation)
+                nameof(Reconciliation),
+                nameof(Voucher)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

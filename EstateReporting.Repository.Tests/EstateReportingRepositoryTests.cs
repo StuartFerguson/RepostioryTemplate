@@ -1014,6 +1014,65 @@ namespace EstateReporting.Repository.Tests
             balanceHistory.ShouldNotBeNull();
         }
 
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddGeneratedVoucher_VoucherAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddGeneratedVoucher(TestData.VoucherGeneratedEvent, CancellationToken.None);
+
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == TestData.VoucherId && e.EstateId == TestData.EstateId);
+            voucher.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateVoucherIssueDetails_VoucherUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Vouchers.AddAsync(new Voucher
+                                 {
+                                     EstateId = TestData.EstateId,
+                                     VoucherId = TestData.VoucherId
+                                 }, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateVoucherIssueDetails(TestData.VoucherIssuedEvent, CancellationToken.None);
+
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == TestData.VoucherId && e.EstateId == TestData.EstateId);
+            voucher.IsIssued.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateVoucherIssueDetails_VouchernNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateVoucherIssueDetails(TestData.VoucherIssuedEvent, CancellationToken.None);
+                                            });
+        }
+
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
