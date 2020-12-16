@@ -14,6 +14,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using Testing;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
     using Xunit;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
@@ -489,6 +490,40 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () =>
                             {
                                 await eventHandler.Handle(reconciliationHasCompletedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_VoucherGeneratedEvent_EventIsHandled()
+        {
+            VoucherGeneratedEvent voucherGeneratedEvent = TestData.VoucherGeneratedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(voucherGeneratedEvent, CancellationToken.None);
+                            });
+        }
+
+        [Fact]
+        public void TransactionDomainEventHandler_VoucherIssuedEvent_EventIsHandled()
+        {
+            VoucherIssuedEvent voucherIssuedEvent = TestData.VoucherIssuedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            TransactionDomainEventHandler eventHandler = new TransactionDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () =>
+                            {
+                                await eventHandler.Handle(voucherIssuedEvent, CancellationToken.None);
                             });
         }
 

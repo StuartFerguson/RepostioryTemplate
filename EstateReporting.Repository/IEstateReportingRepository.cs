@@ -10,6 +10,7 @@
     using Models;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -100,6 +101,15 @@
         /// <returns></returns>
         Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
                                         CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the generated voucher.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddGeneratedVoucher(VoucherGeneratedEvent domainEvent,
+                                 CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the merchant.
@@ -285,6 +295,15 @@
                                                                        CancellationToken cancellationToken);
 
         /// <summary>
+        /// Inserts the merchant balance record.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
+                                         CancellationToken cancellationToken);
+
+        /// <summary>
         /// Records the transaction additional request data.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -383,15 +402,14 @@
         Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                             CancellationToken cancellationToken);
 
-
         /// <summary>
-        /// Inserts the merchant balance record.
+        /// Updates the voucher issue details.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
-                                         CancellationToken cancellationToken);
+        Task UpdateVoucherIssueDetails(VoucherIssuedEvent domainEvent,
+                                       CancellationToken cancellationToken);
 
         #endregion
     }

@@ -7,6 +7,7 @@
     using Shared.DomainDrivenDesign.EventSourcing;
     using TransactionProcessor.Transaction.DomainEvents;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
 
     /// <summary>
     /// 
@@ -223,6 +224,18 @@
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.CompleteReconciliation(domainEvent, cancellationToken);
+        }
+
+        private async Task HandleSpecificDomainEvent(VoucherGeneratedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.AddGeneratedVoucher(domainEvent, cancellationToken);
+        }
+
+        private async Task HandleSpecificDomainEvent(VoucherIssuedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateVoucherIssueDetails(domainEvent, cancellationToken);
         }
         #endregion
     }

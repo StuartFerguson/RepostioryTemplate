@@ -9,6 +9,7 @@
     using Models;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -363,10 +364,36 @@
                                                              TestData.ResponseCode,
                                                              TestData.ResponseMessage);
 
-        public static ReconciliationHasCompletedEvent ReconciliationHasCompletedEvent = ReconciliationHasCompletedEvent.Create(TestData.TransactionId,
-                 TestData.EstateId,
-                 TestData.MerchantId);
-        
+        public static ReconciliationHasCompletedEvent ReconciliationHasCompletedEvent =
+            ReconciliationHasCompletedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId);
+
+        public static Guid VoucherId = Guid.Parse("1736C058-5AC3-4AAC-8167-10DBAC2B7968");
+
+        public static String OperatorIdentifier = "Voucher";
+
+        public static Decimal VoucherValue = 10.00m;
+
+        public static String VoucherCode = "1234GHT";
+        public static DateTime VoucherExpiryDate = new DateTime(2021,12,16);
+        public static String VoucherMessage = String.Empty;
+
+        public static String RecipientEmail = "testemail@recipient.co.uk";
+        public static String RecipientMobile = "123455679";
+
+        public static VoucherGeneratedEvent VoucherGeneratedEvent = VoucherGeneratedEvent.Create(TestData.VoucherId,
+                                                                                                 TestData.EstateId,
+                                                                                                 TestData.OperatorIdentifier,
+                                                                                                 TestData.VoucherValue,
+                                                                                                 TestData.VoucherCode,
+                                                                                                 TestData.VoucherExpiryDate,
+                                                                                                 TestData.VoucherMessage);
+
+        public static VoucherIssuedEvent VoucherIssuedEvent = VoucherIssuedEvent.Create(TestData.VoucherId,
+                                                                                        TestData.EstateId,
+                                                                                        TestData.RecipientEmail,
+                                                                                        TestData.RecipientMobile);
+
+
         public static Decimal? TransactionAmount = 100.00m;
 
         public static Guid ContractId = Guid.Parse("D3F17288-2E3C-41F0-BD00-95047DC13BDA");

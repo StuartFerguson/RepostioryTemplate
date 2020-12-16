@@ -21,6 +21,7 @@
     using Shared.Logger;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
     using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
     using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
@@ -273,6 +274,35 @@
                                                     };
 
             await context.EstateSecurityUsers.AddAsync(estateSecurityUser, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the generated voucher.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddGeneratedVoucher(VoucherGeneratedEvent domainEvent,
+                                              CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Voucher voucher = new Voucher
+                              {
+                                  EstateId = domainEvent.EstateId,
+                                  ExpiryDate = domainEvent.ExpiryDateTime,
+                                  IsGenerated = true,
+                                  IsIssued = false,
+                                  OperatorIdentifier = domainEvent.OperatorIdentifier,
+                                  Value = domainEvent.Value,
+                                  VoucherCode = domainEvent.VoucherCode,
+                                  VoucherId = domainEvent.VoucherId
+                              };
+
+            await context.Vouchers.AddAsync(voucher, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }
@@ -1035,6 +1065,33 @@
             transaction.ResponseCode = domainEvent.ResponseCode;
             transaction.ResponseMessage = domainEvent.ResponseMessage;
             transaction.OperatorIdentifier = domainEvent.OperatorIdentifier;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the voucher issue details.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
+        public async Task UpdateVoucherIssueDetails(VoucherIssuedEvent domainEvent,
+                                                    CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(v => v.VoucherId == domainEvent.VoucherId);
+
+            if (voucher == null)
+            {
+                throw new NotFoundException($"Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model");
+            }
+
+            voucher.IsIssued = true;
+            voucher.RecipientEmail = domainEvent.RecipientEmail;
+            voucher.RecipientMobile = domainEvent.RecipientMobile;
 
             await context.SaveChangesAsync(cancellationToken);
         }
