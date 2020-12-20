@@ -299,7 +299,9 @@
                                   OperatorIdentifier = domainEvent.OperatorIdentifier,
                                   Value = domainEvent.Value,
                                   VoucherCode = domainEvent.VoucherCode,
-                                  VoucherId = domainEvent.VoucherId
+                                  VoucherId = domainEvent.VoucherId,
+                                  TransactionId = domainEvent.TransactionId,
+                                  GenerateDateTime = domainEvent.GeneratedDateTime
                               };
 
             await context.Vouchers.AddAsync(voucher, cancellationToken);
@@ -1092,6 +1094,7 @@
             voucher.IsIssued = true;
             voucher.RecipientEmail = domainEvent.RecipientEmail;
             voucher.RecipientMobile = domainEvent.RecipientMobile;
+            voucher.IssuedDateTime = domainEvent.IssuedDateTime;
 
             await context.SaveChangesAsync(cancellationToken);
         }
