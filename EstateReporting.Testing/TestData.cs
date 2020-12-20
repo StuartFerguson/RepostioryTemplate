@@ -374,6 +374,8 @@
         public static Decimal VoucherValue = 10.00m;
 
         public static String VoucherCode = "1234GHT";
+        public static DateTime VoucherGeneratedDate = new DateTime(2021, 12, 16);
+        public static DateTime VoucherIssuedDate = new DateTime(2021, 12, 16);
         public static DateTime VoucherExpiryDate = new DateTime(2021,12,16);
         public static String VoucherMessage = String.Empty;
 
@@ -382,6 +384,8 @@
 
         public static VoucherGeneratedEvent VoucherGeneratedEvent = VoucherGeneratedEvent.Create(TestData.VoucherId,
                                                                                                  TestData.EstateId,
+                                                                                                 TestData.TransactionId,
+                                                                                                 TestData.VoucherGeneratedDate,
                                                                                                  TestData.OperatorIdentifier,
                                                                                                  TestData.VoucherValue,
                                                                                                  TestData.VoucherCode,
@@ -390,6 +394,7 @@
 
         public static VoucherIssuedEvent VoucherIssuedEvent = VoucherIssuedEvent.Create(TestData.VoucherId,
                                                                                         TestData.EstateId,
+                                                                                        TestData.VoucherIssuedDate,
                                                                                         TestData.RecipientEmail,
                                                                                         TestData.RecipientMobile);
 

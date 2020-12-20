@@ -93,6 +93,30 @@
         [Key]
         public Guid VoucherId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the transaction identifier.
+        /// </summary>
+        /// <value>
+        /// The transaction identifier.
+        /// </value>
+        public Guid TransactionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the generate date time.
+        /// </summary>
+        /// <value>
+        /// The generate date time.
+        /// </value>
+        public DateTime GenerateDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the issued date time.
+        /// </summary>
+        /// <value>
+        /// The issued date time.
+        /// </value>
+        public DateTime IssuedDateTime { get; set; }
+
         #endregion
     }
 }
