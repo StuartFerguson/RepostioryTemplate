@@ -1100,6 +1100,32 @@
         }
 
         /// <summary>
+        /// Updates the voucher redemption details.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
+        public async Task UpdateVoucherRedemptionDetails(VoucherFullyRedeemedEvent domainEvent,
+                                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(v => v.VoucherId == domainEvent.VoucherId);
+
+            if (voucher == null)
+            {
+                throw new NotFoundException($"Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model");
+            }
+
+            voucher.IsRedeemed = true;
+            voucher.RedeemedDateTime = domainEvent.RedeemedDateTime;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Gets the transactions for estate by week.
         /// </summary>
         /// <param name="estateId">The estate identifier.</param>

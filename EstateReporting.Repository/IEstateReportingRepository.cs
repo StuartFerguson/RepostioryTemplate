@@ -411,6 +411,15 @@
         Task UpdateVoucherIssueDetails(VoucherIssuedEvent domainEvent,
                                        CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Updates the voucher redemption details.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateVoucherRedemptionDetails(VoucherFullyRedeemedEvent domainEvent,
+                                            CancellationToken cancellationToken);
+
         #endregion
     }
 }

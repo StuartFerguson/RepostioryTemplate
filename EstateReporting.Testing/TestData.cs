@@ -338,7 +338,8 @@
                                                                                                                                   TestData.ResponseCode,
                                                                                                                                   TestData.ResponseMessage,
                                                                                                                                   TestData.IsAuthorised,
-             TestData.TransactionAmount);
+                                                                                                                                  TestData.TransactionCompletedDateTime,
+                                                                                                                                  TestData.TransactionAmount);
 
         public static ReconciliationHasStartedEvent ReconciliationHasStartedEvent =
             ReconciliationHasStartedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.TransactionDateTime);
@@ -397,6 +398,10 @@
                                                                                         TestData.VoucherIssuedDate,
                                                                                         TestData.RecipientEmail,
                                                                                         TestData.RecipientMobile);
+
+        public static VoucherFullyRedeemedEvent VoucherFullyRedeemedEvent = VoucherFullyRedeemedEvent.Create(TestData.VoucherId,
+                                                                                                             TestData.EstateId,
+                                                                                                             TestData.VoucherRedeemedDate);
 
 
         public static Decimal? TransactionAmount = 100.00m;
@@ -608,5 +613,9 @@
                                                                                                         {
                                                                                                             TransactionMonthModels = new List<TransactionMonthModel>()
                                                                                                         };
+
+        private static DateTime VoucherRedeemedDate = new DateTime(2021, 12, 16);
+
+        private static DateTime TransactionCompletedDateTime = new DateTime(2021, 12, 16);
     }
 }

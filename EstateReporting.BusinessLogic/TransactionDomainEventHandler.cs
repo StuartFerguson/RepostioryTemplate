@@ -1,12 +1,11 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
-    using TransactionProcessor.Transaction.DomainEvents;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
     /// <summary>
@@ -226,17 +225,39 @@
             await this.EstateReportingRepository.CompleteReconciliation(domainEvent, cancellationToken);
         }
 
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         private async Task HandleSpecificDomainEvent(VoucherGeneratedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.AddGeneratedVoucher(domainEvent, cancellationToken);
         }
 
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         private async Task HandleSpecificDomainEvent(VoucherIssuedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.UpdateVoucherIssueDetails(domainEvent, cancellationToken);
         }
+
+        /// <summary>
+        /// Handles the specific domain event.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task HandleSpecificDomainEvent(VoucherFullyRedeemedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateVoucherRedemptionDetails(domainEvent, cancellationToken);
+        }
+
         #endregion
     }
 }
