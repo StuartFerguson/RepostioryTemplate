@@ -19,6 +19,8 @@
         /// </summary>
         private readonly IEstateReportingRepository Repository;
 
+        private readonly IEstateReportingRepositoryForReports RepositoryForReports;
+
         #endregion
 
         #region Constructors
@@ -27,9 +29,12 @@
         /// Initializes a new instance of the <see cref="ReportingManager" /> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public ReportingManager(IEstateReportingRepository repository)
+        /// <param name="repositoryForReports">The repository for reports.</param>
+        public ReportingManager(IEstateReportingRepository repository,
+                                IEstateReportingRepositoryForReports repositoryForReports)
         {
             this.Repository = repository;
+            this.RepositoryForReports = repositoryForReports;
         }
 
         #endregion
@@ -51,7 +56,7 @@
         {
             TransactionsByDayModel model = null;
 
-            model = await this.Repository.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -73,7 +78,7 @@
         {
             TransactionsByDayModel model = null;
 
-            model = await this.Repository.GetTransactionsForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -93,7 +98,7 @@
         {
             TransactionsByWeekModel model = null;
 
-            model = await this.Repository.GetTransactionsForEstateByWeek(estateId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForEstateByWeek(estateId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -115,7 +120,7 @@
         {
             TransactionsByWeekModel model = null;
 
-            model = await this.Repository.GetTransactionsForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -135,7 +140,7 @@
         {
             TransactionsByMonthModel model = null;
 
-            model = await this.Repository.GetTransactionsForEstateByMonth(estateId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForEstateByMonth(estateId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -157,7 +162,43 @@
         {
             TransactionsByMonthModel model = null;
 
-            model = await this.Repository.GetTransactionsForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+            model = await this.RepositoryForReports.GetTransactionsForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<TransactionsByMerchantModel> GetTransactionsForEstateByMerchant(Guid estateId,
+                                                                                          String startDate,
+                                                                                          String endDate,
+                                                                                          Int32 recordCount,
+                                                                                          SortField sortField,
+                                                                                          SortDirection sortDirection,
+                                                                                          CancellationToken cancellationToken)
+        {
+            TransactionsByMerchantModel model = null;
+            EstateReporting.Repository.SortDirection repoSortDirection = EstateReporting.Repository.SortDirection.NotSet;
+            switch (sortDirection)
+            {
+                case SortDirection.Ascending:
+                    repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
+                    break;
+                case SortDirection.Descending:
+                    repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
+                    break;
+            }
+
+            EstateReporting.Repository.SortField repoSortField = EstateReporting.Repository.SortField.NotSet;
+            switch (sortField)
+            {
+                case SortField.Count:
+                    repoSortField = EstateReporting.Repository.SortField.Count;
+                    break;
+                case SortField.Value:
+                    repoSortField = EstateReporting.Repository.SortField.Value;
+                    break;
+            }
+
+            model = await this.RepositoryForReports.GetTransactionsForEstateByMerchant(estateId,  startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
 
             return model;
         }

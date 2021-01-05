@@ -46,4 +46,10 @@
     <ProjectReference Include="..\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="..\.dockerignore">
+      <DependentUpon>dockerfile</DependentUpon>
+    </None>
+  </ItemGroup>
+
 </Project>

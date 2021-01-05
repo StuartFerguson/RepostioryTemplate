@@ -18,6 +18,7 @@
     using TechTalk.SpecFlow;
     using TransactionProcessor.DataTransferObjects;
     using ClientDetails = Common.ClientDetails;
+    using SortDirection = DataTransferObjects.SortDirection;
 
     [Binding]
     [Scope(Tag = "shared")]
@@ -786,6 +787,52 @@
                 }
             });
         }
+
+        [When(@"I get the Estate Transactions By Merchant Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheEstateTransactionsByMerchantReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByMerchantResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                    .GetTransactionsForEstateByMerchant(token,
+                                                                                                        estateDetails.EstateId,
+                                                                                                        startDate,
+                                                                                                        endDate,
+                                                                                                        5,
+                                                                                                        SortDirection.Ascending,
+                                                                                                        SortField.Value,
+                                                                                                        CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionMerchantResponses.ShouldNotBeNull();
+                response.TransactionMerchantResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionMerchantResponse transactionMerchantResponse = response.TransactionMerchantResponses.SingleOrDefault(t => t.MerchantName == merchantName);
+
+                    transactionMerchantResponse.ShouldNotBeNull();
+                    transactionMerchantResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionMerchantResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
 
         [Given(@"I set the date for today to ""(.*)""")]
         public void GivenISetTheDateForTodayTo(String dateForToday)

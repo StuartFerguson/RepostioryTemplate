@@ -57,6 +57,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LogonTransaction.feature</DependentUpon>
     </Compile>
+    <Compile Update="Reporting\TransactionsByMerchant.feature.cs">
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Update="Reporting\TransactionsByMonthReports.feature.cs">
       <DependentUpon>TransactionsByMonthReports.feature</DependentUpon>
     </Compile>
@@ -78,6 +81,10 @@
     <SpecFlowFeatureFiles Update="LogonTransaction\LogonTransaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>LogonTransaction.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\TransactionsByMerchant.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>TransactionsByMerchant.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Reporting\TransactionsByMonthReports.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>

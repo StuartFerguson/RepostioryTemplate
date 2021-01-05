@@ -1,8 +1,9 @@
 ﻿namespace EstateReporting.Factories
 {
-    using BusinessLogic;
     using DataTransferObjects;
     using Models;
+    using SortDirection = BusinessLogic.SortDirection;
+    using SortField = BusinessLogic.SortField;
 
     /// <summary>
     /// 
@@ -39,6 +40,11 @@
         /// <returns></returns>
         TransactionWeekResponse ConvertFrom(TransactionWeekModel model);
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         TransactionMonthResponse ConvertFrom(TransactionMonthModel model);
 
         /// <summary>
@@ -47,6 +53,34 @@
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionDayResponse ConvertFrom(TransactionDayModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionMerchantResponse ConvertFrom(TransactionMerchantModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionsByMerchantResponse ConvertFrom(TransactionsByMerchantModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        SortDirection ConvertFrom(DataTransferObjects.SortDirection model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        SortField ConvertFrom(DataTransferObjects.SortField model);
 
         #endregion
     }

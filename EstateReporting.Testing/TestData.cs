@@ -157,8 +157,11 @@
         public static String EstateName = "Test Estate 1";
 
         public static Decimal AvailableBalance = 1000.00m;
+        public static Decimal AvailableBalance2 = 2000.00m;
         public static Decimal Balance = 1100.00m;
+        public static Decimal Balance2 = 2200.00m;
         public static Decimal ChangeAmount = 100.00m;
+        public static Decimal ChangeAmount2 = 200.00m;
 
         public static String BalanceRecordReference = "Transaction Completed";
 
@@ -167,15 +170,23 @@
         /// </summary>
         public static EstateCreatedEvent EstateCreatedEvent = EstateCreatedEvent.Create(TestData.EstateId, TestData.EstateName);
 
-        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent = new MerchantBalanceChangedEvent
-                                                                                {
-                                                                                    AvailableBalance = TestData.AvailableBalance,
-                                                                                    Balance = TestData.Balance,
-                                                                                    ChangeAmount = TestData.ChangeAmount,
-                                                                                    EstateId = TestData.EstateId,
-                                                                                    MerchantId = TestData.MerchantId,
-                                                                                    Reference = TestData.BalanceRecordReference
-                                                                                };
+        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent = MerchantBalanceChangedEvent.Create(TestData.MerchantId,
+            Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
+            TestData.EstateId,
+            TestData.MerchantId,
+            TestData.AvailableBalance,
+            TestData.Balance,
+            TestData.ChangeAmount,
+            TestData.BalanceRecordReference);
+
+        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent2 = MerchantBalanceChangedEvent.Create(TestData.MerchantId,
+            Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
+            TestData.EstateId,
+            TestData.MerchantId,
+            TestData.AvailableBalance2,
+            TestData.Balance2,
+            TestData.ChangeAmount2,
+            TestData.BalanceRecordReference);
 
         /// <summary>
         /// The security user identifier
@@ -484,9 +495,9 @@
 
         #endregion
 
-        public static String StartDate = "20201001";
+        public static String StartDate = "20210104";
 
-        public static String EndDate = "20201002";
+        public static String EndDate = "20210105";
 
         public static String CurrencyCode = "KES";
 
@@ -617,5 +628,39 @@
         private static DateTime VoucherRedeemedDate = new DateTime(2021, 12, 16);
 
         private static DateTime TransactionCompletedDateTime = new DateTime(2021, 12, 16);
+
+        public static TransactionsByMerchantModel TransactionsByMerchantModel = new TransactionsByMerchantModel
+                                                                                {
+                                                                                    TransactionMerchantModels = new List<TransactionMerchantModel>
+                                                                                                                {
+                                                                                                                    new TransactionMerchantModel
+                                                                                                                    {
+                                                                                                                        CurrencyCode = TestData.CurrencyCode,
+                                                                                                                        MerchantId = TestData.MerchantId,
+                                                                                                                        ValueOfTransactions = 1000.00m,
+                                                                                                                        NumberOfTransactions = 50,
+                                                                                                                        MerchantName = TestData.MerchantName
+                                                                                                                    }
+                                                                                                                }
+                                                                                };
+
+        public static TransactionsByMerchantModel TransactionsByMerchantModelNullTransactionMerchantModelList = new TransactionsByMerchantModel
+                                                                                                                {
+                                                                                                                    TransactionMerchantModels = null
+                                                                                                                };
+
+        public static TransactionsByMerchantModel TransactionsByMerchantModelEmptyTransactionMerchantModelList = new TransactionsByMerchantModel
+                                                                                                                {
+                                                                                                                    TransactionMerchantModels = new List<TransactionMerchantModel>()
+                                                                                                                };
+
+        public static TransactionMerchantModel TransactionMerchantModel = new TransactionMerchantModel
+                                                                          {
+                                                                              CurrencyCode = TestData.CurrencyCode,
+                                                                              MerchantId = TestData.MerchantId,
+                                                                              ValueOfTransactions = 1000.00m,
+                                                                              NumberOfTransactions = 50,
+                                                                              MerchantName = TestData.MerchantName
+                                                                          };
     }
 }

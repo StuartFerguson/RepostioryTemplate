@@ -109,6 +109,72 @@
             return response;
         }
 
+        /// <summary>
+        /// Gets the transactions for estate by merchant.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="recordCount">The record count.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByMerchantResponse> GetTransactionsForEstateByMerchant(String accessToken,
+                                                                                             Guid estateId,
+                                                                                             String startDate,
+                                                                                             String endDate,
+                                                                                             Int32 recordCount,
+                                                                                             SortDirection sortDirection,
+                                                                                             SortField sortField,
+                                                                                             CancellationToken cancellationToken)
+        {
+            if (recordCount == 0)
+            {
+                recordCount = 5;
+            }
+
+            TransactionsByMerchantResponse response = null;
+
+            String requestUri = this.BuildRequestUrl($"/api/reporting/estates/{estateId}/transactions/bymerchant?start_date={startDate}&end_date={endDate}&record_count={recordCount}&sort_direction={sortDirection}&sort_field={sortField}");
+
+            try
+            {
+                StringContent httpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
+
+                // Add the access token to the client headers
+                this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Make the Http Call here
+                HttpResponseMessage httpResponse = await this.HttpClient.GetAsync(requestUri, cancellationToken);
+
+                // Process the response
+                String content = await this.HandleResponse(httpResponse, cancellationToken);
+
+                // call was successful so now deserialise the body to the response object
+                response = JsonConvert.DeserializeObject<TransactionsByMerchantResponse>(content);
+            }
+            catch (Exception ex)
+            {
+                // An exception has occurred, add some additional information to the message
+                Exception exception = new Exception($"Error getting transactions by merchant for estate [{estateId}]");
+
+                throw exception;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Gets the transactions for estate by week.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByWeekResponse> GetTransactionsForEstateByWeek(String accessToken,
                                                                                      Guid estateId,
                                                                                      String startDate,
@@ -146,6 +212,15 @@
             return response;
         }
 
+        /// <summary>
+        /// Gets the transactions for estate by month.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByMonthResponse> GetTransactionsForEstateByMonth(String accessToken,
                                                                                        Guid estateId,
                                                                                        String startDate,
@@ -231,6 +306,16 @@
             return response;
         }
 
+        /// <summary>
+        /// Gets the transactions for merchant by week.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByWeekResponse> GetTransactionsForMerchantByWeek(String accessToken,
                                                                                        Guid estateId,
                                                                                        Guid merchantId,
@@ -269,6 +354,16 @@
             return response;
         }
 
+        /// <summary>
+        /// Gets the transactions for merchant by month.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="merchantId">The merchant identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByMonthResponse> GetTransactionsForMerchantByMonth(String accessToken,
                                                                                          Guid estateId,
                                                                                          Guid merchantId,

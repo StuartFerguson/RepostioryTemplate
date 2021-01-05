@@ -4,6 +4,8 @@
     using System.Linq;
     using DataTransferObjects;
     using Models;
+    using SortDirection = BusinessLogic.SortDirection;
+    using SortField = BusinessLogic.SortField;
 
     /// <summary>
     /// 
@@ -57,6 +59,11 @@
             return response;
         }
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public TransactionsByMonthResponse ConvertFrom(TransactionsByMonthModel model)
         {
             if (model.TransactionMonthModels == null || model.TransactionMonthModels.Any() == false)
@@ -74,6 +81,11 @@
             return response;
         }
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public TransactionWeekResponse ConvertFrom(TransactionWeekModel model)
         {
             if (model == null)
@@ -91,6 +103,11 @@
                    };
         }
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public TransactionMonthResponse ConvertFrom(TransactionMonthModel model)
         {
             if (model == null)
@@ -127,6 +144,93 @@
                        NumberOfTransactions = model.NumberOfTransactions,
                        ValueOfTransactions = model.ValueOfTransactions
                    };
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public TransactionMerchantResponse ConvertFrom(TransactionMerchantModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionMerchantResponse
+                   {
+                       MerchantId = model.MerchantId,
+                       CurrencyCode = model.CurrencyCode,
+                       MerchantName = model.MerchantName,
+                       ValueOfTransactions = model.ValueOfTransactions,
+                       NumberOfTransactions = model.NumberOfTransactions
+                   };
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public TransactionsByMerchantResponse ConvertFrom(TransactionsByMerchantModel model)
+        {
+            if (model.TransactionMerchantModels == null || model.TransactionMerchantModels.Any() == false)
+            {
+                return null;
+            }
+
+            TransactionsByMerchantResponse response = new TransactionsByMerchantResponse
+            {
+                                                          TransactionMerchantResponses = new List<TransactionMerchantResponse>()
+                                                      };
+
+            model.TransactionMerchantModels.ForEach(m => response.TransactionMerchantResponses.Add(this.ConvertFrom(m)));
+
+            return response;
+
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public SortDirection ConvertFrom(DataTransferObjects.SortDirection model)
+        {
+            SortDirection result = SortDirection.Ascending;
+            switch (model)
+            {
+                case DataTransferObjects.SortDirection.Ascending:
+                    result = SortDirection.Ascending;
+                    break;
+                case DataTransferObjects.SortDirection.Descending:
+                    result = SortDirection.Descending;
+                    break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public SortField ConvertFrom(DataTransferObjects.SortField model)
+        {
+            SortField result = SortField.Value;
+            switch (model)
+            {
+                case DataTransferObjects.SortField.Count:
+                    result = SortField.Count;
+                    break;
+                case DataTransferObjects.SortField.Value:
+                    result = SortField.Value;
+                    break;
+            }
+
+            return result;
         }
 
         #endregion
