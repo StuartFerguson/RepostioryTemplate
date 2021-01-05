@@ -97,7 +97,37 @@
                                                                         String endDate,
                                                                         CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Gets the transactions for estate by merchant.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="recordCount">The record count.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         Task<TransactionsByMerchantModel> GetTransactionsForEstateByMerchant(Guid estateId,
+                                                                             String startDate,
+                                                                             String endDate,
+                                                                             Int32 recordCount,
+                                                                             SortField sortField,
+                                                                             SortDirection sortDirection,
+                                                                             CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the transactions for estate by operator.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="recordCount">The record count.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<TransactionsByOperatorModel> GetTransactionsForEstateByOperator(Guid estateId,
                                                                              String startDate,
                                                                              String endDate,
                                                                              Int32 recordCount,

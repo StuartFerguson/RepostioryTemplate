@@ -170,5 +170,22 @@ namespace EstateReporting.Controllers
 
             return this.Ok(response);
         }
+
+        [HttpGet]
+        [Route("estates/{estateId}/transactions/byoperator")]
+        public async Task<IActionResult> GetTransactionForEstateByOperator([FromRoute] Guid estateId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, [FromQuery(Name = "record_count")] Int32 recordCount, [FromQuery(Name = "sort_direction")] SortDirection sortDirection, [FromQuery(Name = "sort_field")] SortField sortField, CancellationToken cancellationToken)
+        {
+            BusinessLogic.SortDirection sortDir = this.ModelFactory.ConvertFrom(sortDirection);
+            BusinessLogic.SortField sortBy = this.ModelFactory.ConvertFrom(sortField);
+
+            // Get the data grouped as requested
+            TransactionsByOperatorModel transactionsByOperator = await this.ReportingManager.GetTransactionsForEstateByOperator(estateId, startDate, endDate, recordCount, sortBy, sortDir, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByOperatorResponse response = this.ModelFactory.ConvertFrom(transactionsByOperator);
+
+            //return this.Ok(response);
+            return this.Ok(response);
+        }
     }
 }

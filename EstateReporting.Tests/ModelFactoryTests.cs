@@ -326,5 +326,78 @@ namespace EstateReporting.Tests
 
             response.ShouldBeNull();
         }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionOperatorModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionOperatorModel model = TestData.TransactionOperatorModel;
+
+            TransactionOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.OperatorName.ShouldBe(model.OperatorName);
+            response.ValueOfTransactions.ShouldBe(model.ValueOfTransactions);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactions.ShouldBe(model.NumberOfTransactions);
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionOperatorModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionOperatorModel model = null;
+
+            TransactionOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByOperatorModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByOperatorModel model = TestData.TransactionsByOperatorModel;
+
+            TransactionsByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.TransactionOperatorResponses.ShouldNotBeNull();
+            response.TransactionOperatorResponses.ShouldNotBeEmpty();
+
+            foreach (TransactionOperatorResponse translated in response.TransactionOperatorResponses)
+            {
+                // Find the original record
+                TransactionOperatorModel original = model.TransactionOperatorModels.SingleOrDefault(m => m.OperatorName == translated.OperatorName);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfTransactions.ShouldBe(original.ValueOfTransactions);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactions.ShouldBe(original.NumberOfTransactions);
+            }
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByOperatorModel_NullTransactionOperatorModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByOperatorModel model = TestData.TransactionsByOperatorModelNullTransactionOperatorModelList;
+
+            TransactionsByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByOperatorModel_EmptyTransactionOperatorModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByOperatorModel model = TestData.TransactionsByOperatorModelEmptyTransactionOperatorModelList;
+
+            TransactionsByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
     }
 }
