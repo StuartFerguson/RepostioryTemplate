@@ -177,25 +177,23 @@
         {
             TransactionsByMerchantModel model = null;
             EstateReporting.Repository.SortDirection repoSortDirection = EstateReporting.Repository.SortDirection.NotSet;
-            switch (sortDirection)
+            if (sortDirection == SortDirection.Ascending)
             {
-                case SortDirection.Ascending:
-                    repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
-                    break;
-                case SortDirection.Descending:
-                    repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
-                    break;
+                repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
+            }
+            else if (sortDirection == SortDirection.Descending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
             }
 
             EstateReporting.Repository.SortField repoSortField = EstateReporting.Repository.SortField.NotSet;
-            switch (sortField)
+            if (sortField == SortField.Count)
             {
-                case SortField.Count:
-                    repoSortField = EstateReporting.Repository.SortField.Count;
-                    break;
-                case SortField.Value:
-                    repoSortField = EstateReporting.Repository.SortField.Value;
-                    break;
+                repoSortField = EstateReporting.Repository.SortField.Count;
+            }
+            else if (sortField == SortField.Value)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Value;
             }
 
             model = await this.RepositoryForReports.GetTransactionsForEstateByMerchant(estateId,  startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);

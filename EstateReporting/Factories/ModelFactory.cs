@@ -199,14 +199,13 @@
         public SortDirection ConvertFrom(DataTransferObjects.SortDirection model)
         {
             SortDirection result = SortDirection.Ascending;
-            switch (model)
+            if (model == DataTransferObjects.SortDirection.Ascending)
             {
-                case DataTransferObjects.SortDirection.Ascending:
-                    result = SortDirection.Ascending;
-                    break;
-                case DataTransferObjects.SortDirection.Descending:
-                    result = SortDirection.Descending;
-                    break;
+                result = SortDirection.Ascending;
+            }
+            else if (model == DataTransferObjects.SortDirection.Descending)
+            {
+                result = SortDirection.Descending;
             }
 
             return result;
@@ -220,14 +219,13 @@
         public SortField ConvertFrom(DataTransferObjects.SortField model)
         {
             SortField result = SortField.Value;
-            switch (model)
+            if (model == DataTransferObjects.SortField.Count)
             {
-                case DataTransferObjects.SortField.Count:
-                    result = SortField.Count;
-                    break;
-                case DataTransferObjects.SortField.Value:
-                    result = SortField.Value;
-                    break;
+                result = SortField.Count;
+            }
+            else if (model == DataTransferObjects.SortField.Value)
+            {
+                result = SortField.Value;
             }
 
             return result;
