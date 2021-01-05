@@ -82,6 +82,20 @@
         /// <returns></returns>
         SortField ConvertFrom(DataTransferObjects.SortField model);
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionOperatorResponse ConvertFrom(TransactionOperatorModel model);
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        TransactionsByOperatorResponse ConvertFrom(TransactionsByOperatorModel model);
+
         #endregion
     }
 }

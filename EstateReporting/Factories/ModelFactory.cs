@@ -188,7 +188,49 @@
             model.TransactionMerchantModels.ForEach(m => response.TransactionMerchantResponses.Add(this.ConvertFrom(m)));
 
             return response;
+        }
 
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public TransactionOperatorResponse ConvertFrom(TransactionOperatorModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            return new TransactionOperatorResponse
+                   {
+                       CurrencyCode = model.CurrencyCode,
+                       OperatorName = model.OperatorName,
+                       ValueOfTransactions = model.ValueOfTransactions,
+                       NumberOfTransactions = model.NumberOfTransactions
+                   };
+        }
+
+        /// <summary>
+        /// Converts from.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public TransactionsByOperatorResponse ConvertFrom(TransactionsByOperatorModel model)
+        {
+            if (model.TransactionOperatorModels == null || model.TransactionOperatorModels.Any() == false)
+            {
+                return null;
+            }
+
+            TransactionsByOperatorResponse response = new TransactionsByOperatorResponse
+            {
+                                                          TransactionOperatorResponses = new List<TransactionOperatorResponse>()
+                                                      };
+
+            model.TransactionOperatorModels.ForEach(m => response.TransactionOperatorResponses.Add(this.ConvertFrom(m)));
+
+            return response;
         }
 
         /// <summary>

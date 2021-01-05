@@ -274,6 +274,60 @@
             return model;
         }
 
+        public async Task<TransactionsByOperatorModel> GetTransactionsForEstateByOperator(Guid estateId,
+                                                                                          String startDate,
+                                                                                          String endDate,
+                                                                                          Int32 recordCount,
+                                                                                          SortField sortField,
+                                                                                          SortDirection sortDirection,
+                                                                                          CancellationToken cancellationToken)
+        {
+            TransactionsByOperatorModel model = new TransactionsByOperatorModel
+            {
+                                                    TransactionOperatorModels = new List<TransactionOperatorModel>()
+                                                };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.TransactionsView.Where(t => t.EstateId == estateId &&
+                                                                   t.TransactionDate >= queryStartDate.Date && t.TransactionDate <= queryEndDate.Date && t.IsAuthorised &&
+                                                                   t.TransactionType == "Sale")
+                                      .GroupBy(txn => new
+                                      {
+                                          OperatorName = txn.OperatorIdentifier,
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          OperatorName = txns.Key.OperatorName,
+                                          NumberofTransactions = txns.Count(),
+                                          ValueOfTransactions = txns.Sum(t => t.Amount)
+                                      }).ToListAsync(cancellationToken);
+
+            if (sortDirection == SortDirection.Ascending)
+            {
+                result = result.OrderBy(o => o.ValueOfTransactions).ToList();
+            }
+            else
+            {
+                result = result.OrderByDescending(o => o.ValueOfTransactions).ToList();
+            }
+
+            result = result.Take(recordCount).ToList();
+            
+            result.ForEach(r => model.TransactionOperatorModels.Add(new TransactionOperatorModel
+            {
+                CurrencyCode = "",
+                OperatorName = r.OperatorName,
+                NumberOfTransactions = r.NumberofTransactions,
+                ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
         /// <summary>
         /// Gets the transactions for estate by month.
         /// </summary>

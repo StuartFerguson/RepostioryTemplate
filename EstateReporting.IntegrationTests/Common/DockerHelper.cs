@@ -212,6 +212,58 @@
             this.Logger.LogInformation("Loaded projections");
         }
 
+        public static IContainerService SetupVoucherManagementContainer(String containerName, ILogger logger, String imageName,
+                                                               List<INetworkService> networkServices,
+                                                               String hostFolder,
+                                                               (String URL, String UserName, String Password)? dockerCredentials,
+                                                               String securityServiceContainerName,
+                                                               String estateManagementContainerName,
+                                                               String eventStoreContainerName,
+                                                               (string clientId, string clientSecret) clientDetails,
+                                                               Boolean forceLatestImage = false,
+                                                               Int32 securityServicePort = DockerHelper.SecurityServiceDockerPort,
+                                                               List<String> additionalEnvironmentVariables = null)
+        {
+            logger.LogInformation("About to Start Voucher Management Container");
+
+            List<String> environmentVariables = new List<String>();
+            environmentVariables.Add($"EventStoreSettings:ConnectionString=https://{eventStoreContainerName}:{DockerHelper.EventStoreHttpDockerPort}");
+            environmentVariables.Add($"AppSettings:SecurityService=http://{securityServiceContainerName}:{securityServicePort}");
+            environmentVariables.Add($"AppSettings:EstateManagementApi=http://{estateManagementContainerName}:{DockerHelper.EstateManagementDockerPort}");
+            environmentVariables.Add($"SecurityConfiguration:Authority=http://{securityServiceContainerName}:{securityServicePort}");
+            environmentVariables.Add($"urls=http://*:{DockerHelper.VoucherManagementDockerPort}");
+            environmentVariables.Add($"AppSettings:ClientId={clientDetails.clientId}");
+            environmentVariables.Add($"AppSettings:ClientSecret={clientDetails.clientSecret}");
+
+            if (additionalEnvironmentVariables != null)
+            {
+                environmentVariables.AddRange(additionalEnvironmentVariables);
+            }
+
+            ContainerBuilder voucherManagementContainer = new Builder().UseContainer().WithName(containerName)
+                                                                       .WithEnvironment(environmentVariables.ToArray())
+                                                              .UseImage(imageName, forceLatestImage).ExposePort(DockerHelper.VoucherManagementDockerPort)
+                                                              .UseNetwork(networkServices.ToArray()).Mount(hostFolder, "/home", MountType.ReadWrite);
+
+            if (String.IsNullOrEmpty(hostFolder) == false)
+            {
+                voucherManagementContainer = voucherManagementContainer.Mount(hostFolder, "/home/txnproc/trace", MountType.ReadWrite);
+            }
+
+            if (dockerCredentials.HasValue)
+            {
+                voucherManagementContainer.WithCredential(dockerCredentials.Value.URL, dockerCredentials.Value.UserName, dockerCredentials.Value.Password);
+            }
+
+            // Now build and return the container                
+            IContainerService builtContainer = voucherManagementContainer.Build().Start().WaitForPort($"{DockerHelper.VoucherManagementDockerPort}/tcp", 30000);
+
+            logger.LogInformation("Voucher Management  Container Started");
+
+            return builtContainer;
+        }
+        public const Int32 VoucherManagementDockerPort = 5007;
+        private Int32 VoucherManagementPort;
         #region Methods
 
         /// <summary>
@@ -237,6 +289,7 @@
             this.SubscriptionServiceContainerName = $"subscription{testGuid:N}";
             this.TransactionProcessorContainerName = $"txnprocessor{testGuid:N}";
             this.TestHostContainerName = $"testhosts{testGuid:N}";
+            this.VoucherManagementContainerName = $"vouchermanagement{testGuid:N}";
 
             (String, String, String) dockerCredentials = ("https://www.docker.com", "stuartferguson", "Sc0tland");
 
@@ -266,6 +319,25 @@
                                                                                                     dockerCredentials,
                                                                                                     true);
 
+            IContainerService voucherManagementContainer = SetupVoucherManagementContainer(this.VoucherManagementContainerName,
+                                                                                           this.Logger,
+                                                                                           "stuartferguson/vouchermanagement",
+                                                                                           new List<INetworkService>
+                                                                                           {
+                                                                                               testNetwork
+                                                                                           },
+                                                                                           traceFolder,
+                                                                                           dockerCredentials,
+                                                                                           this.SecurityServiceContainerName,
+                                                                                           this.EstateManagementContainerName,
+                                                                                           this.EventStoreContainerName,
+                                                                                           ("serviceClient", "Secret1"));
+
+            List<String> additionalVariables = new List<String>()
+                                               {
+                                                   $"AppSettings:VoucherManagementApi=http://{this.VoucherManagementContainerName}:{DockerHelper.VoucherManagementDockerPort}"
+                                               };
+
             IContainerService transactionProcessorContainer = DockerHelper.SetupTransactionProcessorContainer(this.TransactionProcessorContainerName,
                                                                                                               this.Logger,
                                                                                                               "stuartferguson/transactionprocessor",
@@ -280,7 +352,8 @@
                                                                                                               this.EventStoreContainerName,
                                                                                                               ("serviceClient", "Secret1"),
                                                                                                               this.TestHostContainerName,
-                                                                                                              true);
+                                                                                                              true,
+                                                                                                              additionalEnvironmentVariables:additionalVariables);
 
             IContainerService estateReportingContainer = DockerHelper.SetupEstateReportingContainer(this.EstateReportingContainerName,
                                                                                                     this.Logger,
@@ -316,7 +389,8 @@
                                          securityServiceContainer,
                                          transactionProcessorContainer,
                                          estateReportingContainer,
-                                         testhostContainer
+                                         testhostContainer,
+                                         voucherManagementContainer
                                      });
 
             // Cache the ports
@@ -325,19 +399,20 @@
             this.EventStoreHttpPort = eventStoreContainer.ToHostExposedEndpoint("2113/tcp").Port;
             this.TransactionProcessorPort = transactionProcessorContainer.ToHostExposedEndpoint("5002/tcp").Port;
             this.EstateReportingPort= estateReportingContainer.ToHostExposedEndpoint("5005/tcp").Port;
+            this.VoucherManagementPort = voucherManagementContainer.ToHostExposedEndpoint("5007/tcp").Port;
 
             // Setup the base address resolvers
             String EstateManagementBaseAddressResolver(String api) => $"http://127.0.0.1:{this.EstateManagementApiPort}";
             String SecurityServiceBaseAddressResolver(String api) => $"http://127.0.0.1:{this.SecurityServicePort}";
             String TransactionProcessorBaseAddressResolver(String api) => $"http://127.0.0.1:{this.TransactionProcessorPort}";
             String EstateReportingBaseAddressResolver(String api) => $"http://127.0.0.1:{this.EstateReportingPort}";
-
+            
             HttpClient httpClient = new HttpClient();
             this.EstateClient = new EstateClient(EstateManagementBaseAddressResolver, httpClient);
             this.SecurityServiceClient = new SecurityServiceClient(SecurityServiceBaseAddressResolver, httpClient);
             this.TransactionProcessorClient = new TransactionProcessorClient(TransactionProcessorBaseAddressResolver, httpClient);
             this.EstateReportingClient = new EstateReportingClient(EstateReportingBaseAddressResolver, httpClient);
-
+            
             await this.LoadEventStoreProjections().ConfigureAwait(false);
 
             await this.PopulateSubscriptionServiceConfiguration().ConfigureAwait(false);
@@ -362,7 +437,7 @@
 
             this.Containers.Add(subscriptionServiceContainer);
         }
-
+        protected String VoucherManagementContainerName;
         protected async Task PopulateSubscriptionServiceConfiguration()
         {
             String connectionString = Setup.GetLocalConnectionString("SubscriptionServiceConfiguration");

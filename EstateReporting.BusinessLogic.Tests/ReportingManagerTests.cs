@@ -146,5 +146,27 @@ namespace EstateReporting.BusinessLogic.Tests
             model.TransactionMerchantModels.ShouldNotBeEmpty();
             model.TransactionMerchantModels.Count.ShouldBe(TestData.TransactionsByMerchantModel.TransactionMerchantModels.Count);
         }
+
+        [Theory]
+        [InlineData(SortDirection.Ascending, SortField.Count)]
+        [InlineData(SortDirection.Descending, SortField.Count)]
+        [InlineData(SortDirection.Ascending, SortField.Value)]
+        [InlineData(SortDirection.Descending, SortField.Value)]
+        public async Task ReportingManager_GetTransactionsForEstateByOperator_DataReturned(SortDirection sortDirection, SortField sortField)
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetTransactionsForEstateByOperator(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<Int32>(), It.IsAny<EstateReporting.Repository.SortField>(), It.IsAny<EstateReporting.Repository.SortDirection>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.TransactionsByOperatorModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            TransactionsByOperatorModel model = await manager.GetTransactionsForEstateByOperator(TestData.EstateId, TestData.StartDate, TestData.EndDate, 5, sortField, sortDirection, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.TransactionOperatorModels.ShouldNotBeNull();
+            model.TransactionOperatorModels.ShouldNotBeEmpty();
+            model.TransactionOperatorModels.Count.ShouldBe(TestData.TransactionsByOperatorModel.TransactionOperatorModels.Count);
+        }
     }
 }

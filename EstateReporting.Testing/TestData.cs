@@ -662,5 +662,37 @@
                                                                               NumberOfTransactions = 50,
                                                                               MerchantName = TestData.MerchantName
                                                                           };
+
+        public static TransactionsByOperatorModel TransactionsByOperatorModel = new TransactionsByOperatorModel
+                                                                                {
+                                                                                    TransactionOperatorModels = new List<TransactionOperatorModel>
+                                                                                                                {
+                                                                                                                    new TransactionOperatorModel
+                                                                                                                    {
+                                                                                                                        CurrencyCode = TestData.CurrencyCode,
+                                                                                                                        ValueOfTransactions = 1000.00m,
+                                                                                                                        NumberOfTransactions = 50,
+                                                                                                                        OperatorName = TestData.OperatorName
+                                                                                                                    }
+                                                                                                                }
+                                                                                };
+
+        public static TransactionsByOperatorModel TransactionsByOperatorModelNullTransactionOperatorModelList = new TransactionsByOperatorModel
+        {
+                                                                                                                    TransactionOperatorModels = null
+                                                                                                                };
+
+        public static TransactionsByOperatorModel TransactionsByOperatorModelEmptyTransactionOperatorModelList = new TransactionsByOperatorModel
+            {
+                TransactionOperatorModels = new List<TransactionOperatorModel>()
+            };
+
+        public static TransactionOperatorModel TransactionOperatorModel = new TransactionOperatorModel
+                                                                          {
+                                                                              CurrencyCode = TestData.CurrencyCode,
+                                                                              ValueOfTransactions = 1000.00m,
+                                                                              NumberOfTransactions = 50,
+                                                                              OperatorName = TestData.OperatorName
+                                                                          };
     }
 }

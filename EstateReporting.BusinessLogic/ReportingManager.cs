@@ -19,6 +19,9 @@
         /// </summary>
         private readonly IEstateReportingRepository Repository;
 
+        /// <summary>
+        /// The repository for reports
+        /// </summary>
         private readonly IEstateReportingRepositoryForReports RepositoryForReports;
 
         #endregion
@@ -167,6 +170,17 @@
             return model;
         }
 
+        /// <summary>
+        /// Gets the transactions for estate by merchant.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="recordCount">The record count.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<TransactionsByMerchantModel> GetTransactionsForEstateByMerchant(Guid estateId,
                                                                                           String startDate,
                                                                                           String endDate,
@@ -197,6 +211,51 @@
             }
 
             model = await this.RepositoryForReports.GetTransactionsForEstateByMerchant(estateId,  startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Gets the transactions for estate by operator.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <param name="recordCount">The record count.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<TransactionsByOperatorModel> GetTransactionsForEstateByOperator(Guid estateId,
+                                                                                          String startDate,
+                                                                                          String endDate,
+                                                                                          Int32 recordCount,
+                                                                                          SortField sortField,
+                                                                                          SortDirection sortDirection,
+                                                                                          CancellationToken cancellationToken)
+        {
+            TransactionsByOperatorModel model = null;
+            EstateReporting.Repository.SortDirection repoSortDirection = EstateReporting.Repository.SortDirection.NotSet;
+            if (sortDirection == SortDirection.Ascending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
+            }
+            else if (sortDirection == SortDirection.Descending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
+            }
+
+            EstateReporting.Repository.SortField repoSortField = EstateReporting.Repository.SortField.NotSet;
+            if (sortField == SortField.Count)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Count;
+            }
+            else if (sortField == SortField.Value)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Value;
+            }
+
+            model = await this.RepositoryForReports.GetTransactionsForEstateByOperator(estateId, startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
 
             return model;
         }

@@ -258,6 +258,7 @@
                         String customerEmailAddress = SpecflowTableHelper.GetStringRowValue(tableRow, "CustomerEmailAddress");
                         String contractDescription = SpecflowTableHelper.GetStringRowValue(tableRow, "ContractDescription");
                         String productName = SpecflowTableHelper.GetStringRowValue(tableRow, "ProductName");
+                        String recipientMobile = SpecflowTableHelper.GetStringRowValue(tableRow, "RecipientMobile");
 
                         Guid contractId = Guid.Empty;
                         Guid productId = Guid.Empty;
@@ -281,6 +282,7 @@
                                                                                 customerEmailAddress,
                                                                                 contractId,
                                                                                 productId,
+                                                                                recipientMobile,
                                                                                 CancellationToken.None);
                         break;
                         
@@ -445,11 +447,34 @@
             return responseSerialisedMessage;
         }
 
-        private async Task<SerialisedMessage> PerformSaleTransaction(Guid estateId, Guid merchantId, DateTime transactionDateTime, String transactionType, String transactionNumber, String deviceIdentifier, String operatorIdentifier, Decimal transactionAmount, String customerAccountNumber, String customerEmailAddress,
+        private async Task<SerialisedMessage> PerformSaleTransaction(Guid estateId, Guid merchantId, DateTime transactionDateTime, 
+                                                                     String transactionType, String transactionNumber, String deviceIdentifier, 
+                                                                     String operatorIdentifier, Decimal transactionAmount, String customerAccountNumber, 
+                                                                     String customerEmailAddress,
                                                                      Guid contractId,
                                                                      Guid productId,
+                                                                     String recipientMobile,
                                                                      CancellationToken cancellationToken)
         {
+            var additionalTransactionMetadata = new Dictionary<String, String>();
+
+            if (operatorIdentifier == "Voucher")
+            {
+                additionalTransactionMetadata = new Dictionary<String, String>
+                                                {
+                                                    {"Amount", transactionAmount.ToString()},
+                                                    {"RecipientMobile", recipientMobile}
+                                                };
+            }
+            else
+            {
+                additionalTransactionMetadata = new Dictionary<String, String>
+                                                {
+                                                    {"Amount", transactionAmount.ToString()},
+                                                    {"CustomerAccountNumber", customerAccountNumber}
+                                                };
+            }
+
             SaleTransactionRequest saleTransactionRequest = new SaleTransactionRequest
                                                             {
                                                                 MerchantId = merchantId,
@@ -459,11 +484,7 @@
                                                                 DeviceIdentifier = deviceIdentifier,
                                                                 TransactionType = transactionType,
                                                                 OperatorIdentifier = operatorIdentifier,
-                                                                AdditionalTransactionMetadata = new Dictionary<String, String>
-                                                                                                {
-                                                                                                    {"Amount", transactionAmount.ToString()},
-                                                                                                    {"CustomerAccountNumber", customerAccountNumber}
-                                                                                                },
+                                                                AdditionalTransactionMetadata = additionalTransactionMetadata,
                                                                 CustomerEmailAddress = customerEmailAddress,
                                                                 ProductId = productId,
                                                                 ContractId = contractId
@@ -787,6 +808,52 @@
                 }
             });
         }
+
+        [When(@"I get the Estate Transactions By Operator Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
+        public async Task WhenIGetTheEstateTransactionsByOperatorReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+
+            String token = this.TestingContext.AccessToken;
+            if (String.IsNullOrEmpty(estateDetails.AccessToken) == false)
+            {
+                token = estateDetails.AccessToken;
+            }
+
+            String startDate = SpecflowTableHelper.GetDateForDateString(startDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+            String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
+
+            await Retry.For(async () =>
+            {
+                TransactionsByOperatorResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                    .GetTransactionsForEstateByOperator(token,
+                                                                                                        estateDetails.EstateId,
+                                                                                                        startDate,
+                                                                                                        endDate,
+                                                                                                        5,
+                                                                                                        SortDirection.Ascending,
+                                                                                                        SortField.Value,
+                                                                                                        CancellationToken.None).ConfigureAwait(false);
+
+                response.ShouldNotBeNull();
+                response.TransactionOperatorResponses.ShouldNotBeNull();
+                response.TransactionOperatorResponses.ShouldNotBeEmpty();
+
+                foreach (TableRow tableRow in table.Rows)
+                {
+                    String operatorName = SpecflowTableHelper.GetStringRowValue(tableRow, "OperatorName");
+                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                    TransactionOperatorResponse transactionOperatorResponse = response.TransactionOperatorResponses.SingleOrDefault(t => t.OperatorName == operatorName);
+
+                    transactionOperatorResponse.ShouldNotBeNull();
+                    transactionOperatorResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                    transactionOperatorResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                }
+            });
+        }
+
 
         [When(@"I get the Estate Transactions By Merchant Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
         public async Task WhenIGetTheEstateTransactionsByMerchantReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)

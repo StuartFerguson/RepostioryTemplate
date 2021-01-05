@@ -1,6 +1,6 @@
 ﻿CREATE OR ALTER VIEW [dbo].[uvwTransactions]
 AS
-SELECT 
+SELECT
 	t.TransactionId,
 	t.TransactionDateTime,
 	t.TransactionDate,
@@ -16,6 +16,10 @@ SELECT
 	t.ResponseCode,
 	t.TransactionType,
 	CAST(ISNULL(tar.Amount,0) as decimal) as Amount,
-	t.OperatorIdentifier
+	CASE t.OperatorIdentifier
+		WHEN 'Voucher' THEN REPLACE(c.Description, ' Contract', '')
+		ELSE COALESCE(t.OperatorIdentifier, '')
+	END as OperatorIdentifier
 from [transaction] t
+inner join contract c on c.ContractId = t.ContractId
 left outer join transactionadditionalrequestdata tar on tar.TransactionId = t.TransactionId AND tar.MerchantId = t.MerchantId and tar.EstateId = t.EstateId
