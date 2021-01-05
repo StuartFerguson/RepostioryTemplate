@@ -12,6 +12,9 @@ namespace EstateReporting.Controllers
     using Factories;
     using Microsoft.AspNetCore.Mvc;
     using Models;
+    using Repository;
+    using SortDirection = DataTransferObjects.SortDirection;
+    using SortField = DataTransferObjects.SortField;
 
     /// <summary>
     /// 
@@ -148,6 +151,22 @@ namespace EstateReporting.Controllers
 
             // Convert to a dto
             TransactionsByMonthResponse response = this.ModelFactory.ConvertFrom(transactionsByMonth);
+
+            return this.Ok(response);
+        }
+
+        [HttpGet]
+        [Route("estates/{estateId}/transactions/bymerchant")]
+        public async Task<IActionResult> GetTransactionForEstateByMerchant([FromRoute] Guid estateId, [FromQuery(Name = "start_date")] String startDate, [FromQuery(Name = "end_date")] String endDate, [FromQuery(Name = "record_count")] Int32 recordCount, [FromQuery(Name = "sort_direction")] SortDirection sortDirection, [FromQuery(Name = "sort_field")] SortField sortField, CancellationToken cancellationToken)
+        {
+            BusinessLogic.SortDirection sortDir = this.ModelFactory.ConvertFrom(sortDirection);
+            BusinessLogic.SortField sortBy = this.ModelFactory.ConvertFrom(sortField);
+
+            // Get the data grouped as requested
+            TransactionsByMerchantModel transactionsByMerchant = await this.ReportingManager.GetTransactionsForEstateByMerchant(estateId, startDate, endDate, recordCount, sortBy, sortDir, cancellationToken);
+
+            // Convert to a dto
+            TransactionsByMerchantResponse response = this.ModelFactory.ConvertFrom(transactionsByMerchant);
 
             return this.Ok(response);
         }

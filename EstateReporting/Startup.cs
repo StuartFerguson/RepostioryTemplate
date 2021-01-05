@@ -107,6 +107,7 @@ namespace EstateReporting
             services.AddSingleton<Dictionary<String, String[]>>(eventHandlersConfiguration);
 
             services.AddSingleton<IEstateReportingRepository, EstateReportingRepository>();
+            services.AddSingleton<IEstateReportingRepositoryForReports, EstateReportingRepositoryForReports>();
             services.AddSingleton<IDbContextFactory<EstateReportingContext>, DbContextFactory<EstateReportingContext>>();
             
             services.AddSingleton<Func<Type, IDomainEventHandler>>(container => (type) =>

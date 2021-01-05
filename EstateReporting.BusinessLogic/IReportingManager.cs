@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Models;
+    using Repository;
 
     /// <summary>
     /// 
@@ -95,6 +96,14 @@
                                                                         String startDate,
                                                                         String endDate,
                                                                         CancellationToken cancellationToken);
+
+        Task<TransactionsByMerchantModel> GetTransactionsForEstateByMerchant(Guid estateId,
+                                                                             String startDate,
+                                                                             String endDate,
+                                                                             Int32 recordCount,
+                                                                             SortField sortField,
+                                                                             SortDirection sortDirection,
+                                                                             CancellationToken cancellationToken);
 
         #endregion
     }

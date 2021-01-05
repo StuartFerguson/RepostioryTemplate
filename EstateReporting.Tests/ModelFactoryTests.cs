@@ -9,9 +9,106 @@ namespace EstateReporting.Tests
     using Models;
     using Shouldly;
     using Testing;
+    using DTOSortDirection = DataTransferObjects.SortDirection;
+    using ModelSortDirection = BusinessLogic.SortDirection;
+    using DTOSortField = DataTransferObjects.SortField;
+    using ModelSortField = BusinessLogic.SortField;
 
     public class ModelFactoryTests
     {
+        [Theory]
+        [InlineData(DTOSortDirection.Descending, ModelSortDirection.Descending)]
+        [InlineData(DTOSortDirection.Ascending, ModelSortDirection.Ascending)]
+        public void ModelFactory_ConvertFrom_SortDirection_ModelConverted(DTOSortDirection input, ModelSortDirection expectedOutput)
+        {
+            ModelFactory factory = new ModelFactory();
+            ModelSortDirection output = factory.ConvertFrom(input);
+            output.ShouldBe(expectedOutput);
+        }
+
+        [Theory]
+        [InlineData(DTOSortField.Count, ModelSortField.Count)]
+        [InlineData(DTOSortField.Value, ModelSortField.Value)]
+        public void ModelFactory_ConvertFrom_SortField_ModelConverted(DTOSortField input, ModelSortField expectedOutput)
+        {
+            ModelFactory factory = new ModelFactory();
+            ModelSortField output = factory.ConvertFrom(input);
+            output.ShouldBe(expectedOutput);
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMerchantModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMerchantModel model = TestData.TransactionsByMerchantModel;
+
+            TransactionsByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.TransactionMerchantResponses.ShouldNotBeNull();
+            response.TransactionMerchantResponses.ShouldNotBeEmpty();
+
+            foreach (TransactionMerchantResponse translated in response.TransactionMerchantResponses)
+            {
+                // Find the original record
+                TransactionMerchantModel original = model.TransactionMerchantModels.SingleOrDefault(m => m.MerchantId == translated.MerchantId);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfTransactions.ShouldBe(original.ValueOfTransactions);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactions.ShouldBe(original.NumberOfTransactions);
+            }
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMerchantModel_NullTransactionMerchantModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMerchantModel model = TestData.TransactionsByMerchantModelNullTransactionMerchantModelList;
+
+            TransactionsByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionsByMerchantModel_EmptyTransactionMerchantModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionsByMerchantModel model = TestData.TransactionsByMerchantModelEmptyTransactionMerchantModelList;
+
+            TransactionsByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionMerchantModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionMerchantModel model = TestData.TransactionMerchantModel;
+
+            TransactionMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.MerchantId.ShouldBe(model.MerchantId);
+            response.MerchantName.ShouldBe(model.MerchantName);
+            response.ValueOfTransactions.ShouldBe(model.ValueOfTransactions);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactions.ShouldBe(model.NumberOfTransactions);
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_TransactionMerchantModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            TransactionMerchantModel model = null;
+
+            TransactionMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+        
         [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByDayModel_ModelConverted()
         {

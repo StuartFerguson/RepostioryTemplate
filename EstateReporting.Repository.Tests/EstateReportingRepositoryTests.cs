@@ -1012,6 +1012,33 @@ namespace EstateReporting.Repository.Tests
 
             MerchantBalanceHistory balanceHistory= await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EstateId == TestData.EstateId);
             balanceHistory.ShouldNotBeNull();
+            balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_InsertMerchantBalanceRecord_Replay_BalanceRecordUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent, CancellationToken.None);
+
+            MerchantBalanceHistory balanceHistory = null;
+            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == TestData.MerchantBalanceChangedEvent.EventId);
+            balanceHistory.ShouldNotBeNull();
+            balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance);
+
+            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent2, CancellationToken.None);
+
+            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == TestData.MerchantBalanceChangedEvent.EventId);
+            balanceHistory.ShouldNotBeNull();
+            balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance2);
         }
 
         [Theory]
@@ -1113,7 +1140,7 @@ namespace EstateReporting.Repository.Tests
                 await reportingRepository.UpdateVoucherRedemptionDetails(TestData.VoucherFullyRedeemedEvent, CancellationToken.None);
             });
         }
-
+        
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
