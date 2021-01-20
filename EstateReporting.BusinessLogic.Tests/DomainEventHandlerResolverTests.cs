@@ -59,7 +59,7 @@ namespace EstateReporting.BusinessLogic.Tests
             List<IDomainEventHandler> handlers = resolver.GetDomainEventHandlers(estateCreatedEvent);
 
             handlers.ShouldNotBeNull();
-            EnumerableExtensions.Any(handlers).ShouldBeTrue();
+            handlers.Any().ShouldBeTrue();
             handlers.Count.ShouldBe(1);
         }
 
