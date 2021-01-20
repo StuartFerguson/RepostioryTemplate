@@ -23,7 +23,7 @@
         /// <summary>
         /// The database context factory
         /// </summary>
-        private readonly IDbContextFactory<EstateReportingContext> DbContextFactory;
+        private readonly Shared.EntityFramework.IDbContextFactory<EstateReportingContext> DbContextFactory;
 
         #endregion
 
@@ -33,7 +33,7 @@
         /// Initializes a new instance of the <see cref="EstateReportingRepository" /> class.
         /// </summary>
         /// <param name="dbContextFactory">The database context factory.</param>
-        public EstateReportingRepositoryForReports(IDbContextFactory<EstateReportingContext> dbContextFactory)
+        public EstateReportingRepositoryForReports(Shared.EntityFramework.IDbContextFactory<EstateReportingContext> dbContextFactory)
         {
             this.DbContextFactory = dbContextFactory;
         }

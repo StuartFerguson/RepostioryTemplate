@@ -26,10 +26,15 @@ namespace EstateReporting.Repository.Tests
             Logger.Initialise(NullLogger.Instance);
         }
 
+        private Mock<Shared.EntityFramework.IDbContextFactory<EstateReportingContext>> CreateMockContextFactory()
+        {
+            return new Mock<Shared.EntityFramework.IDbContextFactory<EstateReportingContext>>();
+        }
+
         [Fact]
         public void EstateReportingRepository_CanBeCreated_IsCreated()
         {
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
@@ -43,7 +48,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -58,7 +63,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -76,7 +81,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -94,7 +99,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -112,7 +117,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -130,7 +135,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -148,7 +153,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -166,7 +171,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -184,7 +189,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -202,7 +207,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -220,7 +225,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -245,7 +250,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -273,7 +278,7 @@ namespace EstateReporting.Repository.Tests
                                                 });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -301,7 +306,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -322,7 +327,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -348,7 +353,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -369,7 +374,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -394,7 +399,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -415,7 +420,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -441,7 +446,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -462,7 +467,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -488,7 +493,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -507,7 +512,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -523,7 +528,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -541,7 +546,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -561,7 +566,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -581,7 +586,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -608,7 +613,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -628,7 +633,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -653,7 +658,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -678,7 +683,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -702,7 +707,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -727,7 +732,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -757,7 +762,7 @@ namespace EstateReporting.Repository.Tests
                                                                   });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -776,7 +781,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -795,7 +800,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -823,7 +828,7 @@ namespace EstateReporting.Repository.Tests
                                                 });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -842,7 +847,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -871,7 +876,7 @@ namespace EstateReporting.Repository.Tests
                                                    });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -889,7 +894,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -918,7 +923,7 @@ namespace EstateReporting.Repository.Tests
             });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -936,7 +941,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -965,7 +970,7 @@ namespace EstateReporting.Repository.Tests
                                                    });
             await context.SaveChangesAsync();
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -983,7 +988,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1003,7 +1008,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1022,7 +1027,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1048,7 +1053,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1071,7 +1076,7 @@ namespace EstateReporting.Repository.Tests
                                      VoucherId = TestData.VoucherId
                                  }, CancellationToken.None);
             await context.SaveChangesAsync(CancellationToken.None);
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1089,7 +1094,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
             
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1112,7 +1117,7 @@ namespace EstateReporting.Repository.Tests
                 VoucherId = TestData.VoucherId
             }, CancellationToken.None);
             await context.SaveChangesAsync(CancellationToken.None);
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
@@ -1130,7 +1135,7 @@ namespace EstateReporting.Repository.Tests
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
 
-            Mock<IDbContextFactory<EstateReportingContext>> dbContextFactory = new Mock<IDbContextFactory<EstateReportingContext>>();
+            var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);

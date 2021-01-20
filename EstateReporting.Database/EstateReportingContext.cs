@@ -255,7 +255,7 @@
                     }
 
                     // Create the new view using the original sql from file
-                    await this.Database.ExecuteSqlCommandAsync(sql, cancellationToken);
+                    await this.Database.ExecuteSqlRawAsync(sql, cancellationToken);
 
                     Logger.LogDebug($"Created View [{sqlFile}] successfully.");
                 }

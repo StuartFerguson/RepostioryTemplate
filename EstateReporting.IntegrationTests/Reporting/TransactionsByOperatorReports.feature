@@ -99,9 +99,9 @@ Scenario: Sales Transactions By Operator - Transactions All For Same Operator
 	| Test Estate 1 | Test Merchant 1 | 8                 | 0000         | SUCCESS              |
 	
 
-	When I get the Estate Transactions By Merchant Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
+	When I get the Estate Transactions By Operator Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| OperatorName | NumberOfTransactions | ValueOfTransactions |
-	| Safaricom    | 6                    | 250.00              |
+	| Safaricom    | 3                    | 200.00              |
 
 @PRTest
 Scenario: Sales Transactions By Operator - Transactions For Mutiple Operator

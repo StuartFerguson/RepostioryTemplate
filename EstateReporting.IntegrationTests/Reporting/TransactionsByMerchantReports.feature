@@ -91,7 +91,7 @@ Scenario: Sales Transactions By Merchant - Transactions All For Same Merchant
 
 	When I get the Estate Transactions By Merchant Report for Estate 'Test Estate 1' with the Start Date 'Today' and the End Date 'Today' the following data is returned
 	| MerchantName  | NumberOfTransactions | ValueOfTransactions |
-	| Test Merchant 1 | 6                    | 250.00            |		
+	| Test Merchant 1 | 3                    | 200.00            |		
 
 @PRTest
 Scenario: Sales Transactions By Merchant - Transactions For Mutiple Merchants
