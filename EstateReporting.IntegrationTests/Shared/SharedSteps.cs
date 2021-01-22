@@ -548,6 +548,32 @@
             saleTransactionResponse.ResponseMessage.ShouldBe(expectedResponseMessage, $"Transaction Number [{transactionNumber}]");
         }
 
+        [Given(@"I create the following api scopes")]
+        public async Task GivenICreateTheFollowingApiScopes(Table table)
+        {
+            foreach (TableRow tableRow in table.Rows)
+            {
+                CreateApiScopeRequest createApiScopeRequest = new CreateApiScopeRequest
+                                                              {
+                                                                  Name = SpecflowTableHelper.GetStringRowValue(tableRow, "Name"),
+                                                                  Description = SpecflowTableHelper.GetStringRowValue(tableRow, "Description"),
+                                                                  DisplayName = SpecflowTableHelper.GetStringRowValue(tableRow, "DisplayName")
+                                                              };
+                var createApiScopeResponse =
+                    await this.CreateApiScope(createApiScopeRequest, CancellationToken.None).ConfigureAwait(false);
+
+                createApiScopeResponse.ShouldNotBeNull();
+                createApiScopeResponse.ApiScopeName.ShouldNotBeNullOrEmpty();
+            }
+        }
+
+        private async Task<CreateApiScopeResponse> CreateApiScope(CreateApiScopeRequest createApiScopeRequest,
+                                                                  CancellationToken cancellationToken)
+        {
+            CreateApiScopeResponse createApiScopeResponse = await this.TestingContext.DockerHelper.SecurityServiceClient.CreateApiScope(createApiScopeRequest, cancellationToken).ConfigureAwait(false);
+            return createApiScopeResponse;
+        }
+
         [Given(@"the following api resources exist")]
         public async Task GivenTheFollowingApiResourcesExist(Table table)
         {
