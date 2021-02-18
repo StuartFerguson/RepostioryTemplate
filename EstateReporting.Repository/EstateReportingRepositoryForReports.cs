@@ -239,13 +239,21 @@
                                                           ValueOfTransactions = txns.Sum(t => t.Amount)
                                                       }).ToListAsync(cancellationToken);
 
-            if (sortDirection == SortDirection.Ascending)
+            if (sortDirection == SortDirection.Ascending && sortField == SortField.Value)
             {
                 result = result.OrderBy(o => o.ValueOfTransactions).ToList();
             }
-            else
+            else if (sortDirection == SortDirection.Ascending && sortField == SortField.Count)
+            {
+                result = result.OrderBy(o => o.NumberofTransactions).ToList();
+            }
+            if (sortDirection == SortDirection.Descending && sortField == SortField.Value)
             {
                 result = result.OrderByDescending(o => o.ValueOfTransactions).ToList();
+            }
+            else if (sortDirection == SortDirection.Descending && sortField == SortField.Count)
+            {
+                result = result.OrderByDescending(o => o.NumberofTransactions).ToList();
             }
 
             result = result.Take(recordCount).ToList();
@@ -306,13 +314,21 @@
                                           ValueOfTransactions = txns.Sum(t => t.Amount)
                                       }).ToListAsync(cancellationToken);
 
-            if (sortDirection == SortDirection.Ascending)
+            if (sortDirection == SortDirection.Ascending && sortField == SortField.Value)
             {
                 result = result.OrderBy(o => o.ValueOfTransactions).ToList();
             }
-            else
+            else if (sortDirection == SortDirection.Ascending && sortField == SortField.Count)
+            {
+                result = result.OrderBy(o => o.NumberofTransactions).ToList();
+            }
+            if (sortDirection == SortDirection.Descending && sortField == SortField.Value)
             {
                 result = result.OrderByDescending(o => o.ValueOfTransactions).ToList();
+            }
+            else if (sortDirection == SortDirection.Descending && sortField == SortField.Count)
+            {
+                result = result.OrderByDescending(o => o.NumberofTransactions).ToList();
             }
 
             result = result.Take(recordCount).ToList();
