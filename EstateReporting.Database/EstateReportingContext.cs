@@ -79,6 +79,14 @@
         public virtual DbSet<TransactionsView> TransactionsView { get; set; }
 
         /// <summary>
+        /// Gets or sets the merchant balance view.
+        /// </summary>
+        /// <value>
+        /// The merchant balance view.
+        /// </value>
+        public virtual DbSet<MerchantBalanceView> MerchantBalanceView { get; set; }
+
+        /// <summary>
         /// Gets or sets the contract products.
         /// </summary>
         /// <value>
@@ -428,6 +436,7 @@
                                                                                 });
 
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
+            modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
 
             base.OnModelCreating(modelBuilder);
         }
