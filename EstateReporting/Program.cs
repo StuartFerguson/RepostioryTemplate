@@ -11,6 +11,15 @@ using Microsoft.Extensions.Logging;
 namespace EstateReporting
 {
     using System.IO;
+    using EstateManagement.Contract.DomainEvents;
+    using EstateManagement.Estate.DomainEvents;
+    using EstateManagement.Merchant.DomainEvents;
+    using Microsoft.Extensions.DependencyInjection;
+    using Shared.EventStore.Aggregate;
+    using Shared.EventStore.Subscriptions;
+    using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
 
     [ExcludeFromCodeCoverage]
     public class Program
@@ -42,6 +51,25 @@ namespace EstateReporting
                                                      webBuilder.UseConfiguration(config);
                                                      webBuilder.UseKestrel();
                                                  });
+
+            hostBuilder.ConfigureServices(services =>
+                                          {
+                                              VoucherIssuedEvent i = new VoucherIssuedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, "", "");
+
+                                              TransactionHasStartedEvent t = new TransactionHasStartedEvent(Guid.Parse("2AA2D43B-5E24-4327-8029-1135B20F35CE"), Guid.NewGuid(), Guid.NewGuid(),
+                                                                                                            DateTime.Now, "", "", "", "", null);
+
+                                              ReconciliationHasStartedEvent r =
+                                                  new ReconciliationHasStartedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+
+                                              EstateCreatedEvent e = new EstateCreatedEvent(Guid.NewGuid(), "");
+                                              MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
+                                              ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
+                                              
+                                              TypeProvider.LoadDomainEventsTypeDynamically();
+
+                                              services.AddHostedService<SubscriptionWorker>();
+                                          });
             return hostBuilder;
         }
 

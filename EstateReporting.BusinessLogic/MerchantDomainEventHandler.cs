@@ -6,11 +6,12 @@
     using Events;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
+    using Shared.EventStore.EventHandling;
 
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="EstateReporting.BusinessLogic.IDomainEventHandler" />
+    /// <seealso cref="IDomainEventHandler" />
     public class MerchantDomainEventHandler : IDomainEventHandler
     {
         #region Fields
@@ -42,7 +43,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task Handle(DomainEvent domainEvent,
+        public async Task Handle(IDomainEvent domainEvent,
                                  CancellationToken cancellationToken)
         {
             await this.HandleSpecificDomainEvent((dynamic)domainEvent, cancellationToken);

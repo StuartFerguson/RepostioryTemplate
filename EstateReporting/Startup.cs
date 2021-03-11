@@ -20,6 +20,7 @@ namespace EstateReporting
     using BusinessLogic;
     using Common;
     using Database;
+    using EventStore.Client;
     using Factories;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +39,7 @@ namespace EstateReporting
     using Repository;
     using Shared.EntityFramework;
     using Shared.EntityFramework.ConnectionStringConfiguration;
+    using Shared.EventStore.EventHandling;
     using Shared.EventStore.EventStore;
     using Shared.Extensions;
     using Shared.General;
@@ -126,7 +128,39 @@ namespace EstateReporting
             services.AddSingleton<IReportingManager, ReportingManager>();
             services.AddSingleton<IModelFactory,ModelFactory>();
 
+            services.AddEventStorePersistentSubscriptionsClient(Startup.ConfigureEventStoreSettings);
+
         }
+
+        private static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
+        {
+            if (settings == null)
+            {
+                settings = new EventStoreClientSettings();
+            }
+
+            settings.CreateHttpMessageHandler = () => new SocketsHttpHandler
+                                                      {
+                                                          SslOptions =
+                                                          {
+                                                              RemoteCertificateValidationCallback = (sender,
+                                                                                                     certificate,
+                                                                                                     chain,
+                                                                                                     errors) => true,
+                                                          }
+                                                      };
+            settings.ConnectionName = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionName");
+            settings.ConnectivitySettings = new EventStoreClientConnectivitySettings
+                                            {
+                                                Address = new Uri(Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString")),
+                                            };
+
+            settings.DefaultCredentials = new UserCredentials(Startup.Configuration.GetValue<String>("EventStoreSettings:UserName"),
+                                                              Startup.Configuration.GetValue<String>("EventStoreSettings:Password"));
+            Startup.EventStoreClientSettings = settings;
+        }
+
+        private static EventStoreClientSettings EventStoreClientSettings;
 
         private void ConfigureMiddlewareServices(IServiceCollection services)
         {
