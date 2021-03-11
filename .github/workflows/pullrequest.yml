@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
 
+    - name: test
+      run: sudo a2enmod http2
+
     - name: Restore Nuget Packages
       run: dotnet restore EstateReporting.sln --source https://api.nuget.org/v3/index.json --source https://www.myget.org/F/transactionprocessing/api/v3/index.json
 
