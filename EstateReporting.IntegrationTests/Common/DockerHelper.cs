@@ -204,7 +204,7 @@
 
             INetworkService testNetwork = DockerHelper.SetupTestNetwork();
             this.TestNetworks.Add(testNetwork);
-            IContainerService eventStoreContainer = DockerHelper.SetupEventStoreContainer(this.EventStoreContainerName, this.Logger, "eventstore/eventstore:20.10.0-bionic", testNetwork, traceFolder);
+            IContainerService eventStoreContainer = DockerHelper.SetupEventStoreContainer(this.EventStoreContainerName, this.Logger, "eventstore/eventstore:21.2.0-bionic", testNetwork, traceFolder);
             this.EventStoreHttpPort = eventStoreContainer.ToHostExposedEndpoint("2113/tcp").Port;
 
             await this.PopulateSubscriptionServiceConfiguration().ConfigureAwait(false);
