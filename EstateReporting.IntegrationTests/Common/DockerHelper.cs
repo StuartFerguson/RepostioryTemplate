@@ -198,7 +198,7 @@
             this.TestHostContainerName = $"testhosts{testGuid:N}";
             this.VoucherManagementContainerName = $"vouchermanagement{testGuid:N}";
 
-            String eventStoreAddress = $"https://{this.EventStoreContainerName}";
+            String eventStoreAddress = $"http://{this.EventStoreContainerName}";
 
             (String, String, String) dockerCredentials = ("https://www.docker.com", "stuartferguson", "Sc0tland");
 
