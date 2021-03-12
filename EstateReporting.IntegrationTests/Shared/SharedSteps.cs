@@ -70,7 +70,7 @@
                                     estate = await this.TestingContext.DockerHelper.EstateClient
                                                        .GetEstate(this.TestingContext.AccessToken, estateDetails.EstateId, CancellationToken.None).ConfigureAwait(false);
                                     estate.ShouldNotBeNull();
-                                }).ConfigureAwait(false);
+                                }, retryFor:TimeSpan.FromSeconds(90)).ConfigureAwait(false);
 
                 estate.EstateName.ShouldBe(estateDetails.EstateName);
             }

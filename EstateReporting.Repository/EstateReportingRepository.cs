@@ -220,7 +220,7 @@
             // Add the estate to the read model
             Estate estate = new Estate
                             {
-                                CreatedDateTime = domainEvent.EventCreatedDateTime,
+                                CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                 EstateId = estateId,
                                 Name = domainEvent.EstateName
                             };
@@ -269,7 +269,7 @@
 
             EstateSecurityUser estateSecurityUser = new EstateSecurityUser
                                                     {
-                                                        CreatedDateTime = domainEvent.EventCreatedDateTime,
+                                                        CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                                         EstateId = domainEvent.EstateId,
                                                         EmailAddress = domainEvent.EmailAddress,
                                                         SecurityUserId = domainEvent.SecurityUserId
@@ -328,8 +328,8 @@
                                     EstateId = domainEvent.EstateId,
                                     MerchantId = domainEvent.MerchantId,
                                     Name = domainEvent.MerchantName,
-                                    CreatedDateTime = domainEvent.EventCreatedDateTime
-                                };
+                                    CreatedDateTime = domainEvent.EventTimestamp.DateTime
+            };
 
             await context.Merchants.AddAsync(merchant, cancellationToken);
 
@@ -352,7 +352,7 @@
                                               {
                                                   EstateId = domainEvent.EstateId,
                                                   MerchantId = domainEvent.MerchantId,
-                                                  CreatedDateTime = domainEvent.EventCreatedDateTime,
+                                                  CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                                   AddressId = domainEvent.AddressId,
                                                   AddressLine1 = domainEvent.AddressLine1,
                                                   AddressLine2 = domainEvent.AddressLine2,
@@ -389,8 +389,8 @@
                                                   ContactId = domainEvent.ContactId,
                                                   EmailAddress = domainEvent.ContactEmailAddress,
                                                   PhoneNumber = domainEvent.ContactPhoneNumber,
-                                                  CreatedDateTime = domainEvent.EventCreatedDateTime
-                                              };
+                                                  CreatedDateTime = domainEvent.EventTimestamp.DateTime
+            };
 
             await context.MerchantContacts.AddAsync(merchantContact, cancellationToken);
 
@@ -415,8 +415,8 @@
                                                 MerchantId = domainEvent.MerchantId,
                                                 DeviceId = domainEvent.DeviceId,
                                                 DeviceIdentifier = domainEvent.DeviceIdentifier,
-                                                CreatedDateTime = domainEvent.EventCreatedDateTime
-                                            };
+                                                CreatedDateTime = domainEvent.EventTimestamp.DateTime
+            };
 
             await context.MerchantDevices.AddAsync(merchantDevice, cancellationToken);
 
@@ -468,8 +468,8 @@
                                                             MerchantId = domainEvent.MerchantId,
                                                             EmailAddress = domainEvent.EmailAddress,
                                                             SecurityUserId = domainEvent.SecurityUserId,
-                                                            CreatedDateTime = domainEvent.EventCreatedDateTime
-                                                        };
+                                                            CreatedDateTime = domainEvent.EventTimestamp.DateTime
+            };
 
             await context.MerchantSecurityUsers.AddAsync(merchantSecurityUser, cancellationToken);
 
@@ -672,14 +672,29 @@
 
             foreach (String additionalRequestField in this.AdditionalRequestFields)
             {
-                if (domainEvent.AdditionalTransactionRequestMetadata.ContainsKey(additionalRequestField))
+                Logger.LogInformation($"Field to look for [{additionalRequestField}]");
+            }
+
+            foreach (var additionalRequestField in domainEvent.AdditionalTransactionRequestMetadata)
+            {
+                Logger.LogInformation($"Key: [{additionalRequestField.Key}] Value: [{additionalRequestField.Value}]");
+            }
+
+            foreach (String additionalRequestField in this.AdditionalRequestFields)
+            {
+                if (domainEvent.AdditionalTransactionRequestMetadata.Any(m => m.Key.ToLower() == additionalRequestField.ToLower()))
                 {
                     Type dbTableType = additionalRequestData.GetType();
                     PropertyInfo propertyInfo = dbTableType.GetProperty(additionalRequestField);
 
                     if (propertyInfo != null)
                     {
-                        propertyInfo.SetValue(additionalRequestData, domainEvent.AdditionalTransactionRequestMetadata[additionalRequestField]);
+                        propertyInfo.SetValue(additionalRequestData,
+                                              domainEvent.AdditionalTransactionRequestMetadata.Single(m => m.Key.ToLower() == additionalRequestField.ToLower()).Value);
+                    }
+                    else
+                    {
+                        Logger.LogInformation("propertyInfo == null");
                     }
                 }
             }
@@ -710,14 +725,14 @@
 
             foreach (String additionalResponseField in this.AdditionalResponseFields)
             {
-                if (domainEvent.AdditionalTransactionResponseMetadata.ContainsKey(additionalResponseField))
+                if (domainEvent.AdditionalTransactionResponseMetadata.Any(m => m.Key.ToLower() == additionalResponseField.ToLower()))
                 {
                     Type dbTableType = additionalResponseData.GetType();
                     PropertyInfo propertyInfo = dbTableType.GetProperty(additionalResponseField);
 
                     if (propertyInfo != null)
                     {
-                        propertyInfo.SetValue(additionalResponseData, domainEvent.AdditionalTransactionResponseMetadata[additionalResponseField]);
+                        propertyInfo.SetValue(additionalResponseData, domainEvent.AdditionalTransactionResponseMetadata.Single(m => m.Key.ToLower() == additionalResponseField.ToLower()).Value);
                     }
                 }
             }
@@ -1068,7 +1083,7 @@
                                                                     EventId = domainEvent.EventId,
                                                                     MerchantId = domainEvent.MerchantId,
                                                                     Reference = domainEvent.Reference,
-                                                                    EntryDateTime = domainEvent.EventCreatedDateTime,
+                                                                    EntryDateTime = domainEvent.EventTimestamp.DateTime,
                                                                     TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId
                                                                 };
 
@@ -1080,7 +1095,7 @@
                 balanceRecord.Balance = domainEvent.Balance;
                 balanceRecord.ChangeAmount = domainEvent.ChangeAmount;
                 balanceRecord.Reference = domainEvent.Reference;
-                balanceRecord.EntryDateTime = domainEvent.EventCreatedDateTime;
+                balanceRecord.EntryDateTime = domainEvent.EventTimestamp.DateTime;
                 balanceRecord.TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId;
             }
             

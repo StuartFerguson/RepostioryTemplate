@@ -88,7 +88,7 @@
         /// <summary>
         /// The address added event
         /// </summary>
-        public static AddressAddedEvent AddressAddedEvent = AddressAddedEvent.Create(TestData.MerchantId,
+        public static AddressAddedEvent AddressAddedEvent = new AddressAddedEvent(TestData.MerchantId,
                                                                                      TestData.EstateId,
                                                                                      TestData.AddressId,
                                                                                      TestData.AddressLine1,
@@ -123,7 +123,7 @@
         /// <summary>
         /// The contact added event
         /// </summary>
-        public static ContactAddedEvent ContactAddedEvent = ContactAddedEvent.Create(TestData.MerchantId,
+        public static ContactAddedEvent ContactAddedEvent = new ContactAddedEvent(TestData.MerchantId,
                                                                                      TestData.EstateId,
                                                                                      TestData.ContactId,
                                                                                      TestData.ContactName,
@@ -144,7 +144,7 @@
         /// The device added to merchant event
         /// </summary>
         public static DeviceAddedToMerchantEvent DeviceAddedToMerchantEvent =
-            DeviceAddedToMerchantEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.DeviceId, TestData.DeviceIdentifier);
+            new DeviceAddedToMerchantEvent(TestData.MerchantId, TestData.EstateId, TestData.DeviceId, TestData.DeviceIdentifier);
 
         /// <summary>
         /// The email address
@@ -168,7 +168,7 @@
         /// <summary>
         /// The estate created event
         /// </summary>
-        public static EstateCreatedEvent EstateCreatedEvent = EstateCreatedEvent.Create(TestData.EstateId, TestData.EstateName);
+        public static EstateCreatedEvent EstateCreatedEvent = new EstateCreatedEvent(TestData.EstateId, TestData.EstateName);
 
         public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent = MerchantBalanceChangedEvent.Create(TestData.MerchantId,
             Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
@@ -197,7 +197,7 @@
         /// The estate security user added event
         /// </summary>
         public static EstateSecurityUserAddedEvent EstateSecurityUserAddedEvent =
-            EstateSecurityUserAddedEvent.Create(TestData.EstateId, TestData.EstateSecurityUserId, TestData.EmailAddress);
+            new EstateSecurityUserAddedEvent(TestData.EstateId, TestData.EstateSecurityUserId, TestData.EmailAddress);
 
         /// <summary>
         /// The merchant name
@@ -208,7 +208,7 @@
         /// The merchant created event
         /// </summary>
         public static MerchantCreatedEvent MerchantCreatedEvent =
-            MerchantCreatedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.MerchantName, DateTime.Now);
+            new MerchantCreatedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantName, DateTime.Now);
 
         public static String MerchantNumber = "12345678";
 
@@ -218,7 +218,7 @@
         /// The merchant security user added event
         /// </summary>
         public static MerchantSecurityUserAddedEvent MerchantSecurityUserAddedEvent =
-            MerchantSecurityUserAddedEvent.Create(TestData.MerchantId, TestData.EstateId, TestData.MerchantSecurityUserId, TestData.EmailAddress);
+            new MerchantSecurityUserAddedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantSecurityUserId, TestData.EmailAddress);
 
         public static Guid OperatorId = Guid.Parse("DCDC5054-C026-4492-AFED-C74E4DEFD00C");
 
@@ -229,7 +229,7 @@
         public static Boolean RequireCustomTerminalNumber = true;
 
         public static OperatorAddedToEstateEvent OperatorAddedToEstateEvent =
-            OperatorAddedToEstateEvent.Create(TestData.EstateId,
+            new OperatorAddedToEstateEvent(TestData.EstateId,
                                               TestData.OperatorId,
                                               TestData.OperatorName,
                                               TestData.RequireCustomMerchantNumber,
@@ -237,7 +237,7 @@
 
         public static String TerminalNumber = "12345679";
 
-        public static OperatorAssignedToMerchantEvent OperatorAssignedToMerchantEvent = OperatorAssignedToMerchantEvent.Create(TestData.MerchantId,
+        public static OperatorAssignedToMerchantEvent OperatorAssignedToMerchantEvent = new OperatorAssignedToMerchantEvent(TestData.MerchantId,
                                                                                                                                TestData.EstateId,
                                                                                                                                TestData.OperatorId,
                                                                                                                                TestData.OperatorName,
@@ -254,7 +254,7 @@
 
         public static String TransactionReference = "123456";
 
-        public static TransactionHasStartedEvent TransactionHasStartedEvent = TransactionHasStartedEvent.Create(TestData.TransactionId,
+        public static TransactionHasStartedEvent TransactionHasStartedEvent = new TransactionHasStartedEvent(TestData.TransactionId,
                                                                                                                 TestData.EstateId,
                                                                                                                 TestData.MerchantId,
                                                                                                                 TestData.TransactionDateTime,
@@ -265,7 +265,7 @@
                                                                                                                 TestData.TransactionAmount);
 
         public static AdditionalRequestDataRecordedEvent AdditionalRequestDataRecordedEvent =
-            AdditionalRequestDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
+            new AdditionalRequestDataRecordedEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
                                                       TestData.OperatorName, TestData.AdditionalRequestData);
 
         public static Dictionary<String, String> AdditionalRequestData =>
@@ -283,7 +283,7 @@
             };
 
         public static AdditionalResponseDataRecordedEvent AdditionalResponseDataRecordedEvent =
-            AdditionalResponseDataRecordedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
+            new AdditionalResponseDataRecordedEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId,
                                                        TestData.OperatorName, TestData.AdditionalResponseData);
 
         public static String AuthorisationCode = "ABCD1234";
@@ -307,7 +307,7 @@
         public static Boolean IsAuthorised = true;
 
         public static TransactionHasBeenLocallyAuthorisedEvent TransactionHasBeenLocallyAuthorisedEvent =
-            TransactionHasBeenLocallyAuthorisedEvent.Create(TestData.TransactionId,
+            new TransactionHasBeenLocallyAuthorisedEvent(TestData.TransactionId,
                                                             TestData.EstateId,
                                                             TestData.MerchantId,
                                                             TestData.AuthorisationCode,
@@ -315,15 +315,14 @@
                                                             TestData.ResponseMessage);
 
         public static TransactionHasBeenLocallyDeclinedEvent TransactionHasBeenLocallyDeclinedEvent =
-            TransactionHasBeenLocallyDeclinedEvent.Create(TestData.TransactionId,
+            new TransactionHasBeenLocallyDeclinedEvent(TestData.TransactionId,
                                                           TestData.EstateId,
                                                           TestData.MerchantId,
                                                           TestData.DeclinedResponseCode,
                                                           TestData.DeclinedResponseMessage);
 
         public static TransactionAuthorisedByOperatorEvent TransactionAuthorisedByOperatorEvent =
-            TransactionAuthorisedByOperatorEvent.Create(TestData.TransactionId,
-                                                        TestData.EstateId,
+            new TransactionAuthorisedByOperatorEvent(TestData.TransactionId,                                                        TestData.EstateId,
                                                         TestData.MerchantId,
                                                         TestData.OperatorName,
                                                         TestData.AuthorisationCode,
@@ -334,7 +333,7 @@
                                                         TestData.ResponseMessage);
 
         public static TransactionDeclinedByOperatorEvent TransactionDeclinedByOperatorEvent =
-            TransactionDeclinedByOperatorEvent.Create(TestData.TransactionId,
+            new TransactionDeclinedByOperatorEvent(TestData.TransactionId,
                                                       TestData.EstateId,
                                                       TestData.MerchantId,
                                                       TestData.OperatorName,
@@ -343,7 +342,7 @@
                                                       TestData.DeclinedResponseCode,
                                                       TestData.DeclinedResponseMessage);
 
-        public static TransactionHasBeenCompletedEvent TransactionHasBeenCompletedEvent = TransactionHasBeenCompletedEvent.Create(TestData.TransactionId,
+        public static TransactionHasBeenCompletedEvent TransactionHasBeenCompletedEvent = new TransactionHasBeenCompletedEvent(TestData.TransactionId,
                                                                                                                                   TestData.EstateId,
                                                                                                                                   TestData.MerchantId,
                                                                                                                                   TestData.ResponseCode,
@@ -353,31 +352,31 @@
                                                                                                                                   TestData.TransactionAmount);
 
         public static ReconciliationHasStartedEvent ReconciliationHasStartedEvent =
-            ReconciliationHasStartedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.TransactionDateTime);
+            new ReconciliationHasStartedEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.TransactionDateTime);
 
         public static OverallTotalsRecordedEvent OverallTotalsRecordedEvent =
-            OverallTotalsRecordedEvent.Create(TestData.TransactionId,
+            new OverallTotalsRecordedEvent(TestData.TransactionId,
                                               TestData.EstateId,
                                               TestData.MerchantId,
                                               TestData.ReconcilationTransactionCount,
                                               TestData.ReconcilationTransactionValue);
 
         public static ReconciliationHasBeenLocallyAuthorisedEvent ReconciliationHasBeenLocallyAuthorisedEvent =
-            ReconciliationHasBeenLocallyAuthorisedEvent.Create(TestData.TransactionId,
+            new ReconciliationHasBeenLocallyAuthorisedEvent(TestData.TransactionId,
                                                                TestData.EstateId,
                                                                TestData.MerchantId,
                                                                TestData.ResponseCode,
                                                                TestData.ResponseMessage);
 
         public static ReconciliationHasBeenLocallyDeclinedEvent ReconciliationHasBeenLocallyDeclinedEvent =
-            ReconciliationHasBeenLocallyDeclinedEvent.Create(TestData.TransactionId,
+            new ReconciliationHasBeenLocallyDeclinedEvent(TestData.TransactionId,
                                                              TestData.EstateId,
                                                              TestData.MerchantId,
                                                              TestData.ResponseCode,
                                                              TestData.ResponseMessage);
 
         public static ReconciliationHasCompletedEvent ReconciliationHasCompletedEvent =
-            ReconciliationHasCompletedEvent.Create(TestData.TransactionId, TestData.EstateId, TestData.MerchantId);
+            new ReconciliationHasCompletedEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId);
 
         public static Guid VoucherId = Guid.Parse("1736C058-5AC3-4AAC-8167-10DBAC2B7968");
 
@@ -394,7 +393,7 @@
         public static String RecipientEmail = "testemail@recipient.co.uk";
         public static String RecipientMobile = "123455679";
 
-        public static VoucherGeneratedEvent VoucherGeneratedEvent = VoucherGeneratedEvent.Create(TestData.VoucherId,
+        public static VoucherGeneratedEvent VoucherGeneratedEvent = new VoucherGeneratedEvent(TestData.VoucherId,
                                                                                                  TestData.EstateId,
                                                                                                  TestData.TransactionId,
                                                                                                  TestData.VoucherGeneratedDate,
@@ -404,13 +403,13 @@
                                                                                                  TestData.VoucherExpiryDate,
                                                                                                  TestData.VoucherMessage);
 
-        public static VoucherIssuedEvent VoucherIssuedEvent = VoucherIssuedEvent.Create(TestData.VoucherId,
+        public static VoucherIssuedEvent VoucherIssuedEvent = new VoucherIssuedEvent(TestData.VoucherId,
                                                                                         TestData.EstateId,
                                                                                         TestData.VoucherIssuedDate,
                                                                                         TestData.RecipientEmail,
                                                                                         TestData.RecipientMobile);
 
-        public static VoucherFullyRedeemedEvent VoucherFullyRedeemedEvent = VoucherFullyRedeemedEvent.Create(TestData.VoucherId,
+        public static VoucherFullyRedeemedEvent VoucherFullyRedeemedEvent = new VoucherFullyRedeemedEvent(TestData.VoucherId,
                                                                                                              TestData.EstateId,
                                                                                                              TestData.VoucherRedeemedDate);
 
@@ -441,23 +440,23 @@
 
         private static Decimal CalculatedValue = 2.95m;
 
-        public static ContractCreatedEvent ContractCreatedEvent = ContractCreatedEvent.Create(TestData.ContractId, TestData.EstateId,
+        public static ContractCreatedEvent ContractCreatedEvent = new ContractCreatedEvent(TestData.ContractId, TestData.EstateId,
                                                                                               TestData.OperatorId, TestData.ContractDescription);
 
-        public static FixedValueProductAddedToContractEvent FixedValueProductAddedToContractEvent = FixedValueProductAddedToContractEvent.Create(TestData.ContractId,
+        public static FixedValueProductAddedToContractEvent FixedValueProductAddedToContractEvent = new FixedValueProductAddedToContractEvent(TestData.ContractId,
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.ProductName,
                                                                                                                                                  TestData.ProductDisplayText,
                                                                                                                                                  TestData.ProductFixedValue);
 
-        public static VariableValueProductAddedToContractEvent VariableValueProductAddedToContractEvent = VariableValueProductAddedToContractEvent.Create(TestData.ContractId,
+        public static VariableValueProductAddedToContractEvent VariableValueProductAddedToContractEvent = new VariableValueProductAddedToContractEvent(TestData.ContractId,
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.ProductName,
                                                                                                                                                  TestData.ProductDisplayText);
 
-        public static TransactionFeeForProductAddedToContractEvent TransactionFeeForProductAddedToContractEvent = TransactionFeeForProductAddedToContractEvent.Create(TestData.ContractId,
+        public static TransactionFeeForProductAddedToContractEvent TransactionFeeForProductAddedToContractEvent = new TransactionFeeForProductAddedToContractEvent(TestData.ContractId,
                                                                                                                                                                       TestData.EstateId,
                                                                                                                                                                       TestData.ProductId,
                                                                                                                                                                       TestData.TransactionFeeId,
@@ -466,18 +465,18 @@
                                                                                                                                                                       TestData.FeeType,
                                                                                                                                                                       TestData.FeeValue);
 
-        public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent = ProductDetailsAddedToTransactionEvent.Create(TestData.TransactionId,
+        public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent = new ProductDetailsAddedToTransactionEvent(TestData.TransactionId,
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.MerchantId,
                                                                                                                                                  TestData.ContractId,
                                                                                                                                                  TestData.ProductId);
 
-        public static TransactionFeeForProductDisabledEvent TransactionFeeForProductDisabledEvent = TransactionFeeForProductDisabledEvent.Create(TestData.ContractId,
+        public static TransactionFeeForProductDisabledEvent TransactionFeeForProductDisabledEvent = new TransactionFeeForProductDisabledEvent(TestData.ContractId,
                                                                                                                                                  TestData.EstateId,
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.TransactionFeeId);
 
-        public static MerchantFeeAddedToTransactionEvent MerchantFeeAddedToTransactionEvent = MerchantFeeAddedToTransactionEvent.Create(TestData.TransactionId,
+        public static MerchantFeeAddedToTransactionEvent MerchantFeeAddedToTransactionEvent = new MerchantFeeAddedToTransactionEvent(TestData.TransactionId,
             TestData.EstateId,
             TestData.MerchantId,
             TestData.CalculatedValue,
@@ -485,7 +484,7 @@
             TestData.TransactionFeeId,
             TestData.FeeValue);
 
-        public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = ServiceProviderFeeAddedToTransactionEvent.Create(TestData.TransactionId,
+        public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = new ServiceProviderFeeAddedToTransactionEvent(TestData.TransactionId,
             TestData.EstateId,
             TestData.MerchantId,
             TestData.CalculatedValue,
