@@ -122,7 +122,7 @@ Scenario: Sales Transactions By Month - Transactions All On Same Day
 	| MonthNumber | Year | NumberOfTransactions | ValueOfTransactions |
 	| 10         | 2020 | 3                    | 140.00             |
 
-#@PRTest
+@PRTest
 Scenario: Sales Transactions By Month - Transactions On Mutiple Days
 
 	Given I set the date for today to "05/10/2020"
