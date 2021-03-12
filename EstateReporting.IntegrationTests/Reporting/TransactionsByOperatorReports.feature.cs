@@ -639,11 +639,9 @@ this.FeatureBackground();
         [Xunit.SkippableFactAttribute(DisplayName="Sales Transactions By Operator - Transactions For Mutiple Operator")]
         [Xunit.TraitAttribute("FeatureTitle", "TransactionsByOperatorReports")]
         [Xunit.TraitAttribute("Description", "Sales Transactions By Operator - Transactions For Mutiple Operator")]
-        [Xunit.TraitAttribute("Category", "PRTest")]
         public virtual void SalesTransactionsByOperator_TransactionsForMutipleOperator()
         {
-            string[] tagsOfScenario = new string[] {
-                    "PRTest"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Sales Transactions By Operator - Transactions For Mutiple Operator", null, tagsOfScenario, argumentsOfScenario);
 #line 112

@@ -583,11 +583,9 @@ this.FeatureBackground();
         [Xunit.SkippableFactAttribute(DisplayName="Sales Transactions By Merchant - Transactions For Mutiple Merchants")]
         [Xunit.TraitAttribute("FeatureTitle", "TransactionsByMerchantReports")]
         [Xunit.TraitAttribute("Description", "Sales Transactions By Merchant - Transactions For Mutiple Merchants")]
-        [Xunit.TraitAttribute("Category", "PRTest")]
         public virtual void SalesTransactionsByMerchant_TransactionsForMutipleMerchants()
         {
-            string[] tagsOfScenario = new string[] {
-                    "PRTest"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Sales Transactions By Merchant - Transactions For Mutiple Merchants", null, tagsOfScenario, argumentsOfScenario);
 #line 102

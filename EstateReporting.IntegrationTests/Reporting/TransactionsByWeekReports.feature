@@ -121,7 +121,7 @@ Scenario: Sales Transactions By Week - Transactions All On Same Day
 	| WeekNumber | Year | NumberOfTransactions | ValueOfTransactions |
 	| 42         | 2020 | 3                    | 140.00             |
 
-@PRTest
+#@PRTest
 Scenario: Sales Transactions By Week - Transactions On Mutiple Days
 
 	Given I set the date for today to "15/10/2020"

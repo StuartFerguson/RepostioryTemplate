@@ -207,7 +207,11 @@
             IContainerService eventStoreContainer = DockerHelper.SetupEventStoreContainer(this.EventStoreContainerName, this.Logger, "eventstore/eventstore:21.2.0-bionic", testNetwork, traceFolder);
             this.EventStoreHttpPort = eventStoreContainer.ToHostExposedEndpoint("2113/tcp").Port;
 
-            await this.PopulateSubscriptionServiceConfiguration().ConfigureAwait(false);
+            await Retry.For(async () =>
+                            {
+                                await this.PopulateSubscriptionServiceConfiguration().ConfigureAwait(false);
+                            }, retryFor:TimeSpan.FromMinutes(2), retryInterval:TimeSpan.FromSeconds(30));
+            
 
             IContainerService estateManagementContainer = DockerHelper.SetupEstateManagementContainer(this.EstateManagementContainerName, this.Logger,
                                                                                                       "stuartferguson/estatemanagement", new List<INetworkService>

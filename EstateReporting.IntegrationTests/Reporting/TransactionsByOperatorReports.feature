@@ -108,7 +108,7 @@ Scenario: Sales Transactions By Operator - Transactions All For Same Operator
 	| OperatorName | NumberOfTransactions | ValueOfTransactions |
 	| Safaricom    | 3                    | 200.00              |
 
-@PRTest
+#@PRTest
 Scenario: Sales Transactions By Operator - Transactions For Mutiple Operator
 	When I perform the following transactions
 	| DateTime  | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress | ContractDescription         | ProductName    | RecipientMobile |

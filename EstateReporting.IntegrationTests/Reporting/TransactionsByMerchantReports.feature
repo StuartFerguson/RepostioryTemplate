@@ -98,7 +98,7 @@ Scenario: Sales Transactions By Merchant - Transactions All For Same Merchant
 	| MerchantName  | NumberOfTransactions | ValueOfTransactions |
 	| Test Merchant 1 | 3                    | 200.00            |		
 
-@PRTest
+#@PRTest
 Scenario: Sales Transactions By Merchant - Transactions For Mutiple Merchants
 	When I perform the following transactions
 	| DateTime  | TransactionNumber | TransactionType | MerchantName    | DeviceIdentifier | EstateName    | OperatorName | TransactionAmount | CustomerAccountNumber | CustomerEmailAddress | ContractDescription | ProductName    |

@@ -712,11 +712,9 @@ this.FeatureBackground();
         [Xunit.SkippableFactAttribute(DisplayName="Sales Transactions By Week - Transactions On Mutiple Days")]
         [Xunit.TraitAttribute("FeatureTitle", "TransactionsByWeekReports")]
         [Xunit.TraitAttribute("Description", "Sales Transactions By Week - Transactions On Mutiple Days")]
-        [Xunit.TraitAttribute("Category", "PRTest")]
         public virtual void SalesTransactionsByWeek_TransactionsOnMutipleDays()
         {
-            string[] tagsOfScenario = new string[] {
-                    "PRTest"};
+            string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Sales Transactions By Week - Transactions On Mutiple Days", null, tagsOfScenario, argumentsOfScenario);
 #line 125
