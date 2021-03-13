@@ -11,12 +11,12 @@
         /// <summary>
         /// The default retry for
         /// </summary>
-        private static readonly TimeSpan DefaultRetryFor = TimeSpan.FromSeconds(60);
+        private static readonly TimeSpan DefaultRetryFor = TimeSpan.FromSeconds(120);
 
         /// <summary>
         /// The default retry interval
         /// </summary>
-        private static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(15);
 
         #endregion
 
