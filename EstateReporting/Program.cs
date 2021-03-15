@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace EstateReporting
 {
     using System.IO;
+    using System.Net;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
@@ -54,6 +55,9 @@ namespace EstateReporting
 
             hostBuilder.ConfigureServices(services =>
                                           {
+                                              ServicePointManager.ServerCertificateValidationCallback +=
+                                                  (sender, cert, chain, sslPolicyErrors) => true;
+
                                               VoucherIssuedEvent i = new VoucherIssuedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, "", "");
 
                                               TransactionHasStartedEvent t = new TransactionHasStartedEvent(Guid.Parse("2AA2D43B-5E24-4327-8029-1135B20F35CE"), Guid.NewGuid(), Guid.NewGuid(),
