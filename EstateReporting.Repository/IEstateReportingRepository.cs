@@ -9,8 +9,6 @@
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
-    using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
-    using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
     /// <summary>
     /// 
@@ -79,7 +77,7 @@
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task AddEstateSecurityUser(EstateSecurityUserAddedEvent domainEvent,
+        Task AddEstateSecurityUser(SecurityUserAddedToEstateEvent domainEvent,
                                    CancellationToken cancellationToken);
 
         /// <summary>
@@ -160,7 +158,7 @@
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task AddMerchantSecurityUser(MerchantSecurityUserAddedEvent domainEvent,
+        Task AddMerchantSecurityUser(SecurityUserAddedToMerchantEvent domainEvent,
                                      CancellationToken cancellationToken);
 
         /// <summary>

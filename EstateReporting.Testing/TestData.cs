@@ -10,8 +10,6 @@
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
-    using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
-    using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
 
     /// <summary>
     /// 
@@ -196,8 +194,8 @@
         /// <summary>
         /// The estate security user added event
         /// </summary>
-        public static EstateSecurityUserAddedEvent EstateSecurityUserAddedEvent =
-            new EstateSecurityUserAddedEvent(TestData.EstateId, TestData.EstateSecurityUserId, TestData.EmailAddress);
+        public static SecurityUserAddedToEstateEvent EstateSecurityUserAddedEvent =
+            new SecurityUserAddedToEstateEvent(TestData.EstateId, TestData.EstateSecurityUserId, TestData.EmailAddress);
 
         /// <summary>
         /// The merchant name
@@ -217,8 +215,8 @@
         /// <summary>
         /// The merchant security user added event
         /// </summary>
-        public static MerchantSecurityUserAddedEvent MerchantSecurityUserAddedEvent =
-            new MerchantSecurityUserAddedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantSecurityUserId, TestData.EmailAddress);
+        public static SecurityUserAddedToMerchantEvent MerchantSecurityUserAddedEvent =
+            new SecurityUserAddedToMerchantEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantSecurityUserId, TestData.EmailAddress);
 
         public static Guid OperatorId = Guid.Parse("DCDC5054-C026-4492-AFED-C74E4DEFD00C");
 
