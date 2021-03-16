@@ -87,7 +87,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task HandleSpecificDomainEvent(SecurityUserAddedEvent domainEvent,
+        private async Task HandleSpecificDomainEvent(SecurityUserAddedToMerchantEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.AddMerchantSecurityUser(domainEvent, cancellationToken);

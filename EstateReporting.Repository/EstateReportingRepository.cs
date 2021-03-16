@@ -24,9 +24,7 @@
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
-    using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
-    using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
-
+    
     /// <summary>
     /// 
     /// </summary>
@@ -260,7 +258,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task AddEstateSecurityUser(EstateSecurityUserAddedEvent domainEvent,
+        public async Task AddEstateSecurityUser(SecurityUserAddedToEstateEvent domainEvent,
                                                 CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;
@@ -455,7 +453,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task AddMerchantSecurityUser(MerchantSecurityUserAddedEvent domainEvent,
+        public async Task AddMerchantSecurityUser(SecurityUserAddedToMerchantEvent domainEvent,
                                                   CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;

@@ -130,6 +130,18 @@ namespace EstateReporting
 
             services.AddEventStorePersistentSubscriptionsClient(Startup.ConfigureEventStoreSettings);
 
+            var httpMessageHandler = new SocketsHttpHandler
+                                     {
+                                         SslOptions =
+                                         {
+                                             RemoteCertificateValidationCallback = (sender,
+                                                                                    certificate,
+                                                                                    chain,
+                                                                                    errors) => true,
+                                         }
+                                     };
+            HttpClient httpClient = new HttpClient(httpMessageHandler);
+            services.AddSingleton(httpClient);
         }
 
         private static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)

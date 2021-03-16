@@ -16,9 +16,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
     using Xunit;
-    using EstateSecurityUserAddedEvent = EstateManagement.Estate.DomainEvents.SecurityUserAddedEvent;
-    using MerchantSecurityUserAddedEvent = EstateManagement.Merchant.DomainEvents.SecurityUserAddedEvent;
-
+    
     public class EstateDomainEventHandlerTests
     {
         [Fact]
@@ -71,7 +69,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void EstateDomainEventHandler_SecurityUserAddedEvent_EventIsHandled()
         {
-            EstateSecurityUserAddedEvent securityUserAddedEvent = TestData.EstateSecurityUserAddedEvent;
+            SecurityUserAddedToEstateEvent securityUserAddedEvent = TestData.EstateSecurityUserAddedEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
@@ -173,7 +171,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void MerchantDomainEventHandler_SecurityUserAddedEvent_EventIsHandled()
         {
-            MerchantSecurityUserAddedEvent merchantSecurityUserAddedEvent = TestData.MerchantSecurityUserAddedEvent;
+            SecurityUserAddedToMerchantEvent merchantSecurityUserAddedEvent = TestData.MerchantSecurityUserAddedEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
