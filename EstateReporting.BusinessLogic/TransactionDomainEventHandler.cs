@@ -1,7 +1,11 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.EventHandling;
@@ -16,6 +20,45 @@
     public class TransactionDomainEventHandler : IDomainEventHandler
     {
         #region Fields
+
+        /// <summary>
+        /// The generate event identifier
+        /// </summary>
+        internal static readonly Func<Object, Guid> GenerateEventId = domainEvent =>
+                                                                      {
+                                                                          String eventString = JsonConvert.SerializeObject(domainEvent);
+                                                                          FeeAddedToTransactionEventForEventId m =
+                                                                              JsonConvert.DeserializeObject<FeeAddedToTransactionEventForEventId>(eventString,
+                                                                                  new JsonSerializerSettings
+                                                                                  {
+                                                                                      TypeNameHandling = TypeNameHandling.None
+                                                                                  });
+
+                                                                          String strFoeEventIdGenerate = JsonConvert.SerializeObject(m,
+                                                                              new JsonSerializerSettings
+                                                                              {
+                                                                                  DefaultValueHandling = DefaultValueHandling.Ignore,
+                                                                                  TypeNameHandling = TypeNameHandling.None,
+                                                                                  DateTimeZoneHandling = DateTimeZoneHandling.Local,
+                                                                                  Formatting = Formatting.None,
+                                                                                  Converters = new[] {new DecimalJsonConverter()}
+                                                                              });
+
+                                                                          Guid eventId = TransactionDomainEventHandler.GenerateGuidFromString(strFoeEventIdGenerate);
+                                                                          return eventId;
+                                                                      };
+
+        /// <summary>
+        /// The generate unique identifier from string
+        /// </summary>
+        internal static readonly Func<String, Guid> GenerateGuidFromString = uniqueKey =>
+                                                                             {
+                                                                                 using(MD5 md5 = MD5.Create())
+                                                                                 {
+                                                                                     Byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(uniqueKey));
+                                                                                     return new Guid(TransactionDomainEventHandler.HexStringFromBytes(hash));
+                                                                                 }
+                                                                             };
 
         /// <summary>
         /// The estate reporting repository
@@ -48,6 +91,23 @@
                                  CancellationToken cancellationToken)
         {
             await this.HandleSpecificDomainEvent((dynamic)domainEvent, cancellationToken);
+        }
+
+        /// <summary>
+        /// Hexadecimals the string from bytes.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns></returns>
+        internal static String HexStringFromBytes(Byte[] bytes)
+        {
+            var sb = new StringBuilder();
+            foreach (Byte b in bytes)
+            {
+                var hex = b.ToString("x2");
+                sb.Append(hex);
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -157,7 +217,10 @@
         private async Task HandleSpecificDomainEvent(MerchantFeeAddedToTransactionEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
-            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, cancellationToken);
+            // Generate the event id
+            Guid eventId = TransactionDomainEventHandler.GenerateEventId(domainEvent);
+
+            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, eventId, cancellationToken);
         }
 
         /// <summary>
@@ -168,7 +231,10 @@
         private async Task HandleSpecificDomainEvent(ServiceProviderFeeAddedToTransactionEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
-            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, cancellationToken);
+            // Generate the event id
+            Guid eventId = TransactionDomainEventHandler.GenerateEventId(domainEvent);
+
+            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, eventId, cancellationToken);
         }
 
         /// <summary>
@@ -258,6 +324,29 @@
         {
             await this.EstateReportingRepository.UpdateVoucherRedemptionDetails(domainEvent, cancellationToken);
         }
+
+        #endregion
+    }
+
+    public class FeeAddedToTransactionEventForEventId
+    {
+        #region Properties
+
+        public Decimal calculatedValue { get; set; }
+
+        public Guid estateId { get; set; }
+
+        public DateTime feeCalculatedDateTime { get; set; }
+
+        public Int32 feeCalculationType { get; set; }
+
+        public Guid feeId { get; set; }
+
+        public Decimal feeValue { get; set; }
+
+        public Guid merchantId { get; set; }
+
+        public Guid transactionId { get; set; }
 
         #endregion
     }

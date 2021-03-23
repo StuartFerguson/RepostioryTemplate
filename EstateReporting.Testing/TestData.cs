@@ -168,7 +168,7 @@
         /// </summary>
         public static EstateCreatedEvent EstateCreatedEvent = new EstateCreatedEvent(TestData.EstateId, TestData.EstateName);
 
-        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent = MerchantBalanceChangedEvent.Create(TestData.MerchantId,
+        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent => new MerchantBalanceChangedEvent(TestData.MerchantId,
             Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
             TestData.EstateId,
             TestData.MerchantId,
@@ -177,7 +177,7 @@
             TestData.ChangeAmount,
             TestData.BalanceRecordReference);
 
-        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent2 = MerchantBalanceChangedEvent.Create(TestData.MerchantId,
+        public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent2 => new MerchantBalanceChangedEvent(TestData.MerchantId,
             Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
             TestData.EstateId,
             TestData.MerchantId,
@@ -480,7 +480,8 @@
             TestData.CalculatedValue,
             TestData.FeeCalculationType,
             TestData.TransactionFeeId,
-            TestData.FeeValue);
+            TestData.FeeValue,
+            TestData.FeeCalculatedDateTime);
 
         public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = new ServiceProviderFeeAddedToTransactionEvent(TestData.TransactionId,
             TestData.EstateId,
@@ -488,7 +489,8 @@
             TestData.CalculatedValue,
             TestData.FeeCalculationType,
             TestData.TransactionFeeId,
-            TestData.FeeValue);
+            TestData.FeeValue,
+            TestData.FeeCalculatedDateTime);
 
         #endregion
 
@@ -691,5 +693,7 @@
                                                                               NumberOfTransactions = 50,
                                                                               OperatorName = TestData.OperatorName
                                                                           };
+
+        public static DateTime FeeCalculatedDateTime = new DateTime(2021,3,23);
     }
 }

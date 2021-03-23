@@ -9,18 +9,9 @@
     /// 
     /// </summary>
     /// <seealso cref="Shared.DomainDrivenDesign.EventSourcing.DomainEvent" />
-    [JsonObject]
     [ExcludeFromCodeCoverage]
-    public class MerchantBalanceChangedEvent : DomainEvent
+    public record MerchantBalanceChangedEvent : DomainEventRecord.DomainEvent
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MerchantBalanceChangedEvent"/> class.
-        /// </summary>
-        public MerchantBalanceChangedEvent()
-        {
-            // Needed for serialisation    
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MerchantBalanceChangedEvent"/> class.
         /// </summary>
@@ -32,7 +23,7 @@
         /// <param name="balance">The balance.</param>
         /// <param name="changeAmount">The change amount.</param>
         /// <param name="reference">The reference.</param>
-        private MerchantBalanceChangedEvent(Guid aggregateId, Guid eventId,
+        public MerchantBalanceChangedEvent(Guid aggregateId, Guid eventId,
                                            Guid estateId,
                                            Guid merchantId,
                                            Decimal availableBalance,
@@ -46,32 +37,10 @@
             this.Balance = balance;
             this.ChangeAmount = changeAmount;
             this.Reference = reference;
+            this.EventId = eventId;
+            this.AggregateId = aggregateId;
         }
-
-        /// <summary>
-        /// Creates the specified aggregate identifier.
-        /// </summary>
-        /// <param name="aggregateId">The aggregate identifier.</param>
-        /// <param name="eventId">The event identifier.</param>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="merchantId">The merchant identifier.</param>
-        /// <param name="availableBalance">The available balance.</param>
-        /// <param name="balance">The balance.</param>
-        /// <param name="changeAmount">The change amount.</param>
-        /// <param name="reference">The reference.</param>
-        /// <returns></returns>
-        public static MerchantBalanceChangedEvent Create(Guid aggregateId,
-                                                         Guid eventId,
-                                                  Guid estateId,
-                                                  Guid merchantId,
-                                                  Decimal availableBalance,
-                                                  Decimal balance,
-                                                  Decimal changeAmount,
-                                                  String reference)
-        {
-            return new MerchantBalanceChangedEvent(aggregateId, eventId, estateId, merchantId, availableBalance, balance, changeAmount,reference);
-        }
-
+        
         #region Properties
 
         /// <summary>
@@ -80,8 +49,10 @@
         /// <value>
         /// The available balance.
         /// </value>
-        [JsonProperty]
-        public Decimal AvailableBalance { get; private set; }
+        public Decimal AvailableBalance { get; init; }
+
+        public new Guid EventId { get; init; }
+        public new Guid AggregateId { get; init; }
 
         /// <summary>
         /// Gets or sets the balance.
@@ -89,8 +60,7 @@
         /// <value>
         /// The balance.
         /// </value>
-        [JsonProperty]
-        public Decimal Balance { get; private set; }
+        public Decimal Balance { get; init; }
 
         /// <summary>
         /// Gets or sets the change amount.
@@ -98,8 +68,7 @@
         /// <value>
         /// The change amount.
         /// </value>
-        [JsonProperty]
-        public Decimal ChangeAmount { get; private set; }
+        public Decimal ChangeAmount { get; init; }
 
         /// <summary>
         /// Gets or sets the estate identifier.
@@ -107,8 +76,7 @@
         /// <value>
         /// The estate identifier.
         /// </value>
-        [JsonProperty]
-        public Guid EstateId { get; private set; }
+        public Guid EstateId { get; init; }
 
         /// <summary>
         /// Gets or sets the merchant identifier.
@@ -116,8 +84,7 @@
         /// <value>
         /// The merchant identifier.
         /// </value>
-        [JsonProperty]
-        public Guid MerchantId { get; private set; }
+        public Guid MerchantId { get; init; }
 
         /// <summary>
         /// Gets or sets the reference.
@@ -125,8 +92,7 @@
         /// <value>
         /// The reference.
         /// </value>
-        [JsonProperty]
-        public String Reference { get; private set; }
+        public String Reference { get; init; }
 
         #endregion
     }

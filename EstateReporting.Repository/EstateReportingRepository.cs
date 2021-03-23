@@ -326,7 +326,7 @@
                                     EstateId = domainEvent.EstateId,
                                     MerchantId = domainEvent.MerchantId,
                                     Name = domainEvent.MerchantName,
-                                    CreatedDateTime = domainEvent.EventTimestamp.DateTime
+                                    CreatedDateTime = domainEvent.DateCreated
             };
 
             await context.Merchants.AddAsync(merchant, cancellationToken);
@@ -382,7 +382,7 @@
             MerchantContact merchantContact = new MerchantContact
                                               {
                                                   EstateId = domainEvent.EstateId,
-                                                  MerchantId = domainEvent.AggregateId,
+                                                  MerchantId = domainEvent.MerchantId,
                                                   Name = domainEvent.ContactName,
                                                   ContactId = domainEvent.ContactId,
                                                   EmailAddress = domainEvent.ContactEmailAddress,
@@ -531,9 +531,11 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
+        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
+                                                     Guid eventId,
                                                      CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;
@@ -553,7 +555,7 @@
                                                 FeeId = domainEvent.FeeId,
                                                 CalculatedValue = domainEvent.CalculatedValue,
                                                 CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = domainEvent.EventId,
+                                                EventId = eventId,
                                                 FeeType = 0,
                                                 FeeValue = domainEvent.FeeValue,
                                                 TransactionId = domainEvent.TransactionId
@@ -568,9 +570,11 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
+        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
+                                                     Guid eventId,
                                                      CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;
@@ -590,7 +594,7 @@
                                                 FeeId = domainEvent.FeeId,
                                                 CalculatedValue = domainEvent.CalculatedValue,
                                                 CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = domainEvent.EventId,
+                                                EventId = eventId,
                                                 FeeType = 1,
                                                 FeeValue = domainEvent.FeeValue,
                                                 TransactionId = domainEvent.TransactionId
