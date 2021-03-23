@@ -1,5 +1,6 @@
 ﻿namespace EstateReporting.Repository
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using BusinessLogic.Events;
@@ -84,18 +85,22 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
+        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
+                                        Guid eventId,
                                         CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
+        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
+                                        Guid eventId,
                                         CancellationToken cancellationToken);
 
         /// <summary>

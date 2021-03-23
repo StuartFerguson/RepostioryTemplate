@@ -367,6 +367,7 @@
             await client.CreateAsync("$ce-ContractAggregate", "Reporting", settings);
             await client.CreateAsync("$ce-TransactionAggregate", "Reporting", settings);
             await client.CreateAsync("$et-TransactionHasBeenCompletedEvent", "TransactionProcessor", settings);
+            await client.CreateAsync("$ce-MerchantBalanceHistory", "Reporting", settings);
         }
         private async Task RemoveEstateReadModel()
         {

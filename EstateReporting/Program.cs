@@ -13,6 +13,7 @@ namespace EstateReporting
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using BusinessLogic.Events;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
@@ -61,7 +62,7 @@ namespace EstateReporting
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            Console.Title = "Estate Management";
+            Console.Title = "Estate Reporting";
 
             //At this stage, we only need our hosting file for ip and ports
             IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
@@ -94,7 +95,9 @@ namespace EstateReporting
                                    EstateCreatedEvent e = new EstateCreatedEvent(Guid.NewGuid(), "");
                                    MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
                                    ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
-                                              
+                                   MerchantBalanceChangedEvent mb =
+                                       new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
+
                                    TypeProvider.LoadDomainEventsTypeDynamically();
                                    services.AddHostedService<SubscriptionWorker>(provider =>
                                                                                  {
@@ -102,7 +105,7 @@ namespace EstateReporting
                                                                                          provider.GetRequiredService<IDomainEventHandlerResolver>();
                                                                                      EventStorePersistentSubscriptionsClient p = provider.GetRequiredService<EventStorePersistentSubscriptionsClient>();
                                                                                      HttpClient h = provider.GetRequiredService<HttpClient>();
-                                                                                     SubscriptionWorker worker = new SubscriptionWorker(r, p,h);
+                                                                                     SubscriptionWorker worker = new SubscriptionWorker(r, p, h);
                                                                                      worker.TraceGenerated += Worker_TraceGenerated;
                                                                                      return worker;
                                                                                  });

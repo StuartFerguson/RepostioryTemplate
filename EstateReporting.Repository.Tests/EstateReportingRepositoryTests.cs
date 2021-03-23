@@ -5,19 +5,26 @@ namespace EstateReporting.Repository.Tests
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using BusinessLogic.Events;
     using Database;
     using Database.Entities;
     using Database.ViewEntities;
+    using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
+    using EstateManagement.Merchant.DomainEvents;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
     using Moq;
+    using Newtonsoft.Json;
     using Shared.EntityFramework;
     using Shared.Exceptions;
     using Shared.Logger;
     using Shouldly;
     using Testing;
+    using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
 
     public class EstateReportingRepositoryTests
     {
@@ -66,12 +73,17 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.EstateCreatedEvent);
+            var @event = JsonConvert.DeserializeObject<EstateCreatedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddEstate(TestData.EstateCreatedEvent, CancellationToken.None);
+            await reportingRepository.AddEstate(@event, CancellationToken.None);
 
-            Estate estate = await context.Estates.SingleOrDefaultAsync(e => e.EstateId == TestData.EstateId);
+            Estate estate = await context.Estates.SingleOrDefaultAsync(e => e.EstateId == @event.EstateId);
             estate.ShouldNotBeNull();
+            estate.EstateId.ShouldBe(@event.EstateId);
+            estate.Name.ShouldBe(@event.EstateName);
         }
 
         [Theory]
@@ -84,12 +96,18 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.EstateSecurityUserAddedEvent);
+            var @event = JsonConvert.DeserializeObject<SecurityUserAddedToEstateEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddEstateSecurityUser(TestData.EstateSecurityUserAddedEvent, CancellationToken.None);
+            await reportingRepository.AddEstateSecurityUser(@event, CancellationToken.None);
 
-            EstateSecurityUser estateSecurityUser = await context.EstateSecurityUsers.SingleOrDefaultAsync(e => e.SecurityUserId == TestData.EstateSecurityUserId);
+            EstateSecurityUser estateSecurityUser = await context.EstateSecurityUsers.SingleOrDefaultAsync(e => e.SecurityUserId == @event.SecurityUserId);
             estateSecurityUser.ShouldNotBeNull();
+            estateSecurityUser.EstateId.ShouldBe(@event.EstateId);
+            estateSecurityUser.SecurityUserId.ShouldBe(@event.SecurityUserId);
+            estateSecurityUser.EmailAddress.ShouldBe(@event.EmailAddress);
         }
 
         [Theory]
@@ -102,12 +120,20 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.OperatorAddedToEstateEvent);
+            var @event = JsonConvert.DeserializeObject<OperatorAddedToEstateEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddEstateOperator(TestData.OperatorAddedToEstateEvent, CancellationToken.None);
+            await reportingRepository.AddEstateOperator(@event, CancellationToken.None);
 
-            EstateOperator estateOperator = await context.EstateOperators.SingleOrDefaultAsync(e => e.OperatorId == TestData.OperatorId);
+            EstateOperator estateOperator = await context.EstateOperators.SingleOrDefaultAsync(e => e.OperatorId == @event.OperatorId);
             estateOperator.ShouldNotBeNull();
+            estateOperator.EstateId.ShouldBe(@event.EstateId);
+            estateOperator.OperatorId.ShouldBe(@event.OperatorId);
+            estateOperator.Name.ShouldBe(@event.Name);
+            estateOperator.RequireCustomMerchantNumber.ShouldBe(@event.RequireCustomMerchantNumber);
+            estateOperator.RequireCustomTerminalNumber.ShouldBe(@event.RequireCustomTerminalNumber);
         }
 
         [Theory]
@@ -120,12 +146,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantCreatedEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantCreatedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddMerchant(TestData.MerchantCreatedEvent, CancellationToken.None);
+            await reportingRepository.AddMerchant(@event, CancellationToken.None);
 
-            Merchant merchant = await context.Merchants.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.EstateId == TestData.EstateId);
+            Merchant merchant = await context.Merchants.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.EstateId == @event.EstateId);
             merchant.ShouldNotBeNull();
+            merchant.MerchantId.ShouldBe(@event.MerchantId);
+            merchant.EstateId.ShouldBe(@event.EstateId);
+            merchant.Name.ShouldBe(@event.MerchantName);
+            merchant.CreatedDateTime.ShouldBe(@event.DateCreated);
         }
 
         [Theory]
@@ -140,10 +173,26 @@ namespace EstateReporting.Repository.Tests
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddMerchantAddress(TestData.AddressAddedEvent, CancellationToken.None);
+            var jsonData = JsonConvert.SerializeObject(TestData.AddressAddedEvent);
+            var @event = JsonConvert.DeserializeObject<AddressAddedEvent>(jsonData);
 
-            MerchantAddress merchantAddress = await context.MerchantAddresses.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.AddressId == TestData.AddressId && e.EstateId == TestData.EstateId);
+            await reportingRepository.AddMerchantAddress(@event, CancellationToken.None);
+
+            MerchantAddress merchantAddress = await context.MerchantAddresses.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.AddressId == @event.AddressId && 
+                                                                                                        e.EstateId == @event.EstateId);
             merchantAddress.ShouldNotBeNull();
+            merchantAddress.MerchantId.ShouldBe(@event.MerchantId);
+            merchantAddress.EstateId.ShouldBe(@event.EstateId);
+            merchantAddress.AddressId.ShouldBe(@event.AddressId);
+            merchantAddress.AddressLine1.ShouldBe(@event.AddressLine1);
+            merchantAddress.AddressLine2.ShouldBe(@event.AddressLine2);
+            merchantAddress.AddressLine3.ShouldBe(@event.AddressLine3);
+            merchantAddress.AddressLine4.ShouldBe(@event.AddressLine4);
+            merchantAddress.Country.ShouldBe(@event.Country);
+            merchantAddress.Region.ShouldBe(@event.Region);
+            merchantAddress.PostalCode.ShouldBe(@event.PostalCode);
+            merchantAddress.Town.ShouldBe(@event.Town);
+
         }
 
         [Theory]
@@ -158,10 +207,20 @@ namespace EstateReporting.Repository.Tests
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddMerchantContact(TestData.ContactAddedEvent, CancellationToken.None);
+            var jsonData = JsonConvert.SerializeObject(TestData.ContactAddedEvent);
+            var @event = JsonConvert.DeserializeObject<ContactAddedEvent>(jsonData);
 
-            MerchantContact merchantContact = await context.MerchantContacts.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.ContactId == TestData.ContactId && e.EstateId == TestData.EstateId);
+            await reportingRepository.AddMerchantContact(@event, CancellationToken.None);
+
+            MerchantContact merchantContact = await context.MerchantContacts.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.ContactId == @event.ContactId 
+                                                                                                      && e.EstateId == @event.EstateId);
             merchantContact.ShouldNotBeNull();
+            merchantContact.MerchantId.ShouldBe(@event.MerchantId);
+            merchantContact.ContactId.ShouldBe(@event.ContactId);
+            merchantContact.EmailAddress.ShouldBe(@event.ContactEmailAddress);
+            merchantContact.EstateId.ShouldBe(@event.EstateId);
+            merchantContact.Name.ShouldBe(@event.ContactName);
+            merchantContact.PhoneNumber.ShouldBe(@event.ContactPhoneNumber);
         }
 
         [Theory]
@@ -174,12 +233,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.DeviceAddedToMerchantEvent);
+            var @event = JsonConvert.DeserializeObject<DeviceAddedToMerchantEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddMerchantDevice(TestData.DeviceAddedToMerchantEvent, CancellationToken.None);
+            await reportingRepository.AddMerchantDevice(@event, CancellationToken.None);
 
-            MerchantDevice merchantDevice = await context.MerchantDevices.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.DeviceId == TestData.DeviceId && e.EstateId == TestData.EstateId);
+            MerchantDevice merchantDevice = await context.MerchantDevices.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.DeviceId == @event.DeviceId && e.EstateId == @event.EstateId);
             merchantDevice.ShouldNotBeNull();
+            merchantDevice.MerchantId.ShouldBe(@event.MerchantId);
+            merchantDevice.EstateId.ShouldBe(@event.EstateId);
+            merchantDevice.DeviceId.ShouldBe(@event.DeviceId);
+            merchantDevice.DeviceIdentifier.ShouldBe(@event.DeviceIdentifier);
         }
 
         [Theory]
@@ -192,12 +258,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantSecurityUserAddedEvent);
+            var @event = JsonConvert.DeserializeObject<SecurityUserAddedToMerchantEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             await reportingRepository.AddMerchantSecurityUser(TestData.MerchantSecurityUserAddedEvent, CancellationToken.None);
 
-            MerchantSecurityUser merchantSecurityUser = await context.MerchantSecurityUsers.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.SecurityUserId == TestData.MerchantSecurityUserId && e.EstateId == TestData.EstateId);
+            MerchantSecurityUser merchantSecurityUser = await context.MerchantSecurityUsers.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.SecurityUserId == @event.SecurityUserId && e.EstateId == @event.EstateId);
             merchantSecurityUser.ShouldNotBeNull();
+            merchantSecurityUser.MerchantId.ShouldBe(@event.MerchantId);
+            merchantSecurityUser.EstateId.ShouldBe(@event.EstateId);
+            merchantSecurityUser.EmailAddress.ShouldBe(@event.EmailAddress);
+            merchantSecurityUser.SecurityUserId.ShouldBe(@event.SecurityUserId);
         }
 
         [Theory]
@@ -210,12 +283,22 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.OperatorAddedToEstateEvent);
+            var @event = JsonConvert.DeserializeObject<OperatorAssignedToMerchantEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddMerchantOperator(TestData.OperatorAssignedToMerchantEvent, CancellationToken.None);
+            await reportingRepository.AddMerchantOperator(@event, CancellationToken.None);
 
-            MerchantOperator merchantOperator = await context.MerchantOperators.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.OperatorId == TestData.OperatorId && e.EstateId == TestData.EstateId);
+            MerchantOperator merchantOperator = await context.MerchantOperators.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.OperatorId == @event.OperatorId 
+                                                                                                         && e.EstateId == @event.EstateId);
             merchantOperator.ShouldNotBeNull();
+            merchantOperator.MerchantId.ShouldBe(@event.MerchantId);
+            merchantOperator.OperatorId.ShouldBe(@event.OperatorId);
+            merchantOperator.EstateId.ShouldBe(@event.EstateId);
+            merchantOperator.Name.ShouldBe(@event.Name);
+            merchantOperator.MerchantNumber.ShouldBe(@event.MerchantNumber);
+            merchantOperator.TerminalNumber.ShouldBe(@event.TerminalNumber);
         }
 
         [Theory]
@@ -228,12 +311,23 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasStartedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasStartedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.StartTransaction(TestData.TransactionHasStartedEvent, CancellationToken.None);
-
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            await reportingRepository.StartTransaction(@event, CancellationToken.None);
+            
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
+            transaction.EstateId.ShouldBe(@event.EstateId);
+            transaction.MerchantId.ShouldBe(@event.MerchantId);
+            transaction.TransactionDate.ShouldBe(@event.TransactionDateTime.Date);
+            transaction.TransactionDateTime.ShouldBe(@event.TransactionDateTime);
+            transaction.TransactionNumber.ShouldBe(@event.TransactionNumber);
+            transaction.TransactionType.ShouldBe(@event.TransactionType);
+            transaction.TransactionReference.ShouldBe(@event.TransactionReference);
+            transaction.DeviceIdentifier.ShouldBe(@event.DeviceIdentifier);
         }
         
         [Theory]
@@ -253,15 +347,25 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.AdditionalRequestDataRecordedEvent);
+            var @event = JsonConvert.DeserializeObject<AdditionalRequestDataRecordedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.RecordTransactionAdditionalRequestData(TestData.AdditionalRequestDataRecordedEvent, CancellationToken.None);
-
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
-            transaction.ShouldNotBeNull();
-
-            TransactionAdditionalRequestData transactionAdditionalRequestData = await context.TransactionsAdditionalRequestData.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            await reportingRepository.RecordTransactionAdditionalRequestData(@event, CancellationToken.None);
+            
+            TransactionAdditionalRequestData transactionAdditionalRequestData = await context.TransactionsAdditionalRequestData.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transactionAdditionalRequestData.ShouldNotBeNull();
+            if (@event.AdditionalTransactionRequestMetadata.TryGetValue("Amount", out String amount))
+            {
+                transactionAdditionalRequestData.Amount.ShouldBe(amount);
+            }
+            if (@event.AdditionalTransactionRequestMetadata.TryGetValue("CustomerAccountNumber", out String customerAccountNumber))
+            {
+                transactionAdditionalRequestData.CustomerAccountNumber.ShouldBe(customerAccountNumber);
+            }
+
+            // TODO: Compare metadata
         }
 
         [Theory]
@@ -281,6 +385,9 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.AdditionalResponseDataRecordedEvent);
+            var @event = JsonConvert.DeserializeObject<AdditionalResponseDataRecordedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             await reportingRepository.RecordTransactionAdditionalResponseData(TestData.AdditionalResponseDataRecordedEvent, CancellationToken.None);
@@ -288,8 +395,11 @@ namespace EstateReporting.Repository.Tests
             Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
             transaction.ShouldNotBeNull();
 
-            TransactionAdditionalResponseData transactionAdditionalResponseData = await context.TransactionsAdditionalResponseData.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            TransactionAdditionalResponseData transactionAdditionalResponseData = await context.TransactionsAdditionalResponseData.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transactionAdditionalResponseData.ShouldNotBeNull();
+            transactionAdditionalResponseData.MerchantId.ShouldBe(@event.MerchantId);
+            transactionAdditionalResponseData.EstateId.ShouldBe(@event.EstateId);
+            transactionAdditionalResponseData.TransactionId.ShouldBe(@event.TransactionId);
         }
 
         [Theory]
@@ -309,15 +419,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenLocallyAuthorisedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenLocallyAuthorisedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+            await reportingRepository.UpdateTransactionAuthorisation(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
-            transaction.ResponseMessage.ShouldBe(TestData.TransactionHasBeenLocallyAuthorisedEvent.ResponseMessage);
-            transaction.ResponseCode.ShouldBe(TestData.TransactionHasBeenLocallyAuthorisedEvent.ResponseCode);
+            transaction.ResponseMessage.ShouldBe(@event.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(@event.ResponseCode);
             transaction.IsAuthorised.ShouldBeTrue();
+            transaction.AuthorisationCode.ShouldBe(@event.AuthorisationCode);
         }
 
         [Theory]
@@ -330,11 +444,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenLocallyAuthorisedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenLocallyAuthorisedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyAuthorisedEvent,
+                                                await reportingRepository.UpdateTransactionAuthorisation(@event,
                                                                                                          CancellationToken.None);
                                             });
         }
@@ -356,14 +473,17 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenLocallyDeclinedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenLocallyDeclinedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyDeclinedEvent, CancellationToken.None);
+            await reportingRepository.UpdateTransactionAuthorisation(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
-            transaction.ResponseMessage.ShouldBe(TestData.TransactionHasBeenLocallyDeclinedEvent.ResponseMessage);
-            transaction.ResponseCode.ShouldBe(TestData.TransactionHasBeenLocallyDeclinedEvent.ResponseCode);
+            transaction.ResponseMessage.ShouldBe(@event.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(@event.ResponseCode);
             transaction.IsAuthorised.ShouldBeFalse();
         }
 
@@ -377,10 +497,13 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenLocallyDeclinedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenLocallyDeclinedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () => {
-                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionHasBeenLocallyDeclinedEvent, CancellationToken.None);
+                                                await reportingRepository.UpdateTransactionAuthorisation(@event, CancellationToken.None);
 
                                             });
         }
@@ -402,15 +525,20 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionAuthorisedByOperatorEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionAuthorisedByOperatorEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionAuthorisedByOperatorEvent, CancellationToken.None);
+            await reportingRepository.UpdateTransactionAuthorisation(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
-            transaction.ResponseMessage.ShouldBe(TestData.TransactionAuthorisedByOperatorEvent.ResponseMessage);
-            transaction.ResponseCode.ShouldBe(TestData.TransactionAuthorisedByOperatorEvent.ResponseCode);
+            transaction.ResponseMessage.ShouldBe(@event.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(@event.ResponseCode);
             transaction.IsAuthorised.ShouldBeTrue();
+            transaction.AuthorisationCode.ShouldBe(@event.AuthorisationCode);
+            transaction.OperatorIdentifier.ShouldBe(@event.OperatorIdentifier);
         }
 
         [Theory]
@@ -423,11 +551,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionAuthorisedByOperatorEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionAuthorisedByOperatorEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionAuthorisedByOperatorEvent,
+                                                await reportingRepository.UpdateTransactionAuthorisation(@event,
                                                                                                          CancellationToken.None);
                                             });
         }
@@ -449,15 +580,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionDeclinedByOperatorEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionDeclinedByOperatorEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionDeclinedByOperatorEvent, CancellationToken.None);
+            await reportingRepository.UpdateTransactionAuthorisation(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
-            transaction.ResponseMessage.ShouldBe(TestData.TransactionDeclinedByOperatorEvent.ResponseMessage);
-            transaction.ResponseCode.ShouldBe(TestData.TransactionDeclinedByOperatorEvent.ResponseCode);
+            transaction.ResponseMessage.ShouldBe(@event.ResponseMessage);
+            transaction.ResponseCode.ShouldBe(@event.ResponseCode);
             transaction.IsAuthorised.ShouldBeFalse();
+            transaction.OperatorIdentifier.ShouldBe(@event.OperatorIdentifier);
         }
 
         [Theory]
@@ -470,11 +605,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionDeclinedByOperatorEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionDeclinedByOperatorEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateTransactionAuthorisation(TestData.TransactionDeclinedByOperatorEvent,
+                                                await reportingRepository.UpdateTransactionAuthorisation(@event,
                                                                                                          CancellationToken.None);
                                             });
         }
@@ -496,11 +634,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenCompletedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.CompleteTransaction(TestData.TransactionHasBeenCompletedEvent, CancellationToken.None);
+            await reportingRepository.CompleteTransaction(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
             transaction.IsCompleted.ShouldBeTrue();
         }
@@ -515,9 +656,12 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionHasBeenCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionHasBeenCompletedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            Should.Throw<NotFoundException>(async () => { await reportingRepository.CompleteTransaction(TestData.TransactionHasBeenCompletedEvent, CancellationToken.None); });
+            Should.Throw<NotFoundException>(async () => { await reportingRepository.CompleteTransaction(@event, CancellationToken.None); });
         }
 
 
@@ -531,12 +675,19 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ContractCreatedEvent);
+            var @event = JsonConvert.DeserializeObject<ContractCreatedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddContract(TestData.ContractCreatedEvent, CancellationToken.None);
+            await reportingRepository.AddContract(@event, CancellationToken.None);
 
-            Contract contract = await context.Contracts.SingleOrDefaultAsync(e => e.ContractId== TestData.ContractId);
+            Contract contract = await context.Contracts.SingleOrDefaultAsync(e => e.ContractId== @event.ContractId);
             contract.ShouldNotBeNull();
+            contract.OperatorId.ShouldBe(@event.OperatorId);
+            contract.EstateId.ShouldBe(@event.EstateId);
+            contract.ContractId.ShouldBe(@event.ContractId);
+            contract.Description.ShouldBe(@event.Description);
         }
 
         [Theory]
@@ -549,14 +700,22 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.FixedValueProductAddedToContractEvent);
+            var @event = JsonConvert.DeserializeObject<FixedValueProductAddedToContractEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddContractProduct(TestData.FixedValueProductAddedToContractEvent, CancellationToken.None);
+            await reportingRepository.AddContractProduct(@event, CancellationToken.None);
 
-            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
-                                                                                                e.ProductId == TestData.ProductId);
+            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == @event.ContractId &&
+                                                                                                e.ProductId == @event.ProductId);
             contractProduct.ShouldNotBeNull();
-            contractProduct.Value.ShouldBe(TestData.ProductFixedValue);
+            contractProduct.Value.ShouldBe(@event.Value);
+            contractProduct.EstateId.ShouldBe(@event.EstateId);
+            contractProduct.ContractId.ShouldBe(@event.ContractId);
+            contractProduct.DisplayText.ShouldBe(@event.DisplayText);
+            contractProduct.ProductId.ShouldBe(@event.ProductId);
+            contractProduct.ProductName.ShouldBe(@event.ProductName);
         }
 
         [Theory]
@@ -569,14 +728,22 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VariableValueProductAddedToContractEvent);
+            var @event = JsonConvert.DeserializeObject<VariableValueProductAddedToContractEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddContractProduct(TestData.VariableValueProductAddedToContractEvent, CancellationToken.None);
+            await reportingRepository.AddContractProduct(@event, CancellationToken.None);
 
-            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
-                                                                                                       e.ProductId == TestData.ProductId);
+            ContractProduct contractProduct = await context.ContractProducts.SingleOrDefaultAsync(e => e.ContractId == @event.ContractId &&
+                                                                                                       e.ProductId == @event.ProductId);
             contractProduct.ShouldNotBeNull();
             contractProduct.Value.ShouldBeNull();
+            contractProduct.EstateId.ShouldBe(@event.EstateId);
+            contractProduct.ContractId.ShouldBe(@event.ContractId);
+            contractProduct.DisplayText.ShouldBe(@event.DisplayText);
+            contractProduct.ProductId.ShouldBe(@event.ProductId);
+            contractProduct.ProductName.ShouldBe(@event.ProductName);
         }
 
         [Theory]
@@ -589,14 +756,25 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionFeeForProductAddedToContractEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionFeeForProductAddedToContractEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddContractProductTransactionFee(TestData.TransactionFeeForProductAddedToContractEvent, CancellationToken.None);
+            await reportingRepository.AddContractProductTransactionFee(@event, CancellationToken.None);
 
-            ContractProductTransactionFee contractProductTransactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(e => e.ContractId == TestData.ContractId &&
-                                                                                                       e.ProductId == TestData.ProductId &&
-                                                                                                       e.TransactionFeeId == TestData.TransactionFeeId);
+            ContractProductTransactionFee contractProductTransactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(e => e.ContractId == @event.ContractId &&
+                                                                                                       e.ProductId == @event.ProductId &&
+                                                                                                       e.TransactionFeeId == @event.TransactionFeeId);
             contractProductTransactionFee.ShouldNotBeNull();
+            contractProductTransactionFee.EstateId.ShouldBe(@event.EstateId);
+            contractProductTransactionFee.ContractId.ShouldBe(@event.ContractId);
+            contractProductTransactionFee.ProductId.ShouldBe(@event.ProductId);
+            contractProductTransactionFee.Description.ShouldBe(@event.Description);
+            contractProductTransactionFee.CalculationType.ShouldBe(@event.CalculationType);
+            contractProductTransactionFee.FeeType.ShouldBe(@event.FeeType);
+            contractProductTransactionFee.IsEnabled.ShouldBeTrue();
+            contractProductTransactionFee.Value.ShouldBe(@event.Value);
         }
 
         [Theory]
@@ -616,14 +794,17 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ProductDetailsAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<ProductDetailsAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddProductDetailsToTransaction(TestData.ProductDetailsAddedToTransactionEvent, CancellationToken.None);
+            await reportingRepository.AddProductDetailsToTransaction(@event, CancellationToken.None);
 
-            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             transaction.ShouldNotBeNull();
-            transaction.ContractId.ShouldBe(TestData.ProductDetailsAddedToTransactionEvent.ContractId);
-            transaction.ProductId.ShouldBe(TestData.ProductDetailsAddedToTransactionEvent.ProductId);
+            transaction.ContractId.ShouldBe(@event.ContractId);
+            transaction.ProductId.ShouldBe(@event.ProductId);
         }
 
         [Theory]
@@ -636,10 +817,13 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ProductDetailsAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<ProductDetailsAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.AddProductDetailsToTransaction(TestData.ProductDetailsAddedToTransactionEvent,
+                                                await reportingRepository.AddProductDetailsToTransaction(@event,
                                                                                                          CancellationToken.None);
                                             });
         }
@@ -661,19 +845,22 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(TestData.MerchantFeeAddedToTransactionEvent, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
 
-            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == TestData.TransactionId && e.FeeId == TestData.TransactionFeeId);
+            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
-            transactionFee.FeeId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeId);
-            transactionFee.CalculatedValue.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.CalculatedValue);
-            transactionFee.CalculationType.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeCalculationType);
-            transactionFee.EventId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.EventId);
+            transactionFee.FeeId.ShouldBe(@event.FeeId);
+            transactionFee.CalculatedValue.ShouldBe(@event.CalculatedValue);
+            transactionFee.CalculationType.ShouldBe(@event.FeeCalculationType);
+            transactionFee.EventId.ShouldBe(@event.EventId);
             transactionFee.FeeType.ShouldBe(0);
-            transactionFee.FeeValue.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.FeeValue);
-            transactionFee.TransactionId.ShouldBe(TestData.MerchantFeeAddedToTransactionEvent.TransactionId);
+            transactionFee.FeeValue.ShouldBe(@event.FeeValue);
+            transactionFee.TransactionId.ShouldBe(@event.TransactionId);
         }
 
         [Theory]
@@ -686,10 +873,13 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(TestData.MerchantFeeAddedToTransactionEvent, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
             });
         }
 
@@ -710,19 +900,21 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ServiceProviderFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<ServiceProviderFeeAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(TestData.ServiceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
 
-            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == TestData.TransactionId && e.FeeId == TestData.TransactionFeeId);
+            TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
-            transactionFee.FeeId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeId);
-            transactionFee.CalculatedValue.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.CalculatedValue);
-            transactionFee.CalculationType.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeCalculationType);
-            transactionFee.EventId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.EventId);
+            transactionFee.FeeId.ShouldBe(@event.FeeId);
+            transactionFee.CalculatedValue.ShouldBe(@event.CalculatedValue);
+            transactionFee.CalculationType.ShouldBe(@event.FeeCalculationType);
             transactionFee.FeeType.ShouldBe(1);
-            transactionFee.FeeValue.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.FeeValue);
-            transactionFee.TransactionId.ShouldBe(TestData.ServiceProviderFeeAddedToTransactionEvent.TransactionId);
+            transactionFee.FeeValue.ShouldBe(@event.FeeValue);
+            transactionFee.TransactionId.ShouldBe(@event.TransactionId);
         }
 
         [Theory]
@@ -735,10 +927,13 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(TestData.ServiceProviderFeeAddedToTransactionEvent, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
             });
         }
 
@@ -765,12 +960,15 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionFeeForProductDisabledEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionFeeForProductDisabledEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             
-            await reportingRepository.DisableContractProductTransactionFee(TestData.TransactionFeeForProductDisabledEvent, CancellationToken.None);
+            await reportingRepository.DisableContractProductTransactionFee(@event, CancellationToken.None);
 
-            ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleAsync(t => t.TransactionFeeId == TestData.TransactionFeeId);
-
+            ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleAsync(t => t.TransactionFeeId == @event.TransactionFeeId);
+            transactionFee.ShouldNotBeNull();
             transactionFee.IsEnabled.ShouldBeFalse();
         }
 
@@ -784,11 +982,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionFeeForProductDisabledEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionFeeForProductDisabledEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.DisableContractProductTransactionFee(TestData.TransactionFeeForProductDisabledEvent,
+                                                await reportingRepository.DisableContractProductTransactionFee(@event,
                                                                                                                CancellationToken.None);
                                             });
         }
@@ -803,12 +1004,18 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasStartedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasStartedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.StartReconciliation(TestData.ReconciliationHasStartedEvent, CancellationToken.None);
-
-            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            await reportingRepository.StartReconciliation(@event, CancellationToken.None);
+            
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
             reconciliation.ShouldNotBeNull();
+            reconciliation.TransactionId.ShouldBe(@event.TransactionId);
+            reconciliation.EstateId.ShouldBe(@event.EstateId);
+            reconciliation.TransactionDateTime.ShouldBe(@event.TransactionDateTime);
         }
 
         [Theory]
@@ -828,16 +1035,19 @@ namespace EstateReporting.Repository.Tests
                                                 });
             await context.SaveChangesAsync();
 
+            var jsonData = JsonConvert.SerializeObject(TestData.OverallTotalsRecordedEvent);
+            var @event = JsonConvert.DeserializeObject<OverallTotalsRecordedEvent>(jsonData);
+
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateReconciliationOverallTotals(TestData.OverallTotalsRecordedEvent, CancellationToken.None);
+            await reportingRepository.UpdateReconciliationOverallTotals(@event, CancellationToken.None);
 
-            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
-            reconciliation.TransactionCount.ShouldBe(TestData.ReconcilationTransactionCount);
-            reconciliation.TransactionValue.ShouldBe(TestData.ReconcilationTransactionValue);
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
+            reconciliation.TransactionCount.ShouldBe(@event.TransactionCount);
+            reconciliation.TransactionValue.ShouldBe(@event.TransactionValue);
         }
 
         [Theory]
@@ -850,11 +1060,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.OverallTotalsRecordedEvent);
+            var @event = JsonConvert.DeserializeObject<OverallTotalsRecordedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateReconciliationOverallTotals(TestData.OverallTotalsRecordedEvent,
+                                                await reportingRepository.UpdateReconciliationOverallTotals(@event,
                                                                                               CancellationToken.None);
                                             });
         }
@@ -879,11 +1092,15 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasBeenLocallyAuthorisedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasBeenLocallyAuthorisedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyAuthorisedEvent, CancellationToken.None);
+            await reportingRepository.UpdateReconciliationStatus(@event, CancellationToken.None);
 
-            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
+            reconciliation.ShouldNotBeNull();
             reconciliation.IsAuthorised.ShouldBeTrue();
         }
 
@@ -897,12 +1114,15 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasBeenLocallyAuthorisedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasBeenLocallyAuthorisedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyAuthorisedEvent,
-                                                                                                            CancellationToken.None);
+                                                await reportingRepository.UpdateReconciliationStatus(@event,
+                                                                                                     CancellationToken.None);
                                             });
         }
 
@@ -926,11 +1146,15 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasBeenLocallyDeclinedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasBeenLocallyDeclinedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyDeclinedEvent, CancellationToken.None);
+            await reportingRepository.UpdateReconciliationStatus(@event, CancellationToken.None);
 
             Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            reconciliation.ShouldNotBeNull();
             reconciliation.IsAuthorised.ShouldBeFalse();
         }
 
@@ -944,11 +1168,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasBeenLocallyDeclinedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasBeenLocallyDeclinedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateReconciliationStatus(TestData.ReconciliationHasBeenLocallyDeclinedEvent,
+                                                await reportingRepository.UpdateReconciliationStatus(@event,
                                                                                                      CancellationToken.None);
                                             });
         }
@@ -973,11 +1200,15 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasCompletedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.CompleteReconciliation(TestData.ReconciliationHasCompletedEvent, CancellationToken.None);
+            await reportingRepository.CompleteReconciliation(@event, CancellationToken.None);
 
-            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == TestData.MerchantId && e.TransactionId == TestData.TransactionId && e.EstateId == TestData.EstateId);
+            Reconciliation reconciliation = await context.Reconciliations.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
+            reconciliation.ShouldNotBeNull();
             reconciliation.IsCompleted.ShouldBeTrue();
         }
 
@@ -991,11 +1222,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.ReconciliationHasCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<ReconciliationHasCompletedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.CompleteReconciliation(TestData.ReconciliationHasCompletedEvent,
+                                                await reportingRepository.CompleteReconciliation(@event,
                                                                                                      CancellationToken.None);
                                             });
         }
@@ -1011,11 +1245,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantBalanceChangedEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantBalanceChangedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent, CancellationToken.None);
+            await reportingRepository.InsertMerchantBalanceRecord(@event, CancellationToken.None);
 
-            MerchantBalanceHistory balanceHistory= await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EstateId == TestData.EstateId);
+            MerchantBalanceHistory balanceHistory= await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EstateId == @event.EstateId);
             balanceHistory.ShouldNotBeNull();
             balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance);
         }
@@ -1032,18 +1269,24 @@ namespace EstateReporting.Repository.Tests
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent, CancellationToken.None);
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantBalanceChangedEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantBalanceChangedEvent>(jsonData);
+
+            await reportingRepository.InsertMerchantBalanceRecord(@event, CancellationToken.None);
 
             MerchantBalanceHistory balanceHistory = null;
-            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == TestData.MerchantBalanceChangedEvent.EventId);
+            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == @event.EventId);
             balanceHistory.ShouldNotBeNull();
-            balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance);
+            balanceHistory.AvailableBalance.ShouldBe(@event.AvailableBalance);
 
-            await reportingRepository.InsertMerchantBalanceRecord(TestData.MerchantBalanceChangedEvent2, CancellationToken.None);
+            var jsonData2 = JsonConvert.SerializeObject(TestData.MerchantBalanceChangedEvent2);
+            var @event2 = JsonConvert.DeserializeObject<MerchantBalanceChangedEvent>(jsonData2);
 
-            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == TestData.MerchantBalanceChangedEvent.EventId);
+            await reportingRepository.InsertMerchantBalanceRecord(@event2, CancellationToken.None);
+
+            balanceHistory = await context.MerchantBalanceHistories.SingleOrDefaultAsync(e => e.EventId == @event.EventId);
             balanceHistory.ShouldNotBeNull();
-            balanceHistory.AvailableBalance.ShouldBe(TestData.AvailableBalance2);
+            balanceHistory.AvailableBalance.ShouldBe(@event2.AvailableBalance);
         }
 
         [Theory]
@@ -1056,12 +1299,23 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VoucherGeneratedEvent);
+            var @event = JsonConvert.DeserializeObject<VoucherGeneratedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddGeneratedVoucher(TestData.VoucherGeneratedEvent, CancellationToken.None);
+            await reportingRepository.AddGeneratedVoucher(@event, CancellationToken.None);
 
-            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == TestData.VoucherId && e.EstateId == TestData.EstateId);
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == @event.VoucherId && e.EstateId == @event.EstateId);
             voucher.ShouldNotBeNull();
+            voucher.EstateId.ShouldBe(@event.EstateId);
+            voucher.TransactionId.ShouldBe(@event.TransactionId);
+            voucher.VoucherId.ShouldBe(@event.VoucherId);
+            voucher.GenerateDateTime.ShouldBe(@event.GeneratedDateTime);
+            voucher.OperatorIdentifier.ShouldBe(@event.OperatorIdentifier);
+            voucher.Value.ShouldBe(@event.Value);
+            voucher.VoucherCode.ShouldBe(@event.VoucherCode);
+            voucher.ExpiryDate.ShouldBe(@event.ExpiryDateTime.Date);
         }
 
         [Theory]
@@ -1079,29 +1333,38 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VoucherIssuedEvent);
+            var @event = JsonConvert.DeserializeObject<VoucherIssuedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateVoucherIssueDetails(TestData.VoucherIssuedEvent, CancellationToken.None);
+            await reportingRepository.UpdateVoucherIssueDetails(@event, CancellationToken.None);
 
-            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == TestData.VoucherId && e.EstateId == TestData.EstateId);
+            Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == @event.VoucherId && e.EstateId == @event.EstateId);
             voucher.IsIssued.ShouldBeTrue();
+            voucher.RecipientEmail.ShouldBe(@event.RecipientEmail);
+            voucher.RecipientMobile.ShouldBe(@event.RecipientMobile);
+            voucher.IssuedDateTime.ShouldBe(@event.IssuedDateTime);
         }
 
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
-        public async Task EstateReportingRepository_UpdateVoucherIssueDetails_VouchernNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        public async Task EstateReportingRepository_UpdateVoucherIssueDetails_VoucherNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
             
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VoucherIssuedEvent);
+            var @event = JsonConvert.DeserializeObject<VoucherIssuedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
                                             {
-                                                await reportingRepository.UpdateVoucherIssueDetails(TestData.VoucherIssuedEvent, CancellationToken.None);
+                                                await reportingRepository.UpdateVoucherIssueDetails(@event, CancellationToken.None);
                                             });
         }
 
@@ -1120,12 +1383,16 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VoucherFullyRedeemedEvent);
+            var @event = JsonConvert.DeserializeObject<VoucherFullyRedeemedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.UpdateVoucherRedemptionDetails(TestData.VoucherFullyRedeemedEvent, CancellationToken.None);
+            await reportingRepository.UpdateVoucherRedemptionDetails(@event, CancellationToken.None);
 
             Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(e => e.VoucherId == TestData.VoucherId && e.EstateId == TestData.EstateId);
             voucher.IsRedeemed.ShouldBeTrue();
+            voucher.RedeemedDateTime.ShouldBe(@event.RedeemedDateTime);
         }
 
         [Theory]
@@ -1138,11 +1405,14 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
+            var jsonData = JsonConvert.SerializeObject(TestData.VoucherFullyRedeemedEvent);
+            var @event = JsonConvert.DeserializeObject<VoucherFullyRedeemedEvent>(jsonData);
+
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.UpdateVoucherRedemptionDetails(TestData.VoucherFullyRedeemedEvent, CancellationToken.None);
+                await reportingRepository.UpdateVoucherRedemptionDetails(@event, CancellationToken.None);
             });
         }
         

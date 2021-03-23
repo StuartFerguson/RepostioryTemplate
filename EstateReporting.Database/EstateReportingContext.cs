@@ -437,7 +437,8 @@
 
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
-
+            
+            
             base.OnModelCreating(modelBuilder);
         }
 
