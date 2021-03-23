@@ -850,7 +850,7 @@ namespace EstateReporting.Repository.Tests
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
 
             TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
@@ -879,7 +879,7 @@ namespace EstateReporting.Repository.Tests
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
             });
         }
 
@@ -905,7 +905,7 @@ namespace EstateReporting.Repository.Tests
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
 
             TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
@@ -933,7 +933,7 @@ namespace EstateReporting.Repository.Tests
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
             });
         }
 

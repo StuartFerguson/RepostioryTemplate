@@ -480,7 +480,8 @@
             TestData.CalculatedValue,
             TestData.FeeCalculationType,
             TestData.TransactionFeeId,
-            TestData.FeeValue);
+            TestData.FeeValue,
+            TestData.FeeCalculatedDateTime);
 
         public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = new ServiceProviderFeeAddedToTransactionEvent(TestData.TransactionId,
             TestData.EstateId,
@@ -488,7 +489,8 @@
             TestData.CalculatedValue,
             TestData.FeeCalculationType,
             TestData.TransactionFeeId,
-            TestData.FeeValue);
+            TestData.FeeValue,
+            TestData.FeeCalculatedDateTime);
 
         #endregion
 
@@ -691,5 +693,7 @@
                                                                               NumberOfTransactions = 50,
                                                                               OperatorName = TestData.OperatorName
                                                                           };
+
+        public static DateTime FeeCalculatedDateTime = new DateTime(2021,3,23);
     }
 }
