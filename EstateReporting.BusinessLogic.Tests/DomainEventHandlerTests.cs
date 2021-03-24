@@ -375,7 +375,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void TransactionDomainEventHandler_MerchantFeeAddedToTransactionEvent_EventIsHandled()
         {
-            MerchantFeeAddedToTransactionEvent merchantFeeAddedToTransactionEvent = TestData.MerchantFeeAddedToTransactionEvent;
+            MerchantFeeAddedToTransactionEnrichedEvent merchantFeeAddedToTransactionEvent = TestData.MerchantFeeAddedToTransactionEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
@@ -392,7 +392,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void TransactionDomainEventHandler_ServiceProviderFeeAddedToTransactionEvent_EventIsHandled()
         {
-            ServiceProviderFeeAddedToTransactionEvent serviceProviderFeeAddedToTransactionEvent = TestData.ServiceProviderFeeAddedToTransactionEvent;
+            ServiceProviderFeeAddedToTransactionEnrichedEvent serviceProviderFeeAddedToTransactionEvent = TestData.ServiceProviderFeeAddedToTransactionEvent;
 
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
