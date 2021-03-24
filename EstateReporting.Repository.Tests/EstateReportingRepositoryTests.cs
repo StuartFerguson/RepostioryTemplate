@@ -846,11 +846,11 @@ namespace EstateReporting.Repository.Tests
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
-            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEnrichedEvent>(jsonData);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
 
             TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
@@ -874,12 +874,12 @@ namespace EstateReporting.Repository.Tests
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
-            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEnrichedEvent>(jsonData);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
             });
         }
 
@@ -901,11 +901,11 @@ namespace EstateReporting.Repository.Tests
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             var jsonData = JsonConvert.SerializeObject(TestData.ServiceProviderFeeAddedToTransactionEvent);
-            var @event = JsonConvert.DeserializeObject<ServiceProviderFeeAddedToTransactionEvent>(jsonData);
+            var @event = JsonConvert.DeserializeObject<ServiceProviderFeeAddedToTransactionEnrichedEvent>(jsonData);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
 
-            await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
+            await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
 
             TransactionFee transactionFee = await context.TransactionFees.SingleOrDefaultAsync(e => e.TransactionId == @event.TransactionId && e.FeeId == @event.FeeId);
             transactionFee.ShouldNotBeNull();
@@ -928,12 +928,12 @@ namespace EstateReporting.Repository.Tests
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
             var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
-            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEnrichedEvent>(jsonData);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
             {
-                await reportingRepository.AddFeeDetailsToTransaction(@event, @event.EventId, CancellationToken.None);
+                await reportingRepository.AddFeeDetailsToTransaction(@event, CancellationToken.None);
             });
         }
 

@@ -474,7 +474,8 @@
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.TransactionFeeId);
 
-        public static MerchantFeeAddedToTransactionEvent MerchantFeeAddedToTransactionEvent = new MerchantFeeAddedToTransactionEvent(TestData.TransactionId,
+        public static MerchantFeeAddedToTransactionEnrichedEvent MerchantFeeAddedToTransactionEvent = new MerchantFeeAddedToTransactionEnrichedEvent(TestData.TransactionId,
+            Guid.Parse("9646B63F-1956-4261-99FF-E90B2F8BFC79"),
             TestData.EstateId,
             TestData.MerchantId,
             TestData.CalculatedValue,
@@ -483,7 +484,8 @@
             TestData.FeeValue,
             TestData.FeeCalculatedDateTime);
 
-        public static ServiceProviderFeeAddedToTransactionEvent ServiceProviderFeeAddedToTransactionEvent = new ServiceProviderFeeAddedToTransactionEvent(TestData.TransactionId,
+        public static ServiceProviderFeeAddedToTransactionEnrichedEvent ServiceProviderFeeAddedToTransactionEvent = new ServiceProviderFeeAddedToTransactionEnrichedEvent(TestData.TransactionId,
+            Guid.Parse("9646B63F-1956-4261-99FF-E90B2F8BFC79"),
             TestData.EstateId,
             TestData.MerchantId,
             TestData.CalculatedValue,

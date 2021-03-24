@@ -85,22 +85,18 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
-        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
-                                        Guid eventId,
+        Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
                                         CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
-        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
-                                        Guid eventId,
+        Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
                                         CancellationToken cancellationToken);
 
         /// <summary>

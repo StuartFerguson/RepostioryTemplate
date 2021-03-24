@@ -5,6 +5,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Events;
     using Newtonsoft.Json;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
@@ -20,46 +21,7 @@
     public class TransactionDomainEventHandler : IDomainEventHandler
     {
         #region Fields
-
-        /// <summary>
-        /// The generate event identifier
-        /// </summary>
-        internal static readonly Func<Object, Guid> GenerateEventId = domainEvent =>
-                                                                      {
-                                                                          String eventString = JsonConvert.SerializeObject(domainEvent);
-                                                                          FeeAddedToTransactionEventForEventId m =
-                                                                              JsonConvert.DeserializeObject<FeeAddedToTransactionEventForEventId>(eventString,
-                                                                                  new JsonSerializerSettings
-                                                                                  {
-                                                                                      TypeNameHandling = TypeNameHandling.None
-                                                                                  });
-
-                                                                          String strFoeEventIdGenerate = JsonConvert.SerializeObject(m,
-                                                                              new JsonSerializerSettings
-                                                                              {
-                                                                                  DefaultValueHandling = DefaultValueHandling.Ignore,
-                                                                                  TypeNameHandling = TypeNameHandling.None,
-                                                                                  DateTimeZoneHandling = DateTimeZoneHandling.Local,
-                                                                                  Formatting = Formatting.None,
-                                                                                  Converters = new[] {new DecimalJsonConverter()}
-                                                                              });
-
-                                                                          Guid eventId = TransactionDomainEventHandler.GenerateGuidFromString(strFoeEventIdGenerate);
-                                                                          return eventId;
-                                                                      };
-
-        /// <summary>
-        /// The generate unique identifier from string
-        /// </summary>
-        internal static readonly Func<String, Guid> GenerateGuidFromString = uniqueKey =>
-                                                                             {
-                                                                                 using(MD5 md5 = MD5.Create())
-                                                                                 {
-                                                                                     Byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(uniqueKey));
-                                                                                     return new Guid(TransactionDomainEventHandler.HexStringFromBytes(hash));
-                                                                                 }
-                                                                             };
-
+        
         /// <summary>
         /// The estate reporting repository
         /// </summary>
@@ -214,13 +176,10 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task HandleSpecificDomainEvent(MerchantFeeAddedToTransactionEvent domainEvent,
+        private async Task HandleSpecificDomainEvent(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
-            // Generate the event id
-            Guid eventId = TransactionDomainEventHandler.GenerateEventId(domainEvent);
-
-            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, eventId, cancellationToken);
+            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, cancellationToken);
         }
 
         /// <summary>
@@ -228,13 +187,10 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task HandleSpecificDomainEvent(ServiceProviderFeeAddedToTransactionEvent domainEvent,
+        private async Task HandleSpecificDomainEvent(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
-            // Generate the event id
-            Guid eventId = TransactionDomainEventHandler.GenerateEventId(domainEvent);
-
-            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, eventId, cancellationToken);
+            await this.EstateReportingRepository.AddFeeDetailsToTransaction(domainEvent, cancellationToken);
         }
 
         /// <summary>
@@ -324,29 +280,6 @@
         {
             await this.EstateReportingRepository.UpdateVoucherRedemptionDetails(domainEvent, cancellationToken);
         }
-
-        #endregion
-    }
-
-    public class FeeAddedToTransactionEventForEventId
-    {
-        #region Properties
-
-        public Decimal calculatedValue { get; set; }
-
-        public Guid estateId { get; set; }
-
-        public DateTime feeCalculatedDateTime { get; set; }
-
-        public Int32 feeCalculationType { get; set; }
-
-        public Guid feeId { get; set; }
-
-        public Decimal feeValue { get; set; }
-
-        public Guid merchantId { get; set; }
-
-        public Guid transactionId { get; set; }
 
         #endregion
     }
