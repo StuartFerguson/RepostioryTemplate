@@ -534,8 +534,7 @@
         /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
-        public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEvent domainEvent,
-                                                     Guid eventId,
+        public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;
@@ -555,7 +554,7 @@
                                                 FeeId = domainEvent.FeeId,
                                                 CalculatedValue = domainEvent.CalculatedValue,
                                                 CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = eventId,
+                                                EventId = domainEvent.EventId,
                                                 FeeType = 0,
                                                 FeeValue = domainEvent.FeeValue,
                                                 TransactionId = domainEvent.TransactionId
@@ -573,8 +572,7 @@
         /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
-        public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEvent domainEvent,
-                                                     Guid eventId,
+        public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             Guid estateId = domainEvent.EstateId;
@@ -594,7 +592,7 @@
                                                 FeeId = domainEvent.FeeId,
                                                 CalculatedValue = domainEvent.CalculatedValue,
                                                 CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = eventId,
+                                                EventId = domainEvent.EventId,
                                                 FeeType = 1,
                                                 FeeValue = domainEvent.FeeValue,
                                                 TransactionId = domainEvent.TransactionId
