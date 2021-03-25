@@ -170,6 +170,7 @@
 
         public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent => new MerchantBalanceChangedEvent(TestData.MerchantId,
             Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
+            DateTime.Now, 
             TestData.EstateId,
             TestData.MerchantId,
             TestData.AvailableBalance,
@@ -179,6 +180,7 @@
 
         public static MerchantBalanceChangedEvent MerchantBalanceChangedEvent2 => new MerchantBalanceChangedEvent(TestData.MerchantId,
             Guid.Parse("E736CC81-5155-4119-84CD-537B81AA7F6D"),
+            DateTime.Now,
             TestData.EstateId,
             TestData.MerchantId,
             TestData.AvailableBalance2,

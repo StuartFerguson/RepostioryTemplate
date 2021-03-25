@@ -96,7 +96,7 @@ namespace EstateReporting
                                    MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
                                    ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
                                    MerchantBalanceChangedEvent mb =
-                                       new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
+                                       new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
 
                                    TypeProvider.LoadDomainEventsTypeDynamically();
                                    services.AddHostedService<SubscriptionWorker>(provider =>
