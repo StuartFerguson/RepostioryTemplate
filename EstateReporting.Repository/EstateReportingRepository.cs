@@ -1083,7 +1083,7 @@
                                                                     EventId = domainEvent.EventId,
                                                                     MerchantId = domainEvent.MerchantId,
                                                                     Reference = domainEvent.Reference,
-                                                                    EntryDateTime = domainEvent.EventTimestamp.DateTime,
+                                                                    EntryDateTime = domainEvent.EventCreatedDateTime,
                                                                     TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId
                                                                 };
 
@@ -1095,7 +1095,7 @@
                 balanceRecord.Balance = domainEvent.Balance;
                 balanceRecord.ChangeAmount = domainEvent.ChangeAmount;
                 balanceRecord.Reference = domainEvent.Reference;
-                balanceRecord.EntryDateTime = domainEvent.EventTimestamp.DateTime;
+                balanceRecord.EntryDateTime = domainEvent.EventCreatedDateTime;
                 balanceRecord.TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId;
             }
             

@@ -13,10 +13,11 @@
     public record MerchantBalanceChangedEvent : DomainEventRecord.DomainEvent
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MerchantBalanceChangedEvent"/> class.
+        /// Initializes a new instance of the <see cref="MerchantBalanceChangedEvent" /> class.
         /// </summary>
         /// <param name="aggregateId">The aggregate identifier.</param>
         /// <param name="eventId">The event identifier.</param>
+        /// <param name="eventCreatedDateTime">The event created date time.</param>
         /// <param name="estateId">The estate identifier.</param>
         /// <param name="merchantId">The merchant identifier.</param>
         /// <param name="availableBalance">The available balance.</param>
@@ -24,6 +25,7 @@
         /// <param name="changeAmount">The change amount.</param>
         /// <param name="reference">The reference.</param>
         public MerchantBalanceChangedEvent(Guid aggregateId, Guid eventId,
+                                           DateTime eventCreatedDateTime,
                                            Guid estateId,
                                            Guid merchantId,
                                            Decimal availableBalance,
@@ -39,6 +41,7 @@
             this.Reference = reference;
             this.EventId = eventId;
             this.AggregateId = aggregateId;
+            this.EventCreatedDateTime = eventCreatedDateTime;
         }
         
         #region Properties
@@ -52,6 +55,7 @@
         public Decimal AvailableBalance { get; init; }
 
         public new Guid EventId { get; init; }
+        public DateTime EventCreatedDateTime { get; init; }
         public new Guid AggregateId { get; init; }
 
         /// <summary>
