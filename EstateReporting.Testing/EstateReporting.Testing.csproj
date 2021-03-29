@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.8.4" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.8.4" />
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.8.4" />
-    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.10.5" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.10.5" />
-    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.0.2.3" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.9" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.9" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.9" />
+    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.11" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.11" />
+    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
