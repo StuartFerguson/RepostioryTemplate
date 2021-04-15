@@ -20,6 +20,7 @@ namespace EstateReporting.Controllers
     [Route(DomainEventController.ControllerRoute)]
     [ApiController]
     [ExcludeFromCodeCoverage]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class DomainEventController : ControllerBase
     {
         #region Fields
