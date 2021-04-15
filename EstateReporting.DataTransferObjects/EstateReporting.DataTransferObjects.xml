@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EstateReporting.DataTransferObjects</name>
+    </assembly>
+    <members>
+        <member name="T:EstateReporting.DataTransferObjects.SortDirection">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:EstateReporting.DataTransferObjects.SortDirection.Ascending">
+            <summary>
+            The ascending
+            </summary>
+        </member>
+        <member name="F:EstateReporting.DataTransferObjects.SortDirection.Descending">
+            <summary>
+            The descending
+            </summary>
+        </member>
+        <member name="T:EstateReporting.DataTransferObjects.SortField">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:EstateReporting.DataTransferObjects.SortField.Value">
+            <summary>
+            The value
+            </summary>
+        </member>
+        <member name="F:EstateReporting.DataTransferObjects.SortField.Count">
+            <summary>
+            The count
+            </summary>
+        </member>
+        <member name="T:EstateReporting.DataTransferObjects.TransactionDayResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionDayResponse.Date">
+            <summary>
+            Gets or sets the date.
+            </summary>
+            <value>
+            The date.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionDayResponse.NumberOfTransactions">
+            <summary>
+            Gets or sets the number of transactions.
+            </summary>
+            <value>
+            The number of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionDayResponse.ValueOfTransactions">
+            <summary>
+            Gets or sets the value of transactions.
+            </summary>
+            <value>
+            The value of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionDayResponse.CurrencyCode">
+            <summary>
+            Gets or sets the currency code.
+            </summary>
+            <value>
+            The currency code.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMerchantResponse.MerchantName">
+            <summary>
+            Gets or sets the year.
+            </summary>
+            <value>
+            The year.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMerchantResponse.MerchantId">
+            <summary>
+            Gets or sets the month number.
+            </summary>
+            <value>
+            The week number.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMerchantResponse.NumberOfTransactions">
+            <summary>
+            Gets or sets the number of transactions.
+            </summary>
+            <value>
+            The number of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMerchantResponse.ValueOfTransactions">
+            <summary>
+            Gets or sets the value of transactions.
+            </summary>
+            <value>
+            The value of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMerchantResponse.CurrencyCode">
+            <summary>
+            Gets or sets the currency code.
+            </summary>
+            <value>
+            The currency code.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMonthResponse.Year">
+            <summary>
+            Gets or sets the year.
+            </summary>
+            <value>
+            The year.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMonthResponse.MonthNumber">
+            <summary>
+            Gets or sets the month number.
+            </summary>
+            <value>
+            The week number.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMonthResponse.NumberOfTransactions">
+            <summary>
+            Gets or sets the number of transactions.
+            </summary>
+            <value>
+            The number of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMonthResponse.ValueOfTransactions">
+            <summary>
+            Gets or sets the value of transactions.
+            </summary>
+            <value>
+            The value of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionMonthResponse.CurrencyCode">
+            <summary>
+            Gets or sets the currency code.
+            </summary>
+            <value>
+            The currency code.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionOperatorResponse.OperatorName">
+            <summary>
+            Gets or sets the year.
+            </summary>
+            <value>
+            The year.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionOperatorResponse.NumberOfTransactions">
+            <summary>
+            Gets or sets the number of transactions.
+            </summary>
+            <value>
+            The number of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionOperatorResponse.ValueOfTransactions">
+            <summary>
+            Gets or sets the value of transactions.
+            </summary>
+            <value>
+            The value of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionOperatorResponse.CurrencyCode">
+            <summary>
+            Gets or sets the currency code.
+            </summary>
+            <value>
+            The currency code.
+            </value>
+        </member>
+        <member name="T:EstateReporting.DataTransferObjects.TransactionsByDayResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionsByDayResponse.TransactionDayResponses">
+            <summary>
+            Gets or sets the transaction day models.
+            </summary>
+            <value>
+            The transaction day models.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionsByMerchantResponse.TransactionMerchantResponses">
+            <summary>
+            Gets or sets the transaction month responses.
+            </summary>
+            <value>
+            The transaction week responses.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionsByOperatorResponse.TransactionOperatorResponses">
+            <summary>
+            Gets or sets the transaction month responses.
+            </summary>
+            <value>
+            The transaction week responses.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionsByMonthResponse.TransactionMonthResponses">
+            <summary>
+            Gets or sets the transaction month responses.
+            </summary>
+            <value>
+            The transaction week responses.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionsByWeekResponse.TransactionWeekResponses">
+            <summary>
+            Gets or sets the transaction week responses.
+            </summary>
+            <value>
+            The transaction week responses.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionWeekResponse.Year">
+            <summary>
+            Gets or sets the year.
+            </summary>
+            <value>
+            The year.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionWeekResponse.WeekNumber">
+            <summary>
+            Gets or sets the week number.
+            </summary>
+            <value>
+            The week number.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionWeekResponse.NumberOfTransactions">
+            <summary>
+            Gets or sets the number of transactions.
+            </summary>
+            <value>
+            The number of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionWeekResponse.ValueOfTransactions">
+            <summary>
+            Gets or sets the value of transactions.
+            </summary>
+            <value>
+            The value of transactions.
+            </value>
+        </member>
+        <member name="P:EstateReporting.DataTransferObjects.TransactionWeekResponse.CurrencyCode">
+            <summary>
+            Gets or sets the currency code.
+            </summary>
+            <value>
+            The currency code.
+            </value>
+        </member>
+    </members>
+</doc>

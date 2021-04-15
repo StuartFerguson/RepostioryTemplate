@@ -1,8 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	  <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
       <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+    <DocumentationFile>D:\Projects\StuartFerguson\EstateReporting\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
