@@ -6,6 +6,8 @@
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using EstateReporting.BusinessLogic.Events;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using Models;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
@@ -699,5 +701,48 @@
                                                                           };
 
         public static DateTime FeeCalculatedDateTime = new DateTime(2021,3,23);
+        public static String FileLocation = "home/txnproc/bulkfiles/safaricom/ExampleFile.csv";
+        public static DateTime ImportLogDateTime = new DateTime(2021, 5, 7);
+        public static DateTime FileUploadedDateTime = new DateTime(2021, 5, 7);
+        public static Guid FileImportLogId = Guid.Parse("5F1149F8-0313-45E4-BE3A-3D7B07EEB414");
+        public static String FilePath = "home/txnproc/bulkfiles";
+        public static Guid FileId = Guid.Parse("5F7F45D6-0604-46C7-AA88-EAA885A6B208");
+        public static String OriginalFileName = "ExampleFile.csv";
+        public static Guid UserId = Guid.Parse("BE52C5AC-72E5-4976-BAA0-98699E36C1EB");
+        public static Guid FileProfileId = Guid.Parse("D0D3A4E5-870E-42F6-AD0E-5E24252BC95E");
+        public static Int32 LineNumber = 1;
+        public static String FileLine = "D,124567,100";
+        public static DateTime ProcessingCompletedDateTime = new DateTime(2021, 5, 7);
+        public static ImportLogCreatedEvent ImportLogCreatedEvent => new ImportLogCreatedEvent(TestData.FileImportLogId, TestData.EstateId, TestData.ImportLogDateTime);
+
+        public static FileAddedToImportLogEvent FileAddedToImportLogEvent = new FileAddedToImportLogEvent(TestData.FileImportLogId, TestData.FileId,
+                                                                                                          TestData.EstateId, TestData.MerchantId,
+                                                                                                          TestData.UserId, TestData.FileProfileId,
+                                                                                                          TestData.OriginalFileName,
+                                                                                                          TestData.FilePath, TestData.FileUploadedDateTime);
+
+        public static FileCreatedEvent FileCreatedEvent = new FileCreatedEvent(TestData.FileId,
+                                                                              TestData.FileImportLogId,
+                                                                              TestData.EstateId,
+                                                                              TestData.MerchantId,
+                                                                              TestData.UserId,
+                                                                              TestData.FileProfileId,
+                                                                              TestData.FileLocation,
+                                                                              TestData.FileUploadedDateTime);
+
+        public static FileLineAddedEvent FileLineAddedEvent = new FileLineAddedEvent(TestData.FileId, TestData.EstateId, TestData.LineNumber, TestData.FileLine);
+
+        public static FileLineProcessingSuccessfulEvent FileLineProcessingSuccessfulEvent =
+            new FileLineProcessingSuccessfulEvent(TestData.FileId, TestData.EstateId, TestData.LineNumber, TestData.TransactionId);
+
+        public static FileLineProcessingFailedEvent FileLineProcessingFailedEvent =
+            new FileLineProcessingFailedEvent(TestData.FileId, TestData.EstateId, TestData.LineNumber, TestData.TransactionId,
+                                              TestData.ResponseCode, TestData.ResponseMessage);
+
+        public static FileLineProcessingIgnoredEvent FileLineProcessingIgnoredEvent =
+            new FileLineProcessingIgnoredEvent(TestData.FileId, TestData.EstateId, TestData.LineNumber);
+
+        public static FileProcessingCompletedEvent FileProcessingCompletedEvent =
+            new FileProcessingCompletedEvent(TestData.FileId, TestData.EstateId, TestData.ProcessingCompletedDateTime);
     }
 }

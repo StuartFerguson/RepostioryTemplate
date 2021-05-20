@@ -18,6 +18,8 @@ namespace EstateReporting
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
     using EventStore.Client;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using Microsoft.Extensions.DependencyInjection;
     using Shared.EventStore.Aggregate;
     using Shared.EventStore.EventHandling;
@@ -97,6 +99,15 @@ namespace EstateReporting
                                    ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
                                    MerchantBalanceChangedEvent mb =
                                        new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
+                                   ImportLogCreatedEvent i = new ImportLogCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.MinValue);
+                                   FileCreatedEvent f = new FileCreatedEvent(Guid.NewGuid(),
+                                                                             Guid.NewGuid(),
+                                                                             Guid.NewGuid(),
+                                                                             Guid.NewGuid(),
+                                                                             Guid.NewGuid(),
+                                                                             Guid.NewGuid(),
+                                                                             String.Empty,
+                                                                             DateTime.MinValue);
 
                                    TypeProvider.LoadDomainEventsTypeDynamically();
                                    services.AddHostedService<SubscriptionWorker>(provider =>

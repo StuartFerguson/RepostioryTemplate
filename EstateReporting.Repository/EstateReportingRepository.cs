@@ -15,6 +15,8 @@
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using Microsoft.EntityFrameworkCore;
     using Models;
     using Newtonsoft.Json;
@@ -24,7 +26,7 @@
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -274,6 +276,78 @@
                                                     };
 
             await context.EstateSecurityUsers.AddAsync(estateSecurityUser, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the file line to file.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">File with Id {domainEvent.FileId} not found for estate Id {estateId}</exception>
+        public async Task AddFileLineToFile(FileLineAddedEvent domainEvent,
+                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            File file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
+
+            if (file == null)
+            {
+                throw new NotFoundException($"File with Id {domainEvent.FileId} not found for estate Id {estateId}");
+            }
+
+            FileLine fileLine = new FileLine
+                                {
+                                    EstateId = domainEvent.EstateId,
+                                    FileId = domainEvent.FileId,
+                                    LineNumber = domainEvent.LineNumber,
+                                    FileLineData = domainEvent.FileLine,
+                                    Status = "P"  // Pending
+                                };
+
+            await context.FileLines.AddAsync(fileLine, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the file to import log.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">Import log with Id {domainEvent.FileImportLogId} not found for estate Id {estateId}</exception>
+        public async Task AddFileToImportLog(FileAddedToImportLogEvent domainEvent,
+                                             CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            FileImportLog fileImportLog = await context.FileImportLogs.SingleOrDefaultAsync(f => f.FileImportLogId == domainEvent.FileImportLogId);
+
+            if (fileImportLog == null)
+            {
+                throw new NotFoundException($"Import log with Id {domainEvent.FileImportLogId} not found for estate Id {estateId}");
+            }
+
+            FileImportLogFile fileImportLogFile = new FileImportLogFile
+                                                  {
+                                                      MerchantId = domainEvent.MerchantId,
+                                                      EstateId = domainEvent.EstateId,
+                                                      FileImportLogId = domainEvent.FileImportLogId,
+                                                      FileId = domainEvent.FileId,
+                                                      FilePath = domainEvent.FilePath,
+                                                      FileProfileId = domainEvent.FileProfileId,
+                                                      FileUploadedDateTime = domainEvent.FileUploadedDateTime,
+                                                      OriginalFileName = domainEvent.OriginalFileName,
+                                                      UserId = domainEvent.UserId
+                                                  };
+
+            await context.FileImportLogFiles.AddAsync(fileImportLogFile, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }
@@ -531,7 +605,6 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
-        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
@@ -569,7 +642,6 @@
         /// Adds the fee details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
-        /// <param name="eventId">The event identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
@@ -603,7 +675,58 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// Adds the file.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddFile(FileCreatedEvent domainEvent,
+                                  CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
 
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            File file = new File
+                        {
+                            MerchantId = domainEvent.MerchantId,
+                            FileImportLogId = domainEvent.FileImportLogId,
+                            EstateId = domainEvent.EstateId,
+                            UserId = domainEvent.UserId,
+                            FileId = domainEvent.FileId,
+                            FileProfileId = domainEvent.FileProfileId,
+                            FileLocation = domainEvent.FileLocation,
+                            FileReceivedDateTime = domainEvent.FileReceivedDateTime,
+                        };
+
+            await context.Files.AddAsync(file, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the file import log.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddFileImportLog(ImportLogCreatedEvent domainEvent,
+                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            FileImportLog fileImportLog = new FileImportLog
+                                      {
+                                          EstateId = domainEvent.EstateId,
+                                          FileImportLogId = domainEvent.FileImportLogId,
+                                          ImportLogDateTime = domainEvent.ImportLogDateTime
+                                      };
+
+            await context.FileImportLogs.AddAsync(fileImportLog, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Completes the transaction.
@@ -675,7 +798,7 @@
                 Logger.LogInformation($"Field to look for [{additionalRequestField}]");
             }
 
-            foreach (var additionalRequestField in domainEvent.AdditionalTransactionRequestMetadata)
+            foreach (KeyValuePair<String, String> additionalRequestField in domainEvent.AdditionalTransactionRequestMetadata)
             {
                 Logger.LogInformation($"Key: [{additionalRequestField.Key}] Value: [{additionalRequestField.Value}]");
             }
@@ -798,6 +921,68 @@
             await context.Transactions.AddAsync(transaction, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateFileLine(FileLineProcessingSuccessfulEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "S", cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the file line status.
+        /// </summary>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="fileId">The file identifier.</param>
+        /// <param name="lineNumber">The line number.</param>
+        /// <param name="newStatus">The new status.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="NotFoundException">FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}</exception>
+        private async Task UpdateFileLineStatus(Guid estateId,
+                                                          Guid fileId,
+                                                          Int32 lineNumber,
+                                                          String newStatus,
+                                                          CancellationToken cancellationToken)
+        {
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var fileLine = await context.FileLines.SingleOrDefaultAsync(f => f.FileId == fileId && f.LineNumber == lineNumber);
+
+            if (fileLine == null)
+            {
+                throw new NotFoundException($"FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}");
+            }
+
+            fileLine.Status = newStatus;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateFileLine(FileLineProcessingFailedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "F", cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task UpdateFileLine(FileLineProcessingIgnoredEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "I", cancellationToken);
         }
 
         /// <summary>
@@ -1053,7 +1238,22 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
+                                               CancellationToken cancellationToken)
+        {
+            EstateReportingContext context = await this.DbContextFactory.GetContext(domainEvent.EstateId, cancellationToken);
 
+            var file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
+
+            if (file == null)
+            {
+                throw new NotFoundException($"File Id {domainEvent.FileId} not found for estate Id {domainEvent.EstateId}");
+            }
+
+            file.IsCompleted = true;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Inserts the merchant balance record.

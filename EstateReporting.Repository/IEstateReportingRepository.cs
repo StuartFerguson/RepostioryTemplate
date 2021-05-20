@@ -1,12 +1,13 @@
 ﻿namespace EstateReporting.Repository
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using BusinessLogic.Events;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using TransactionProcessor.Reconciliation.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
@@ -98,6 +99,42 @@
         /// <returns></returns>
         Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
                                         CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the file.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFile(FileCreatedEvent domainEvent,
+                     CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the file import log.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFileImportLog(ImportLogCreatedEvent domainEvent,
+                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the file line to file.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFileLineToFile(FileLineAddedEvent domainEvent,
+                               CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the file to import log.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddFileToImportLog(FileAddedToImportLogEvent domainEvent,
+                                CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the generated voucher.
@@ -207,10 +244,6 @@
         Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
                                                   CancellationToken cancellationToken);
 
-
-
-
-
         /// <summary>
         /// Inserts the merchant balance record.
         /// </summary>
@@ -255,6 +288,33 @@
         /// <returns></returns>
         Task StartTransaction(TransactionHasStartedEvent domainEvent,
                               CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateFileLine(FileLineProcessingSuccessfulEvent domainEvent,
+                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateFileLine(FileLineProcessingFailedEvent domainEvent,
+                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the file line.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateFileLine(FileLineProcessingIgnoredEvent domainEvent,
+                            CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the reconciliation overall totals.
@@ -336,6 +396,15 @@
         /// <returns></returns>
         Task UpdateVoucherRedemptionDetails(VoucherFullyRedeemedEvent domainEvent,
                                             CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the file as complete.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
+                                  CancellationToken cancellationToken);
 
         #endregion
     }

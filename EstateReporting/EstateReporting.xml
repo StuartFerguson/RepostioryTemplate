@@ -50,6 +50,216 @@
             <param name="value">The value.</param>
             <param name="serializer">The calling serializer.</param>
         </member>
+        <member name="T:EstateReporting.Common.Examples.ExampleData">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.MerchantId">
+            <summary>
+            The merchant identifier
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.MerchantName">
+            <summary>
+            The merchant name
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.MonthNumber">
+            <summary>
+            The month number
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.OperatorName">
+            <summary>
+            The operator name
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionDayNumberOfTransactions">
+            <summary>
+            The transaction day number of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionDayResponseDate">
+            <summary>
+            The transaction day response date
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionDayValueOfTransactions">
+            <summary>
+            The transaction day value of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionMerchantNumberOfTransactions">
+            <summary>
+            The transaction merchant number of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionMerchantValueOfTransactions">
+            <summary>
+            The transaction merchant value of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionMonthNumberOfTransactions">
+            <summary>
+            The transaction month number of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionMonthValueOfTransactions">
+            <summary>
+            The transaction month value of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionOperatorNumberOfTransactions">
+            <summary>
+            The transaction operator number of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionOperatorValueOfTransactions">
+            <summary>
+            The transaction operator value of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionWeekNumberOfTransactions">
+            <summary>
+            The transaction week number of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.TransactionWeekValueOfTransactions">
+            <summary>
+            The transaction week value of transactions
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.WeekNumber">
+            <summary>
+            The week number
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Common.Examples.ExampleData.YearNumber">
+            <summary>
+            The year number
+            </summary>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionDayResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionDayResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionDayResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionMerchantResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionMerchantResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionMerchantResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionMonthResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionMonthResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionMonthResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionOperatorResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionOperatorResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionOperatorResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionsByDayResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionsByDayResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionsByDayResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionsByMerchantResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionsByMerchantResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionsByMerchantResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionsByMonthResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionsByMonthResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionsByMonthResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionsByOperatorResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionsByOperatorResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionsByOperatorResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionsByWeekResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionsByWeekResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionsByWeekResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EstateReporting.Common.Examples.TransactionWeekResponseExample">
+            <summary>
+            
+            </summary>
+            <seealso cref="!:Swashbuckle.AspNetCore.Filters.IExamplesProvider&lt;EstateReporting.DataTransferObjects.TransactionWeekResponse&gt;" />
+        </member>
+        <member name="M:EstateReporting.Common.Examples.TransactionWeekResponseExample.GetExamples">
+            <summary>
+            Gets the examples.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:EstateReporting.Controllers.DomainEventController.DomainEventHandlerResolver">
             <summary>
             The domain event handler resolver

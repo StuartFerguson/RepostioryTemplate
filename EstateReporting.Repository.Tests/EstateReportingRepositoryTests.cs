@@ -12,6 +12,8 @@ namespace EstateReporting.Repository.Tests
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -1415,7 +1417,393 @@ namespace EstateReporting.Repository.Tests
                 await reportingRepository.UpdateVoucherRedemptionDetails(@event, CancellationToken.None);
             });
         }
-        
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFileImportLog_ImportLogAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.ImportLogCreatedEvent);
+            var @event = JsonConvert.DeserializeObject<ImportLogCreatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFileImportLog(@event, CancellationToken.None);
+
+            FileImportLog fileImportLog= await context.FileImportLogs.SingleOrDefaultAsync(e => e.FileImportLogId == @event.FileImportLogId);
+            fileImportLog.ShouldNotBeNull();
+            fileImportLog.EstateId.ShouldBe(@event.EstateId);
+            fileImportLog.FileImportLogId.ShouldBe(@event.FileImportLogId);
+            fileImportLog.ImportLogDateTime.ShouldBe(@event.ImportLogDateTime);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFileToImportLog_FileAddedToImportLog(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.FileImportLogs.AddAsync(new FileImportLog
+                                       {
+                                           FileImportLogId = TestData.FileAddedToImportLogEvent.FileImportLogId,
+                                           EstateId = TestData.FileAddedToImportLogEvent.EstateId
+                                       }, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileAddedToImportLogEvent);
+            var @event = JsonConvert.DeserializeObject<FileAddedToImportLogEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFileToImportLog(@event, CancellationToken.None);
+
+            FileImportLogFile fileImportLogFile = await context.FileImportLogFiles.SingleOrDefaultAsync(e => e.FileImportLogId == @event.FileImportLogId);
+            fileImportLogFile.ShouldNotBeNull();
+            fileImportLogFile.FileImportLogId.ShouldBe(@event.FileImportLogId);
+            fileImportLogFile.MerchantId.ShouldBe(@event.MerchantId);
+            fileImportLogFile.FileId.ShouldBe(@event.FileId);
+            fileImportLogFile.FilePath.ShouldBe(@event.FilePath);
+            fileImportLogFile.EstateId.ShouldBe(@event.EstateId);
+            fileImportLogFile.FileProfileId.ShouldBe(@event.FileProfileId);
+            fileImportLogFile.FileUploadedDateTime.ShouldBe(@event.FileUploadedDateTime);
+            fileImportLogFile.OriginalFileName.ShouldBe(@event.OriginalFileName);
+            
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFileToImportLog_ImportLogNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileAddedToImportLogEvent);
+            var @event = JsonConvert.DeserializeObject<FileAddedToImportLogEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.AddFileToImportLog(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFile_FileAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileCreatedEvent);
+            var @event = JsonConvert.DeserializeObject<FileCreatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFile(@event, CancellationToken.None);
+
+            File file = await context.Files.SingleOrDefaultAsync(e => e.FileId == @event.FileId);
+            file.ShouldNotBeNull();
+            file.EstateId.ShouldBe(@event.EstateId);
+            file.FileImportLogId.ShouldBe(@event.FileImportLogId);
+            file.IsCompleted.ShouldBeFalse();
+            file.FileLocation.ShouldBe(@event.FileLocation);
+            file.FileProfileId.ShouldBe(@event.FileProfileId);
+            file.FileId.ShouldBe(@event.FileId);
+            file.FileReceivedDateTime.ShouldBe(@event.FileReceivedDateTime);
+            file.MerchantId.ShouldBe(@event.MerchantId);
+            file.UserId.ShouldBe(@event.UserId);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFileLineToFile_FileLineAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                   {
+                                       FileId = TestData.FileLineAddedEvent.FileId
+                                   }, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineAddedEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineAddedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddFileLineToFile(@event, CancellationToken.None);
+
+            FileLine fileLine = await context.FileLines.SingleOrDefaultAsync(e => e.FileId == @event.FileId && e.LineNumber == @event.LineNumber);
+            fileLine.ShouldNotBeNull();
+            fileLine.EstateId.ShouldBe(@event.EstateId);
+            fileLine.LineNumber.ShouldBe(@event.LineNumber);
+            fileLine.Status.ShouldBe("P");
+            fileLine.FileId.ShouldBe(@event.FileId);
+            fileLine.FileLineData.ShouldBe(@event.FileLine);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddFileLineToFile_FileNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineAddedEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineAddedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.AddFileLineToFile(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Successful_FileLineAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingSuccessfulEvent.FileId
+                                         }, CancellationToken.None);
+            await context.FileLines.AddAsync(new FileLine
+                                             {
+                                                 FileId = TestData.FileLineProcessingSuccessfulEvent.FileId,
+                                                 LineNumber = TestData.FileLineProcessingSuccessfulEvent.LineNumber
+                                             });
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingSuccessfulEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingSuccessfulEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+
+            FileLine fileLine = await context.FileLines.SingleOrDefaultAsync(e => e.FileId == @event.FileId && e.LineNumber == @event.LineNumber);
+            fileLine.ShouldNotBeNull();
+            fileLine.Status.ShouldBe("S");
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Successful_LineNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingSuccessfulEvent.FileId
+                                         }, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingSuccessfulEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingSuccessfulEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Failed_FileLineAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingFailedEvent.FileId
+                                         }, CancellationToken.None);
+            await context.FileLines.AddAsync(new FileLine
+                                             {
+                                                 FileId = TestData.FileLineProcessingFailedEvent.FileId,
+                                                 LineNumber = TestData.FileLineProcessingFailedEvent.LineNumber
+                                             });
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingFailedEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingFailedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+
+            FileLine fileLine = await context.FileLines.SingleOrDefaultAsync(e => e.FileId == @event.FileId && e.LineNumber == @event.LineNumber);
+            fileLine.ShouldNotBeNull();
+            fileLine.Status.ShouldBe("F");
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Failed_LineNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingFailedEvent.FileId
+                                         }, CancellationToken.None);
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingFailedEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingFailedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Ignored_FileLineAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingIgnoredEvent.FileId
+                                         }, CancellationToken.None);
+            await context.FileLines.AddAsync(new FileLine
+                                             {
+                                                 FileId = TestData.FileLineProcessingIgnoredEvent.FileId,
+                                                 LineNumber = TestData.FileLineProcessingIgnoredEvent.LineNumber
+                                             });
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingIgnoredEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingIgnoredEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+
+            FileLine fileLine = await context.FileLines.SingleOrDefaultAsync(e => e.FileId == @event.FileId && e.LineNumber == @event.LineNumber);
+            fileLine.ShouldNotBeNull();
+            fileLine.Status.ShouldBe("I");
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileLine_Ignored_LineNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileLineProcessingIgnoredEvent.FileId
+                                         }, CancellationToken.None);
+            
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileLineProcessingIgnoredEvent);
+            var @event = JsonConvert.DeserializeObject<FileLineProcessingIgnoredEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateFileLine(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileAsCompleted_FileUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Files.AddAsync(new File
+                                         {
+                                             FileId = TestData.FileProcessingCompletedEvent.FileId
+                                         }, CancellationToken.None);
+
+            await context.SaveChangesAsync(CancellationToken.None);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileProcessingCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<FileProcessingCompletedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateFileAsComplete(@event, CancellationToken.None);
+
+            File file = await context.Files.SingleOrDefaultAsync(e => e.FileId == @event.FileId);
+            file.ShouldNotBeNull();
+            file.IsCompleted.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateFileAsCompleted_FileNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.FileProcessingCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<FileProcessingCompletedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateFileAsComplete(@event, CancellationToken.None);
+                                            });
+        }
+
         private async Task<EstateReportingContext> GetContext(String databaseName, TestDatabaseType databaseType = TestDatabaseType.InMemory)
         {
             EstateReportingContext context = null;
@@ -1443,6 +1831,8 @@ namespace EstateReporting.Repository.Tests
             
             return context;
         }
+
+
 
         public enum TestDatabaseType
         {

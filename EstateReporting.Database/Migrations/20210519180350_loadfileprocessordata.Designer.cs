@@ -4,14 +4,16 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20210519180350_loadfileprocessordata")]
+    partial class loadfileprocessordata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
