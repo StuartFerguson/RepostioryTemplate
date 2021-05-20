@@ -1,6 +1,7 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
@@ -60,6 +61,7 @@
         /// </summary>
         /// <param name="bytes">The bytes.</param>
         /// <returns></returns>
+        [ExcludeFromCodeCoverage]
         internal static String HexStringFromBytes(Byte[] bytes)
         {
             var sb = new StringBuilder();

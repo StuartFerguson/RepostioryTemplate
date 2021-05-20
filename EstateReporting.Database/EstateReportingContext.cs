@@ -12,6 +12,7 @@
     using Shared.General;
     using Shared.Logger;
     using ViewEntities;
+    using File = Entities.File;
 
     /// <summary>
     /// 
@@ -61,6 +62,13 @@
         #endregion
 
         #region Properties
+
+        public virtual DbSet<FileImportLog> FileImportLogs { get; set; }
+        public virtual DbSet<FileImportLogFile> FileImportLogFiles { get; set; }
+
+        public virtual DbSet<File> Files { get; set; }
+
+        public virtual DbSet<FileLine> FileLines { get; set; }
 
         /// <summary>
         /// Gets or sets the merchant balance histories.
@@ -245,7 +253,7 @@
 
             String scriptsFolder = $@"{executingAssemblyFolder}/Views";
 
-            var directiories = Directory.GetDirectories(scriptsFolder);
+            String[] directiories = Directory.GetDirectories(scriptsFolder);
             directiories = directiories.OrderBy(d => d).ToArray();
 
             foreach (String directiory in directiories)
@@ -254,7 +262,7 @@
                 foreach (String sqlFile in sqlFiles.OrderBy(x => x))
                 {
                     Logger.LogDebug($"About to create View [{sqlFile}]");
-                    String sql = File.ReadAllText(sqlFile);
+                    String sql = System.IO.File.ReadAllText(sqlFile);
 
                     // Check here is we need to replace a Database Name
                     if (sql.Contains("{DatabaseName}"))
@@ -435,6 +443,33 @@
                                                                                     t.TransactionId
                                                                                 });
 
+            modelBuilder.Entity<FileImportLog>().HasKey(f => new
+                                                             {
+                                                                 f.EstateId,
+                                                                 f.FileImportLogId
+                                                             });
+
+            modelBuilder.Entity<FileImportLogFile>().HasKey(f => new
+                                                             {
+                                                                 f.EstateId,
+                                                                 f.FileImportLogId,
+                                                                 f.FileId
+                                                             });
+
+            modelBuilder.Entity<File>().HasKey(f => new
+                                                    {
+                                                        f.EstateId,
+                                                        f.FileImportLogId,
+                                                        f.FileId
+                                                    });
+
+            modelBuilder.Entity<FileLine>().HasKey(f => new
+                                                    {
+                                                        f.EstateId,
+                                                        f.FileId,
+                                                        f.LineNumber
+                                                    });
+
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
             
@@ -467,7 +502,11 @@
                 nameof(ContractProduct),
                 nameof(ContractProductTransactionFee),
                 nameof(Reconciliation),
-                nameof(Voucher)
+                nameof(Voucher),
+                nameof(FileImportLog),
+                nameof(FileImportLogFile),
+                nameof(File),
+                nameof(FileLine)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

@@ -1,12 +1,14 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Newtonsoft.Json;
 
     /// <summary>
     /// 
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter{System.Decimal}" />
+    [ExcludeFromCodeCoverage]
     public class DecimalJsonConverter : JsonConverter<decimal>
     {
         /// <summary>
