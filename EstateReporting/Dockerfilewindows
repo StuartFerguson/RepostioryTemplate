@@ -1,7 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-windowsservercore-ltsc2019 AS base
+USER ContainerAdministrator
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-windowsservercore-ltsc2019 AS build
 WORKDIR /src
 COPY ["EstateReporting/NuGet.Config", "."]
 COPY ["EstateReporting/EstateReporting.csproj", "EstateReporting/"]
@@ -14,6 +15,10 @@ COPY . .
 WORKDIR "/src/EstateReporting"
 RUN dotnet build "EstateReporting.csproj" -c Release -o /app/build
 
+WORKDIR "/src"
+RUN %SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe -Command Import-PfxCertificate -FilePath "Certificates/aspnetapp-root-cert.pfx" -Password (ConvertTo-SecureString -String 'password' -AsPlainText -Force) -CertStoreLocation Cert:\LocalMachine\Root
+
+WORKDIR "/src/EstateReporting"
 FROM build AS publish
 RUN dotnet publish "EstateReporting.csproj" -c Release -o /app/publish
 
