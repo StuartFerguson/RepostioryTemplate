@@ -4,6 +4,43 @@
         <name>EstateReporting</name>
     </assembly>
     <members>
+        <member name="M:EstateReporting.Common.ClaimsHelper.GetUserClaim(System.Security.Claims.ClaimsPrincipal,System.String,System.String)">
+            <summary>
+            Gets the user claims.
+            </summary>
+            <param name="user">The user.</param>
+            <param name="customClaimType">Type of the custom claim.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException">No claim [{customClaimType}] found for user id [{userIdClaim.Value}</exception>
+        </member>
+        <member name="M:EstateReporting.Common.ClaimsHelper.IsPasswordToken(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Determines whether [is client token] [the specified user].
+            </summary>
+            <param name="user">The user.</param>
+            <returns>
+              <c>true</c> if [is client token] [the specified user]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:EstateReporting.Common.ClaimsHelper.ValidateRouteParameter``1(``0,System.Security.Claims.Claim)">
+            <summary>
+            Validates the route parameter.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="routeParameter">The route parameter.</param>
+            <param name="userClaim">The user claim.</param>
+        </member>
+        <member name="M:EstateReporting.Common.ClaimsHelper.IsUserRolesValid(System.Security.Claims.ClaimsPrincipal,System.String[])">
+            <summary>
+            Determines whether [is user roles valid] [the specified user].
+            </summary>
+            <param name="user">The user.</param>
+            <param name="allowedRoles">The allowed roles.</param>
+            <returns>
+              <c>true</c> if [is user roles valid] [the specified user]; otherwise, <c>false</c>.
+            </returns>
+        </member>
         <member name="M:EstateReporting.Common.SwaggerDefaultValues.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
             <summary>
             Applies the filter to the specified operation using the given context.
@@ -309,14 +346,14 @@
             </summary>
             <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase" />
         </member>
-        <member name="F:EstateReporting.Controllers.ReportingController.ReportingManager">
-            <summary>
-            The reporting manager
-            </summary>
-        </member>
         <member name="F:EstateReporting.Controllers.ReportingController.ModelFactory">
             <summary>
             The model factory
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Controllers.ReportingController.ReportingManager">
+            <summary>
+            The reporting manager
             </summary>
         </member>
         <member name="M:EstateReporting.Controllers.ReportingController.#ctor(EstateReporting.BusinessLogic.IReportingManager,EstateReporting.Factories.IModelFactory)">
@@ -326,74 +363,11 @@
             <param name="reportingManager">The reporting manager.</param>
             <param name="modelFactory">The model factory.</param>
         </member>
-        <member name="F:EstateReporting.Controllers.ReportingController.ControllerName">
-            <summary>
-            The controller name
-            </summary>
-        </member>
-        <member name="F:EstateReporting.Controllers.ReportingController.ControllerRoute">
-            <summary>
-            The controller route
-            </summary>
-        </member>
         <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByDate(System.Guid,System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Gets the transaction for estate by date.
             </summary>
             <param name="estateId">The estate identifier.</param>
-            <param name="startDate">The start date.</param>
-            <param name="endDate">The end date.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns></returns>
-        </member>
-        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByDate(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets the transaction for merchant by date.
-            </summary>
-            <param name="estateId">The estate identifier.</param>
-            <param name="merchantId">The merchant identifier.</param>
-            <param name="startDate">The start date.</param>
-            <param name="endDate">The end date.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns></returns>
-        </member>
-        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByWeek(System.Guid,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets the transaction for estate by week.
-            </summary>
-            <param name="estateId">The estate identifier.</param>
-            <param name="startDate">The start date.</param>
-            <param name="endDate">The end date.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns></returns>
-        </member>
-        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByWeek(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets the transaction for merchant by week.
-            </summary>
-            <param name="estateId">The estate identifier.</param>
-            <param name="merchantId">The merchant identifier.</param>
-            <param name="startDate">The start date.</param>
-            <param name="endDate">The end date.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns></returns>
-        </member>
-        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByMonth(System.Guid,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets the transaction for estate by month.
-            </summary>
-            <param name="estateId">The estate identifier.</param>
-            <param name="startDate">The start date.</param>
-            <param name="endDate">The end date.</param>
-            <param name="cancellationToken">The cancellation token.</param>
-            <returns></returns>
-        </member>
-        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByMonth(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Gets the transaction for merchant by month.
-            </summary>
-            <param name="estateId">The estate identifier.</param>
-            <param name="merchantId">The merchant identifier.</param>
             <param name="startDate">The start date.</param>
             <param name="endDate">The end date.</param>
             <param name="cancellationToken">The cancellation token.</param>
@@ -412,6 +386,16 @@
             <param name="cancellationToken">The cancellation token.</param>
             <returns></returns>
         </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByMonth(System.Guid,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the transaction for estate by month.
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <param name="startDate">The start date.</param>
+            <param name="endDate">The end date.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns></returns>
+        </member>
         <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByOperator(System.Guid,System.String,System.String,System.Int32,EstateReporting.DataTransferObjects.SortDirection,EstateReporting.DataTransferObjects.SortField,System.Threading.CancellationToken)">
             <summary>
             Gets the transaction for estate by operator.
@@ -424,6 +408,68 @@
             <param name="sortField">The sort field.</param>
             <param name="cancellationToken">The cancellation token.</param>
             <returns></returns>
+        </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForEstateByWeek(System.Guid,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the transaction for estate by week.
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <param name="startDate">The start date.</param>
+            <param name="endDate">The end date.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns></returns>
+        </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByDate(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the transaction for merchant by date.
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <param name="merchantId">The merchant identifier.</param>
+            <param name="startDate">The start date.</param>
+            <param name="endDate">The end date.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns></returns>
+        </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByMonth(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the transaction for merchant by month.
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <param name="merchantId">The merchant identifier.</param>
+            <param name="startDate">The start date.</param>
+            <param name="endDate">The end date.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns></returns>
+        </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.GetTransactionForMerchantByWeek(System.Guid,System.Guid,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the transaction for merchant by week.
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <param name="merchantId">The merchant identifier.</param>
+            <param name="startDate">The start date.</param>
+            <param name="endDate">The end date.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns></returns>
+        </member>
+        <member name="M:EstateReporting.Controllers.ReportingController.IsTokenValid(System.Guid)">
+            <summary>
+            Determines whether [is token valid] [the specified estate identifier].
+            </summary>
+            <param name="estateId">The estate identifier.</param>
+            <returns>
+              <c>true</c> if [is token valid] [the specified estate identifier]; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="F:EstateReporting.Controllers.ReportingController.ControllerName">
+            <summary>
+            The controller name
+            </summary>
+        </member>
+        <member name="F:EstateReporting.Controllers.ReportingController.ControllerRoute">
+            <summary>
+            The controller route
+            </summary>
         </member>
         <member name="T:EstateReporting.Factories.IModelFactory">
             <summary>
