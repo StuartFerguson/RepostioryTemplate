@@ -33,6 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Views\Priority1\uvwFile.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Priority1\uvwFileImportLog.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Priority1\uvwMerchantBalance.View.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
