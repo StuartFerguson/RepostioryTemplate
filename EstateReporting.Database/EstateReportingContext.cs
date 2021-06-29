@@ -63,37 +63,6 @@
 
         #region Properties
 
-        public virtual DbSet<FileImportLog> FileImportLogs { get; set; }
-        public virtual DbSet<FileImportLogFile> FileImportLogFiles { get; set; }
-
-        public virtual DbSet<File> Files { get; set; }
-
-        public virtual DbSet<FileLine> FileLines { get; set; }
-
-        /// <summary>
-        /// Gets or sets the merchant balance histories.
-        /// </summary>
-        /// <value>
-        /// The merchant balance histories.
-        /// </value>
-        public virtual DbSet<MerchantBalanceHistory> MerchantBalanceHistories { get; set; }
-
-        /// <summary>
-        /// Gets or sets the transactions view.
-        /// </summary>
-        /// <value>
-        /// The transactions view.
-        /// </value>
-        public virtual DbSet<TransactionsView> TransactionsView { get; set; }
-
-        /// <summary>
-        /// Gets or sets the merchant balance view.
-        /// </summary>
-        /// <value>
-        /// The merchant balance view.
-        /// </value>
-        public virtual DbSet<MerchantBalanceView> MerchantBalanceView { get; set; }
-
         /// <summary>
         /// Gets or sets the contract products.
         /// </summary>
@@ -143,12 +112,76 @@
         public DbSet<EstateSecurityUser> EstateSecurityUsers { get; set; }
 
         /// <summary>
+        /// Gets or sets the file import log files.
+        /// </summary>
+        /// <value>
+        /// The file import log files.
+        /// </value>
+        public virtual DbSet<FileImportLogFile> FileImportLogFiles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file import logs.
+        /// </summary>
+        /// <value>
+        /// The file import logs.
+        /// </value>
+        public virtual DbSet<FileImportLog> FileImportLogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file import log view.
+        /// </summary>
+        /// <value>
+        /// The file import log view.
+        /// </value>
+        public virtual DbSet<FileImportLogView> FileImportLogView { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file lines.
+        /// </summary>
+        /// <value>
+        /// The file lines.
+        /// </value>
+        public virtual DbSet<FileLine> FileLines { get; set; }
+
+        /// <summary>
+        /// Gets or sets the files.
+        /// </summary>
+        /// <value>
+        /// The files.
+        /// </value>
+        public virtual DbSet<File> Files { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file view.
+        /// </summary>
+        /// <value>
+        /// The file view.
+        /// </value>
+        public virtual DbSet<FileView> FileView { get; set; }
+
+        /// <summary>
         /// Gets or sets the merchant addresses.
         /// </summary>
         /// <value>
         /// The merchant addresses.
         /// </value>
         public DbSet<MerchantAddress> MerchantAddresses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant balance histories.
+        /// </summary>
+        /// <value>
+        /// The merchant balance histories.
+        /// </value>
+        public virtual DbSet<MerchantBalanceHistory> MerchantBalanceHistories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the merchant balance view.
+        /// </summary>
+        /// <value>
+        /// The merchant balance view.
+        /// </value>
+        public virtual DbSet<MerchantBalanceView> MerchantBalanceView { get; set; }
 
         /// <summary>
         /// Gets or sets the merchant contacts.
@@ -229,6 +262,14 @@
         /// The transaction additional response data.
         /// </value>
         public DbSet<TransactionAdditionalResponseData> TransactionsAdditionalResponseData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transactions view.
+        /// </summary>
+        /// <value>
+        /// The transactions view.
+        /// </value>
+        public virtual DbSet<TransactionsView> TransactionsView { get; set; }
 
         /// <summary>
         /// Gets or sets the vouchers.
@@ -450,11 +491,11 @@
                                                              });
 
             modelBuilder.Entity<FileImportLogFile>().HasKey(f => new
-                                                             {
-                                                                 f.EstateId,
-                                                                 f.FileImportLogId,
-                                                                 f.FileId
-                                                             });
+                                                                 {
+                                                                     f.EstateId,
+                                                                     f.FileImportLogId,
+                                                                     f.FileId
+                                                                 });
 
             modelBuilder.Entity<File>().HasKey(f => new
                                                     {
@@ -464,16 +505,17 @@
                                                     });
 
             modelBuilder.Entity<FileLine>().HasKey(f => new
-                                                    {
-                                                        f.EstateId,
-                                                        f.FileId,
-                                                        f.LineNumber
-                                                    });
+                                                        {
+                                                            f.EstateId,
+                                                            f.FileId,
+                                                            f.LineNumber
+                                                        });
 
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
-            
-            
+            modelBuilder.Entity<FileImportLogView>().HasNoKey().ToView("uvwFileImportLog");
+            modelBuilder.Entity<FileView>().HasNoKey().ToView("uvwFile");
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -519,6 +561,9 @@
         #endregion
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Extensions
     {
         #region Methods
