@@ -71,6 +71,8 @@
         /// </value>
         public DbSet<ContractProduct> ContractProducts { get; set; }
 
+        public DbSet<Settlement> Settlements { get; set; }
+
         /// <summary>
         /// Gets or sets the contract product transaction fees.
         /// </summary>
@@ -279,6 +281,7 @@
         /// </value>
         public DbSet<Voucher> Vouchers { get; set; }
 
+        public DbSet<MerchantSettlementFee> MerchantSettlementFees { get; set; }
         #endregion
 
         #region Methods
@@ -510,6 +513,20 @@
                                                             f.FileId,
                                                             f.LineNumber
                                                         });
+
+            modelBuilder.Entity<Settlement>().HasKey(s => new
+                                                          {
+                                                              s.EstateId,
+                                                              s.SettlementId
+                                                          });
+
+            modelBuilder.Entity<MerchantSettlementFee>().HasKey(s => new
+                                                                     {
+                                                                         s.EstateId,
+                                                                         s.SettlementId,
+                                                                         s.TransactionId,
+                                                                         s.FeeId
+                                                                     });
 
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");

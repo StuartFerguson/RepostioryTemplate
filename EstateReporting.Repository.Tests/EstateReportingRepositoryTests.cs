@@ -25,6 +25,7 @@ namespace EstateReporting.Repository.Tests
     using Shouldly;
     using Testing;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
@@ -864,7 +865,7 @@ namespace EstateReporting.Repository.Tests
             transactionFee.FeeValue.ShouldBe(@event.FeeValue);
             transactionFee.TransactionId.ShouldBe(@event.TransactionId);
         }
-
+        
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
@@ -929,8 +930,8 @@ namespace EstateReporting.Repository.Tests
             var dbContextFactory = this.CreateMockContextFactory();
             dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
 
-            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
-            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEnrichedEvent>(jsonData);
+            var jsonData = JsonConvert.SerializeObject(TestData.ServiceProviderFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<ServiceProviderFeeAddedToTransactionEnrichedEvent>(jsonData);
 
             EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
             Should.Throw<NotFoundException>(async () =>
@@ -1801,6 +1802,173 @@ namespace EstateReporting.Repository.Tests
             Should.Throw<NotFoundException>(async () =>
                                             {
                                                 await reportingRepository.UpdateFileAsComplete(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_CreateSettlement_SettlementCreated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.SettlementCreatedForDateEvent);
+            var @event = JsonConvert.DeserializeObject<SettlementCreatedForDateEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.CreateSettlement(@event, CancellationToken.None);
+
+            Settlement settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == @event.SettlementId);
+            settlement.ShouldNotBeNull();
+            settlement.EstateId.ShouldBe(@event.EstateId);
+            settlement.SettlementId.ShouldBe(@event.SettlementId);
+            settlement.SettlementDate.ShouldBe(@event.SettlementDate);
+            settlement.IsCompleted.ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddPendingMerchantFeeToSettlement_PendingMerchantFeeAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedPendingSettlementEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedPendingSettlementEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddPendingMerchantFeeToSettlement(@event, CancellationToken.None);
+
+            var merchantSettlementFee = await context.MerchantSettlementFees.SingleOrDefaultAsync(s => s.SettlementId == @event.SettlementId &&
+                                                                                                       s.EstateId == @event.EstateId &&
+                                                                                                       s.MerchantId == @event.MerchantId &&
+                                                                                                       s.FeeId == @event.FeeId);
+            merchantSettlementFee.ShouldNotBeNull();
+            merchantSettlementFee.EstateId.ShouldBe(@event.EstateId);
+            merchantSettlementFee.SettlementId.ShouldBe(@event.SettlementId);
+            merchantSettlementFee.FeeId.ShouldBe(@event.FeeId);
+            merchantSettlementFee.IsSettled.ShouldBeFalse();
+            merchantSettlementFee.MerchantId.ShouldBe(@event.MerchantId);
+            merchantSettlementFee.TransactionId.ShouldBe(@event.TransactionId);
+            merchantSettlementFee.CalculatedValue.ShouldBe(@event.CalculatedValue);
+            merchantSettlementFee.FeeCalculatedDateTime.ShouldBe(@event.FeeCalculatedDateTime);
+            merchantSettlementFee.FeeValue.ShouldBe(@event.FeeValue);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_MarkMerchantFeeAsSettled_FeeMarkedAsSettled(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            context.MerchantSettlementFees.Add(new MerchantSettlementFee
+                                               {
+                                                   SettlementId = TestData.SettlementId,
+                                                   EstateId = TestData.EstateId,
+                                                   FeeId = TestData.TransactionFeeId,
+                                                   MerchantId = TestData.MerchantId,
+                                                   TransactionId = TestData.TransactionId,
+                                                   FeeValue = TestData.FeeValue,
+                                                   CalculatedValue = TestData.CalculatedValue,
+                                                   FeeCalculatedDateTime = TestData.FeeCalculatedDateTime,
+                                                   IsSettled = false
+                                               });
+            context.SaveChanges();
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeSettledEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeSettledEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.MarkMerchantFeeAsSettled(@event, CancellationToken.None);
+
+            var merchantSettlementFee = await context.MerchantSettlementFees.SingleOrDefaultAsync(s => s.SettlementId == @event.SettlementId &&
+                                                                                                       s.EstateId == @event.EstateId &&
+                                                                                                       s.MerchantId == @event.MerchantId &&
+                                                                                                       s.FeeId == @event.FeeId);
+            merchantSettlementFee.ShouldNotBeNull();
+            merchantSettlementFee.IsSettled.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_MarkMerchantFeeAsSettled_FeeNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeSettledEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeSettledEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.MarkMerchantFeeAsSettled(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_MarkSettlementAsCompleted_SettlementMarkedAsComplete(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            context.Settlements.Add(new Settlement
+            {
+                SettlementId = TestData.SettlementId,
+                EstateId = TestData.EstateId,
+                IsCompleted = false,
+                SettlementDate = TestData.SettlementDate
+            });
+            context.SaveChanges();
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.SettlementCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<SettlementCompletedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.MarkSettlementAsCompleted(@event, CancellationToken.None);
+
+            var settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == @event.SettlementId &&
+                                                                                                       s.EstateId == @event.EstateId);
+            settlement.ShouldNotBeNull();
+            settlement.IsCompleted.ShouldBeTrue();
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_MarkSettlementAsCompleted_SettlementNotFOund_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.SettlementCompletedEvent);
+            var @event = JsonConvert.DeserializeObject<SettlementCompletedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.MarkSettlementAsCompleted(@event, CancellationToken.None);
+                                                
                                             });
         }
 

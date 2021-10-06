@@ -24,6 +24,7 @@
     using Shared.Exceptions;
     using Shared.Logger;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
@@ -70,6 +71,88 @@
         #endregion
 
         #region Methods
+
+        public async Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
+                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Settlement settlement = new Settlement
+                                    {
+                                        EstateId = estateId,
+                                        IsCompleted = false,
+                                        SettlementDate = domainEvent.SettlementDate.Date,
+                                        SettlementId = domainEvent.SettlementId
+                                    };
+
+            await context.Settlements.AddAsync(settlement, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
+                                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
+                                                          {
+                                                              SettlementId = domainEvent.SettlementId,
+                                                              EstateId = domainEvent.EstateId,
+                                                              CalculatedValue = domainEvent.CalculatedValue,
+                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
+                                                              FeeId = domainEvent.FeeId,
+                                                              FeeValue = domainEvent.FeeValue,
+                                                              IsSettled = false,
+                                                              MerchantId = domainEvent.MerchantId,
+                                                              TransactionId = domainEvent.TransactionId
+                                                          };
+            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
+                                                   CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchantFee = await context.MerchantSettlementFees.Where(m => m.EstateId == domainEvent.EstateId &&
+                                                                        m.MerchantId == domainEvent.MerchantId && m.TransactionId == domainEvent.TransactionId &&
+                                                                        m.SettlementId == domainEvent.SettlementId && m.FeeId == domainEvent.FeeId)
+                                     .SingleOrDefaultAsync(cancellationToken);
+            if (merchantFee == null)
+            {
+                throw new NotFoundException("Merchant Fee not found to update as settled");
+            }
+
+            merchantFee.IsSettled = true;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
+                                                    CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == domainEvent.SettlementId, cancellationToken);
+
+            if (settlement == null)
+            {
+                throw new NotFoundException($"No settlement with Id {domainEvent.SettlementId} found to mark as completed");
+            }
+
+            settlement.IsCompleted = true;
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Adds the contract.

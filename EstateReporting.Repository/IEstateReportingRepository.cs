@@ -9,6 +9,7 @@
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
@@ -18,6 +19,18 @@
     public interface IEstateReportingRepository
     {
         #region Methods
+
+        Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
+                            CancellationToken cancellationToken);
+
+        Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
+                                       CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the contract.
