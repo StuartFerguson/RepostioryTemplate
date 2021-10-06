@@ -127,6 +127,7 @@ namespace EstateReporting
             services.AddSingleton<MerchantDomainEventHandler>();
             services.AddSingleton<TransactionDomainEventHandler>();
             services.AddSingleton<ContractDomainEventHandler>();
+            services.AddSingleton<SettlementDomainEventHandler>();
             services.AddSingleton<FileProcessorDomainEventHandler>();
             services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
             services.AddSingleton<IReportingManager, ReportingManager>();

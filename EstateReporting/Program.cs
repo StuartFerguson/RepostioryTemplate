@@ -26,6 +26,7 @@ namespace EstateReporting
     using Shared.EventStore.Subscriptions;
     using Shared.Logger;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
@@ -108,6 +109,7 @@ namespace EstateReporting
                                                                              Guid.NewGuid(),
                                                                              String.Empty,
                                                                              DateTime.MinValue);
+                                   SettlementCreatedForDateEvent s = new SettlementCreatedForDateEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
 
                                    TypeProvider.LoadDomainEventsTypeDynamically();
                                    services.AddHostedService<SubscriptionWorker>(provider =>

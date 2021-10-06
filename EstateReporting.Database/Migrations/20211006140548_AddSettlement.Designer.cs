@@ -4,14 +4,16 @@ using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations
 {
     [DbContext(typeof(EstateReportingContext))]
-    partial class EstateReportingContextModelSnapshot : ModelSnapshot
+    [Migration("20211006140548_AddSettlement")]
+    partial class AddSettlement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -455,40 +457,6 @@ namespace EstateReporting.Database.Migrations
                     b.ToTable("merchantsecurityuser");
                 });
 
-            modelBuilder.Entity("EstateReporting.Database.Entities.MerchantSettlementFee", b =>
-                {
-                    b.Property<Guid>("EstateId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SettlementId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TransactionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("CalculatedValue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("FeeCalculatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("FeeValue")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsSettled")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("EstateId", "SettlementId", "TransactionId", "FeeId");
-
-                    b.ToTable("merchantsettlementfees");
-                });
-
             modelBuilder.Entity("EstateReporting.Database.Entities.Reconciliation", b =>
                 {
                     b.Property<Guid>("TransactionId")
@@ -538,21 +506,28 @@ namespace EstateReporting.Database.Migrations
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Settlement", b =>
                 {
+                    b.Property<Guid>("SettlementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("EstateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SettlementId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("FeesAwaitingSettlement")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("SettledFees")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("SettlementDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("EstateId", "SettlementId");
+                    b.HasKey("SettlementId");
 
-                    b.ToTable("settlement");
+                    b.ToTable("Settlements");
                 });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Transaction", b =>

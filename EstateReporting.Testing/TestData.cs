@@ -10,6 +10,7 @@
     using FileProcessor.FileImportLog.DomainEvents;
     using Models;
     using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
     using TransactionProcessor.Transaction.DomainEvents;
     using VoucherManagement.Voucher.DomainEvents;
 
@@ -440,7 +441,7 @@
 
         public static Decimal FeeValue = 0.0005m;
 
-        private static Decimal CalculatedValue = 2.95m;
+        public static Decimal CalculatedValue = 2.95m;
 
         public static ContractCreatedEvent ContractCreatedEvent = new ContractCreatedEvent(TestData.ContractId, TestData.EstateId,
                                                                                               TestData.OperatorId, TestData.ContractDescription);
@@ -744,5 +745,36 @@
 
         public static FileProcessingCompletedEvent FileProcessingCompletedEvent =
             new FileProcessingCompletedEvent(TestData.FileId, TestData.EstateId, TestData.ProcessingCompletedDateTime);
+
+        public static SettlementCreatedForDateEvent SettlementCreatedForDateEvent =>
+            new SettlementCreatedForDateEvent(TestData.SettlementId, TestData.EstateId, TestData.SettlementDate);
+
+        public static MerchantFeeAddedPendingSettlementEvent MerchantFeeAddedPendingSettlementEvent =>
+            new MerchantFeeAddedPendingSettlementEvent(TestData.SettlementId,
+                                                       TestData.EstateId,
+                                                       TestData.MerchantId,
+                                                       TestData.TransactionId,
+                                                       TestData.CalculatedValue,
+                                                       TestData.FeeCalculationType,
+                                                       TestData.TransactionFeeId,
+                                                       TestData.FeeValue,
+                                                       TestData.FeeCalculatedDateTime);
+
+        public static MerchantFeeSettledEvent MerchantFeeSettledEvent =>
+            new MerchantFeeSettledEvent(TestData.SettlementId,
+                                        TestData.EstateId,
+                                        TestData.MerchantId,
+                                        TestData.TransactionId,
+                                        TestData.CalculatedValue,
+                                        TestData.FeeCalculationType,
+                                        TestData.TransactionFeeId,
+                                        TestData.FeeValue,
+                                        TestData.FeeCalculatedDateTime);
+
+        public static SettlementCompletedEvent SettlementCompletedEvent => new SettlementCompletedEvent(TestData.SettlementId, TestData.EstateId);
+
+        public static Guid SettlementId = Guid.Parse("7CF02BE4-4BF0-4BB2-93C1-D6E5EC769E56");
+
+        public static DateTime SettlementDate = new DateTime(2021,10,6);
     }
 }
