@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="ClientProxyBase" Version="1.0.12" />
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.7" />
-    <PackageReference Include="EstateManagement.Client" Version="1.0.9.2" />
+    <PackageReference Include="EstateManagement.Client" Version="1.0.15-build77" />
     <PackageReference Include="EstateReporting.Database" Version="1.0.12" />
     <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="20.10.0" />
     <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="20.10.0" />

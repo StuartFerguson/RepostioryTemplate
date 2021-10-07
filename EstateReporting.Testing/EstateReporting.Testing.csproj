@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.9.2" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.9.2" />
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.9.2" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.15-build77" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.15-build77" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.15-build77" />
     <PackageReference Include="FileProcessor.File.DomainEvents" Version="0.0.1-build2" />
     <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="0.0.1-build2" />
     <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.11.2" />

@@ -491,6 +491,24 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
+
+            if (merchant == null)
+            {
+                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
+            }
+
+            merchant.SettlementSchedule = domainEvent.SettlementSchedule;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         /// <summary>
         /// Adds the merchant address.
         /// </summary>

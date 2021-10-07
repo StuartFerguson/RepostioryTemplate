@@ -240,6 +240,9 @@
 
         public static String TerminalNumber = "12345679";
 
+        public static SettlementScheduleChangedEvent SettlementScheduleChangedEvent =>
+            new SettlementScheduleChangedEvent(TestData.MerchantId, TestData.EstateId, TestData.SettlementSchedule, TestData.NextSettlementDate);
+
         public static OperatorAssignedToMerchantEvent OperatorAssignedToMerchantEvent = new OperatorAssignedToMerchantEvent(TestData.MerchantId,
                                                                                                                                TestData.EstateId,
                                                                                                                                TestData.OperatorId,
@@ -776,5 +779,9 @@
         public static Guid SettlementId = Guid.Parse("7CF02BE4-4BF0-4BB2-93C1-D6E5EC769E56");
 
         public static DateTime SettlementDate = new DateTime(2021,10,6);
+
+        public static Int32 SettlementSchedule = 1;
+
+        public static DateTime NextSettlementDate = new DateTime(2021,10,6);
     }
 }

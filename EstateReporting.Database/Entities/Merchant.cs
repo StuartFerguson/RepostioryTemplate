@@ -43,6 +43,8 @@
         /// </value>
         public String Name { get; set; }
 
+        public Int32 SettlementSchedule { get; set; }
+
         #endregion
     }
 }
