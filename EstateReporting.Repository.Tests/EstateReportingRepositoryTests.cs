@@ -307,6 +307,57 @@ namespace EstateReporting.Repository.Tests
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateMerchant_MerchantSettlementScheduleUpdated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            context.Merchants.Add(new Merchant
+                                  {
+                                      EstateId = TestData.EstateId,
+                                      MerchantId = TestData.MerchantId,
+                                      SettlementSchedule = 0,
+                                      CreatedDateTime = DateTime.Now,
+                                      Name = TestData.MerchantName
+                                  });
+            context.SaveChanges();
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.SettlementScheduleChangedEvent);
+            var @event = JsonConvert.DeserializeObject<SettlementScheduleChangedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateMerchant(@event, CancellationToken.None);
+
+            Merchant merchant = await context.Merchants.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.EstateId == @event.EstateId);
+            merchant.ShouldNotBeNull();
+            merchant.SettlementSchedule.ShouldBe(TestData.SettlementScheduleChangedEvent.SettlementSchedule);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateMerchant_MerchantNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.SettlementScheduleChangedEvent);
+            var @event = JsonConvert.DeserializeObject<SettlementScheduleChangedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+                                            {
+                                                await reportingRepository.UpdateMerchant(@event, CancellationToken.None);
+                                            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
         public async Task EstateReportingRepository_StartTransaction_TransactionAdded(TestDatabaseType testDatabaseType)
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);

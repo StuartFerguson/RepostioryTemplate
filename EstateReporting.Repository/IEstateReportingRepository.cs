@@ -166,6 +166,9 @@
         /// <returns></returns>
         Task AddMerchant(MerchantCreatedEvent domainEvent,
                          CancellationToken cancellationToken);
+        
+        Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
+                         CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the merchant address.

@@ -126,6 +126,12 @@
             await this.EstateReportingRepository.InsertMerchantBalanceRecord(domainEvent, cancellationToken);
         }
 
+        private async Task HandleSpecificDomainEvent(SettlementScheduleChangedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateMerchant(domainEvent, cancellationToken);
+        }
+
         #endregion
     }
 }

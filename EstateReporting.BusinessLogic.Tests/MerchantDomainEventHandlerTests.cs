@@ -122,6 +122,20 @@ namespace EstateReporting.BusinessLogic.Tests
             Should.NotThrow(async () => { await eventHandler.Handle(merchantSecurityUserAddedEvent, CancellationToken.None); });
         }
 
+        [Fact]
+        public void MerchantDomainEventHandler_SettlementScheduleChangedEvent_EventIsHandled()
+        {
+            SettlementScheduleChangedEvent settlementScheduleChangedEvent = TestData.SettlementScheduleChangedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () => { await eventHandler.Handle(settlementScheduleChangedEvent, CancellationToken.None); });
+        }
+
         #endregion
     }
 }
