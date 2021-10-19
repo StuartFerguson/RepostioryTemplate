@@ -86,6 +86,11 @@
         Task AddEstateOperator(OperatorAddedToEstateEvent domainEvent,
                                CancellationToken cancellationToken);
 
+        Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent, CancellationToken cancellationToken);
+
+        Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
+                            CancellationToken cancellationToken);
+
         /// <summary>
         /// Adds the estate security user.
         /// </summary>

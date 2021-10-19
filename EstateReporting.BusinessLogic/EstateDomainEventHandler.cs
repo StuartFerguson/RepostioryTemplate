@@ -83,6 +83,13 @@
             await this.EstateReportingRepository.AddEstateOperator(domainEvent, cancellationToken);
         }
 
+
+        private async Task HandleSpecificDomainEvent(EstateReferenceAllocatedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateEstate(domainEvent, cancellationToken);
+        }
+
         #endregion
     }
 }

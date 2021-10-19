@@ -358,6 +358,106 @@ namespace EstateReporting.Repository.Tests
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateEstate_EstateReferenceAllocated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            context.Estates.Add(new Estate
+            {
+                EstateId = TestData.EstateId,
+                CreatedDateTime = DateTime.Now,
+                Name = TestData.EstateName
+            });
+            context.SaveChanges();
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.EstateReferenceAllocatedEvent);
+            var @event = JsonConvert.DeserializeObject<EstateReferenceAllocatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateEstate(@event, CancellationToken.None);
+
+            Estate estate = await context.Estates.SingleOrDefaultAsync(e => e.EstateId == @event.EstateId);
+            estate.ShouldNotBeNull();
+            estate.Reference.ShouldBe(TestData.EstateReferenceAllocatedEvent.EstateReference);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateEstate_EstateReferenceAllocated_EstateNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.EstateReferenceAllocatedEvent);
+            var @event = JsonConvert.DeserializeObject<EstateReferenceAllocatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+            {
+                await reportingRepository.UpdateEstate(@event, CancellationToken.None);
+            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateMerchant_MerchantReferenceAllocated(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            context.Merchants.Add(new Merchant
+            {
+                EstateId = TestData.EstateId,
+                MerchantId = TestData.MerchantId,
+                SettlementSchedule = 0,
+                CreatedDateTime = DateTime.Now,
+                Name = TestData.MerchantName
+            });
+            context.SaveChanges();
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantReferenceAllocatedEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantReferenceAllocatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.UpdateMerchant(@event, CancellationToken.None);
+
+            Merchant merchant = await context.Merchants.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.EstateId == @event.EstateId);
+            merchant.ShouldNotBeNull();
+            merchant.Reference.ShouldBe(TestData.MerchantReferenceAllocatedEvent.MerchantReference);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_UpdateMerchant_MerchantReferenceAllocated_MerchantNotFound_ErrorThrown(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantReferenceAllocatedEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantReferenceAllocatedEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            Should.Throw<NotFoundException>(async () =>
+            {
+                await reportingRepository.UpdateMerchant(@event, CancellationToken.None);
+            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
         public async Task EstateReportingRepository_StartTransaction_TransactionAdded(TestDatabaseType testDatabaseType)
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);

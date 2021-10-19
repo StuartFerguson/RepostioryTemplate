@@ -36,6 +36,8 @@
         /// </value>
         public String Name { get; set; }
 
+        public String Reference { get; set; }
+
         #endregion
     }
 }

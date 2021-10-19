@@ -38,6 +38,20 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public void EstateDomainEventHandler_EstateReferenceAllocatedEvent_EventIsHandled()
+        {
+            EstateReferenceAllocatedEvent estateReferenceAllocatedEvent = TestData.EstateReferenceAllocatedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            EstateDomainEventHandler eventHandler = new EstateDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () => { await eventHandler.Handle(estateReferenceAllocatedEvent, CancellationToken.None); });
+        }
+
+        [Fact]
         public void EstateDomainEventHandler_OperatorAddedToEstateEvent_EventIsHandled()
         {
             OperatorAddedToEstateEvent operatorAddedToEstateEvent = TestData.OperatorAddedToEstateEvent;
