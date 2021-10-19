@@ -132,6 +132,12 @@
             await this.EstateReportingRepository.UpdateMerchant(domainEvent, cancellationToken);
         }
 
+        private async Task HandleSpecificDomainEvent(MerchantReferenceAllocatedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateMerchant(domainEvent, cancellationToken);
+        }
+
         #endregion
     }
 }

@@ -783,5 +783,14 @@
         public static Int32 SettlementSchedule = 1;
 
         public static DateTime NextSettlementDate = new DateTime(2021,10,6);
+
+        public static String EstateReference = "Estate1";
+
+        public static String MerchantReference = "Merchant1";
+
+        public static MerchantReferenceAllocatedEvent MerchantReferenceAllocatedEvent =>
+            new MerchantReferenceAllocatedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantReference);
+
+        public static EstateReferenceAllocatedEvent EstateReferenceAllocatedEvent => new EstateReferenceAllocatedEvent(TestData.EstateId, TestData.EstateReference);
     }
 }

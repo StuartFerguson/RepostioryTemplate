@@ -338,6 +338,27 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent,
+                                       CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var estate = await context.Estates.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId);
+
+            if (estate == null)
+            {
+                throw new NotFoundException($"Estate not found with Id {domainEvent.EstateId}");
+            }
+
+            estate.Reference = domainEvent.EstateReference;
+
+            await context.SaveChangesAsync(cancellationToken);
+
+
+        }
+
         /// <summary>
         /// Adds the estate security user.
         /// </summary>
@@ -506,6 +527,24 @@
             }
 
             merchant.SettlementSchedule = domainEvent.SettlementSchedule;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
+
+            if (merchant == null)
+            {
+                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
+            }
+
+            merchant.Reference = domainEvent.MerchantReference;
             await context.SaveChangesAsync(cancellationToken);
         }
 

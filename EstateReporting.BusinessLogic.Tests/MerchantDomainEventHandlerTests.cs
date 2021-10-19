@@ -53,6 +53,20 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public void MerchantDomainEventHandler_MerchantReferenceAllocatedEvent_EventIsHandled()
+        {
+            MerchantReferenceAllocatedEvent merchantReferenceAllocatedEvent = TestData.MerchantReferenceAllocatedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () => { await eventHandler.Handle(merchantReferenceAllocatedEvent, CancellationToken.None); });
+        }
+
+        [Fact]
         public void MerchantDomainEventHandler_DeviceAddedToMerchantEvent_EventIsHandled()
         {
             DeviceAddedToMerchantEvent deviceAddedToMerchantEvent = TestData.DeviceAddedToMerchantEvent;

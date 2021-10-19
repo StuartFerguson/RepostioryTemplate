@@ -45,6 +45,8 @@
 
         public Int32 SettlementSchedule { get; set; }
 
+        public String Reference { get; set; }
+
         #endregion
     }
 }
