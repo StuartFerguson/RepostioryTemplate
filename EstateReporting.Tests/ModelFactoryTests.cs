@@ -60,6 +60,29 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMerchantModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMerchantModel model = TestData.SettlementByMerchantModel;
+
+            SettlementByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.SettlementMerchantResponses.ShouldNotBeNull();
+            response.SettlementMerchantResponses.ShouldNotBeEmpty();
+
+            foreach (SettlementMerchantResponse translated in response.SettlementMerchantResponses)
+            {
+                // Find the original record
+                SettlementMerchantModel original = model.SettlementMerchantModels.SingleOrDefault(m => m.MerchantId == translated.MerchantId);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfSettlement.ShouldBe(original.ValueOfSettlement);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactionsSettled.ShouldBe(original.NumberOfTransactionsSettled);
+            }
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByMerchantModel_NullTransactionMerchantModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -71,12 +94,34 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMerchantModel_NullSettlementMerchantModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMerchantModel model = TestData.SettlementByMerchantModelNullSettlementMerchantModelList;
+
+            SettlementByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByMerchantModel_EmptyTransactionMerchantModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionsByMerchantModel model = TestData.TransactionsByMerchantModelEmptyTransactionMerchantModelList;
 
             TransactionsByMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMerchantModel_EmptySettlementMerchantModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMerchantModel model = TestData.SettlementByMerchantModelEmptySettlementMerchantModelList;
+
+            SettlementByMerchantResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -99,6 +144,23 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementMerchantModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementMerchantModel model = TestData.SettlementMerchantModel;
+
+            SettlementMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.MerchantId.ShouldBe(model.MerchantId);
+            response.MerchantName.ShouldBe(model.MerchantName);
+            response.ValueOfSettlement.ShouldBe(model.ValueOfSettlement);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactionsSettled.ShouldBe(model.NumberOfTransactionsSettled);
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionMerchantModelNull_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -108,7 +170,18 @@ namespace EstateReporting.Tests
 
             response.ShouldBeNull();
         }
-        
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementMerchantModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementMerchantModel model = null;
+
+            SettlementMerchantResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
         [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByDayModel_ModelConverted()
         {
@@ -133,6 +206,29 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByDayModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByDayModel model = TestData.SettlementByDayModel;
+
+            SettlementByDayResponse response = factory.ConvertFrom(model);
+
+            response.SettlementDayResponses.ShouldNotBeNull();
+            response.SettlementDayResponses.ShouldNotBeEmpty();
+
+            foreach (SettlementDayResponse translated in response.SettlementDayResponses)
+            {
+                // Find the original record
+                SettlementDayModel original = model.SettlementDayModels.SingleOrDefault(m => m.Date == translated.Date);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfSettlement.ShouldBe(original.ValueOfSettlement);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactionsSettled.ShouldBe(original.NumberOfTransactionsSettled);
+            }
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByDayModel_NullTransactionDayModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -144,12 +240,34 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByDayModel_NullSettlementDayModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByDayModel model = TestData.SettlementByDayModelNullSettlementDayModelList;
+
+            SettlementByDayResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByDayModel_EmptyTransactionDayModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionsByDayModel model = TestData.TransactionsByDayModelEmptyTransactionDayModelList;
 
             TransactionsByDayResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByDayModel_EmptySettlemnentDayModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByDayModel model = TestData.SettlementByDayModelEmptySettlementDayModelList;
+
+            SettlementByDayResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -171,12 +289,39 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementDayModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementDayModel model = TestData.SettlementDayModel;
+
+            SettlementDayResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.Date.ShouldBe(model.Date);
+            response.ValueOfSettlement.ShouldBe(model.ValueOfSettlement);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactionsSettled.ShouldBe(model.NumberOfTransactionsSettled);
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionDayModelNull_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionDayModel model = null;
 
             TransactionDayResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementDayModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementDayModel model = null;
+
+            SettlementDayResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -205,6 +350,29 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByWeekModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByWeekModel model = TestData.SettlementByWeekModel;
+
+            SettlementByWeekResponse response = factory.ConvertFrom(model);
+
+            response.SettlementWeekResponses.ShouldNotBeNull();
+            response.SettlementWeekResponses.ShouldNotBeEmpty();
+
+            foreach (SettlementWeekResponse translated in response.SettlementWeekResponses)
+            {
+                // Find the original record
+                SettlementWeekModel original = model.SettlementWeekModels.SingleOrDefault(m => m.WeekNumber == translated.WeekNumber && m.Year == translated.Year);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfSettlement.ShouldBe(original.ValueOfSettlement);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactionsSettled.ShouldBe(original.NumberOfTransactionsSettled);
+            }
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByWeekModel_NullTransactionWeekModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -216,12 +384,34 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByWeekModel_NullSettlementWeekModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByWeekModel model = TestData.SettlementByWeekModelNullSettlementWeekModelList;
+
+            SettlementByWeekResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByWeekModel_EmptyTransactionWeekModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionsByWeekModel model = TestData.TransactionsByWeekModelEmptyTransactionWeekModelList;
 
             TransactionsByWeekResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByWeekModel_EmptySettlementWeekModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByWeekModel model = TestData.SettlementByWeekModelEmptySettlementWeekModelList;
+
+            SettlementByWeekResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -244,12 +434,40 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementWeekModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementWeekModel model = TestData.SettlementWeekModel;
+
+            SettlementWeekResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.WeekNumber.ShouldBe(model.WeekNumber);
+            response.Year.ShouldBe(model.Year);
+            response.ValueOfSettlement.ShouldBe(model.ValueOfSettlement);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactionsSettled.ShouldBe(model.NumberOfTransactionsSettled);
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionWeekModelNull_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionWeekModel model = null;
 
             TransactionWeekResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementWeekModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementWeekModel model = null;
+
+            SettlementWeekResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -272,12 +490,40 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementMonthModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementMonthModel model = TestData.SettlementMonthModel;
+
+            SettlementMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.MonthNumber.ShouldBe(model.MonthNumber);
+            response.Year.ShouldBe(model.Year);
+            response.ValueOfSettlement.ShouldBe(model.ValueOfSettlement);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactionsSettled.ShouldBe(model.NumberOfTransactionsSettled);
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionMonthModelNull_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionMonthModel model = null;
 
             TransactionMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementMonthModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementMonthModel model = null;
+
+            SettlementMonthResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -306,6 +552,29 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMonthModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMonthModel model = TestData.SettlementByMonthModel;
+
+            SettlementByMonthResponse response = factory.ConvertFrom(model);
+
+            response.SettlementMonthResponses.ShouldNotBeNull();
+            response.SettlementMonthResponses.ShouldNotBeEmpty();
+
+            foreach (SettlementMonthResponse translated in response.SettlementMonthResponses)
+            {
+                // Find the original record
+                SettlementMonthModel original = model.SettlementMonthModels.SingleOrDefault(m => m.MonthNumber == translated.MonthNumber && m.Year == translated.Year);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfSettlement.ShouldBe(original.ValueOfSettlement);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactionsSettled.ShouldBe(original.NumberOfTransactionsSettled);
+            }
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByMonthModel_NullTransactionMonthModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -317,12 +586,34 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMonthModel_NullSettlementMonthModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMonthModel model = TestData.SettlementByMonthModelNullSettlementMonthModelList;
+
+            SettlementByMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByMonthModel_EmptyTransactionMonthModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionsByMonthModel model = TestData.TransactionsByMonthModelEmptyTransactionMonthModelList;
 
             TransactionsByMonthResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByMonthModel_EmptySettlementMonthModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByMonthModel model = TestData.SettlementByMonthModelEmptySettlementMonthModelList;
+
+            SettlementByMonthResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -344,12 +635,39 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementOperatorModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementOperatorModel model = TestData.SettlementOperatorModel;
+
+            SettlementOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldNotBeNull();
+
+            response.OperatorName.ShouldBe(model.OperatorName);
+            response.ValueOfSettlement.ShouldBe(model.ValueOfSettlement);
+            response.CurrencyCode.ShouldBe(model.CurrencyCode);
+            response.NumberOfTransactionsSettled.ShouldBe(model.NumberOfTransactionsSettled);
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionOperatorModelNull_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionOperatorModel model = null;
 
             TransactionOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementOperatorModelNull_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementOperatorModel model = null;
+
+            SettlementOperatorResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }
@@ -378,6 +696,29 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByOperatorModel_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByOperatorModel model = TestData.SettlementByOperatorModel;
+
+            SettlementByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.SettlementOperatorResponses.ShouldNotBeNull();
+            response.SettlementOperatorResponses.ShouldNotBeEmpty();
+
+            foreach (SettlementOperatorResponse translated in response.SettlementOperatorResponses)
+            {
+                // Find the original record
+                SettlementOperatorModel original = model.SettlementOperatorModels.SingleOrDefault(m => m.OperatorName == translated.OperatorName);
+                original.ShouldNotBeNull();
+
+                translated.ValueOfSettlement.ShouldBe(original.ValueOfSettlement);
+                translated.CurrencyCode.ShouldBe(original.CurrencyCode);
+                translated.NumberOfTransactionsSettled.ShouldBe(original.NumberOfTransactionsSettled);
+            }
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByOperatorModel_NullTransactionOperatorModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
@@ -389,12 +730,34 @@ namespace EstateReporting.Tests
         }
 
         [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByOperatorModel_NullSettlementOperatorModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByOperatorModel model = TestData.SettlementByOperatorModelNullSettlementOperatorModelList;
+
+            SettlementByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
         public void ModelFactory_ConvertFrom_TransactionsByOperatorModel_EmptyTransactionOperatorModelList_ModelConverted()
         {
             ModelFactory factory = new ModelFactory();
             TransactionsByOperatorModel model = TestData.TransactionsByOperatorModelEmptyTransactionOperatorModelList;
 
             TransactionsByOperatorResponse response = factory.ConvertFrom(model);
+
+            response.ShouldBeNull();
+        }
+
+        [Fact]
+        public void ModelFactory_ConvertFrom_SettlementByOperatorModel_EmptySettlementOperatorModelList_ModelConverted()
+        {
+            ModelFactory factory = new ModelFactory();
+            SettlementByOperatorModel model = TestData.SettlementByOperatorModelEmptySettlementOperatorModelList;
+
+            SettlementByOperatorResponse response = factory.ConvertFrom(model);
 
             response.ShouldBeNull();
         }

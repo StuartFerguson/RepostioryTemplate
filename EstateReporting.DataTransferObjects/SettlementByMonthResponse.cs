@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    public class TransactionsByMerchantResponse
+    public class SettlementByMonthResponse
     {
         #region Properties
 
@@ -13,8 +13,8 @@
         /// <value>
         /// The transaction week responses.
         /// </value>
-        [JsonProperty("transaction_merchant_responses")]
-        public List<TransactionMerchantResponse> TransactionMerchantResponses { get; set; }
+        [JsonProperty("settlement_month_responses")]
+        public List<SettlementMonthResponse> SettlementMonthResponses { get; set; }
 
         #endregion
     }

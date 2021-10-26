@@ -36,6 +36,24 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public async Task ReportingManager_GetSettlementForEstateByDate_DataReturned()
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetSettlementForEstateByDate(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.SettlementByDayModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            var model = await manager.GetSettlementForEstateByDate(TestData.EstateId, TestData.StartDate, TestData.EndDate, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.SettlementDayModels.ShouldNotBeNull();
+            model.SettlementDayModels.ShouldNotBeEmpty();
+            model.SettlementDayModels.Count.ShouldBe(TestData.SettlementByDayModel.SettlementDayModels.Count);
+        }
+
+        [Fact]
         public async Task ReportingManager_GetTransactionsForMerchantByDate_DataReturned()
         {
             Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
@@ -52,7 +70,7 @@ namespace EstateReporting.BusinessLogic.Tests
             model.TransactionDayModels.ShouldNotBeEmpty();
             model.TransactionDayModels.Count.ShouldBe(TestData.TransactionsByDayModel.TransactionDayModels.Count);
         }
-
+        
         [Fact]
         public async Task ReportingManager_GetTransactionsForEstateByWeek_DataReturned()
         {
@@ -72,6 +90,24 @@ namespace EstateReporting.BusinessLogic.Tests
         }
 
         [Fact]
+        public async Task ReportingManager_GetSettlementForEstateByWeek_DataReturned()
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetSettlementForEstateByWeek(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.SettlementByWeekModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            SettlementByWeekModel model = await manager.GetSettlementForEstateByWeek(TestData.EstateId, TestData.StartDate, TestData.EndDate, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.SettlementWeekModels.ShouldNotBeNull();
+            model.SettlementWeekModels.ShouldNotBeEmpty();
+            model.SettlementWeekModels.Count.ShouldBe(TestData.SettlementByWeekModel.SettlementWeekModels.Count);
+        }
+
+        [Fact]
         public async Task ReportingManager_GetTransactionsForEstateByMonth_DataReturned()
         {
             Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
@@ -87,6 +123,24 @@ namespace EstateReporting.BusinessLogic.Tests
             model.TransactionMonthModels.ShouldNotBeNull();
             model.TransactionMonthModels.ShouldNotBeEmpty();
             model.TransactionMonthModels.Count.ShouldBe(TestData.TransactionsByMonthModel.TransactionMonthModels.Count);
+        }
+
+        [Fact]
+        public async Task ReportingManager_GetSettlementForEstateByMonth_DataReturned()
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetSettlementForEstateByMonth(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.SettlementByMonthModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            SettlementByMonthModel model = await manager.GetSettlementForEstateByMonth(TestData.EstateId, TestData.StartDate, TestData.EndDate, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.SettlementMonthModels.ShouldNotBeNull();
+            model.SettlementMonthModels.ShouldNotBeEmpty();
+            model.SettlementMonthModels.Count.ShouldBe(TestData.SettlementByMonthModel.SettlementMonthModels.Count);
         }
 
         [Fact]
@@ -152,6 +206,28 @@ namespace EstateReporting.BusinessLogic.Tests
         [InlineData(SortDirection.Descending, SortField.Count)]
         [InlineData(SortDirection.Ascending, SortField.Value)]
         [InlineData(SortDirection.Descending, SortField.Value)]
+        public async Task ReportingManager_GetSettlementForEstateByMerchant_DataReturned(SortDirection sortDirection, SortField sortField)
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetSettlementForEstateByMerchant(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<Int32>(), It.IsAny<EstateReporting.Repository.SortField>(), It.IsAny<EstateReporting.Repository.SortDirection>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.SettlementByMerchantModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            SettlementByMerchantModel model = await manager.GetSettlementForEstateByMerchant(TestData.EstateId, TestData.StartDate, TestData.EndDate, 5, sortField, sortDirection, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.SettlementMerchantModels.ShouldNotBeNull();
+            model.SettlementMerchantModels.ShouldNotBeEmpty();
+            model.SettlementMerchantModels.Count.ShouldBe(TestData.SettlementByMerchantModel.SettlementMerchantModels.Count);
+        }
+
+        [Theory]
+        [InlineData(SortDirection.Ascending, SortField.Count)]
+        [InlineData(SortDirection.Descending, SortField.Count)]
+        [InlineData(SortDirection.Ascending, SortField.Value)]
+        [InlineData(SortDirection.Descending, SortField.Value)]
         public async Task ReportingManager_GetTransactionsForEstateByOperator_DataReturned(SortDirection sortDirection, SortField sortField)
         {
             Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
@@ -167,6 +243,28 @@ namespace EstateReporting.BusinessLogic.Tests
             model.TransactionOperatorModels.ShouldNotBeNull();
             model.TransactionOperatorModels.ShouldNotBeEmpty();
             model.TransactionOperatorModels.Count.ShouldBe(TestData.TransactionsByOperatorModel.TransactionOperatorModels.Count);
+        }
+
+        [Theory]
+        [InlineData(SortDirection.Ascending, SortField.Count)]
+        [InlineData(SortDirection.Descending, SortField.Count)]
+        [InlineData(SortDirection.Ascending, SortField.Value)]
+        [InlineData(SortDirection.Descending, SortField.Value)]
+        public async Task ReportingManager_GetSettlementForEstateByOperator_DataReturned(SortDirection sortDirection, SortField sortField)
+        {
+            Mock<IEstateReportingRepository> repository = new Mock<IEstateReportingRepository>();
+            Mock<IEstateReportingRepositoryForReports> repositoryForReports = new Mock<IEstateReportingRepositoryForReports>();
+            repositoryForReports.Setup(r => r.GetSettlementForEstateByOperator(It.IsAny<Guid>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<Int32>(), It.IsAny<EstateReporting.Repository.SortField>(), It.IsAny<EstateReporting.Repository.SortDirection>(), It.IsAny<CancellationToken>()))
+                                .ReturnsAsync(TestData.SettlementByOperatorModel);
+
+            ReportingManager manager = new ReportingManager(repository.Object, repositoryForReports.Object);
+
+            SettlementByOperatorModel model = await manager.GetSettlementForEstateByOperator(TestData.EstateId, TestData.StartDate, TestData.EndDate, 5, sortField, sortDirection, CancellationToken.None);
+
+            model.ShouldNotBeNull();
+            model.SettlementOperatorModels.ShouldNotBeNull();
+            model.SettlementOperatorModels.ShouldNotBeEmpty();
+            model.SettlementOperatorModels.Count.ShouldBe(TestData.SettlementByOperatorModel.SettlementOperatorModels.Count);
         }
     }
 }
