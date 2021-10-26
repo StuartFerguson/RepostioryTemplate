@@ -79,6 +79,12 @@
                                                                       String endDate,
                                                                       CancellationToken cancellationToken);
 
+        Task<SettlementByDayModel> GetSettlementForMerchantByDate(Guid estateId,
+                                                                      Guid merchantId,
+                                                                      String startDate,
+                                                                      String endDate,
+                                                                      CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for merchant by month.
         /// </summary>
@@ -94,6 +100,12 @@
                                                                          String endDate,
                                                                          CancellationToken cancellationToken);
 
+        Task<SettlementByMonthModel> GetSettlementForMerchantByMonth(Guid estateId,
+                                                                         Guid merchantId,
+                                                                         String startDate,
+                                                                         String endDate,
+                                                                         CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for merchant by week.
         /// </summary>
@@ -104,6 +116,12 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByWeekModel> GetTransactionsForMerchantByWeek(Guid estateId,
+                                                                       Guid merchantId,
+                                                                       String startDate,
+                                                                       String endDate,
+                                                                       CancellationToken cancellationToken);
+
+        Task<SettlementByWeekModel> GetSettlementForMerchantByWeek(Guid estateId,
                                                                        Guid merchantId,
                                                                        String startDate,
                                                                        String endDate,
