@@ -519,7 +519,17 @@
                                                                                               {
                                                                                                   TransactionDayModels = null
                                                                                               };
-        
+
+        public static SettlementByDayModel SettlementByDayModelEmptySettlementDayModelList = new SettlementByDayModel
+                                                                                              {
+                                                                                                  SettlementDayModels = new List<SettlementDayModel>()
+                                                                                              };
+
+        public static SettlementByDayModel SettlementByDayModelNullSettlementDayModelList = new SettlementByDayModel
+        {
+            SettlementDayModels = null
+                                                                                             };
+
 
         public static TransactionsByDayModel TransactionsByDayModel = new TransactionsByDayModel
                                                                       {
@@ -541,6 +551,27 @@
                                                                                                      }
                                                                                                  }
                                                                       };
+
+        public static SettlementByDayModel SettlementByDayModel = new SettlementByDayModel
+        {
+                                                                      SettlementDayModels = new List<SettlementDayModel>
+                                                                                             {
+                                                                                                 new SettlementDayModel
+                                                                                                 {
+                                                                                                     CurrencyCode = TestData.CurrencyCode,
+                                                                                                     Date = new DateTime(2020, 10, 1),
+                                                                                                     ValueOfSettlement = 1000.00m,
+                                                                                                     NumberOfTransactionsSettled = 50
+                                                                                                 },
+                                                                                                 new SettlementDayModel
+                                                                                                 {
+                                                                                                     CurrencyCode = TestData.CurrencyCode,
+                                                                                                     Date = new DateTime(2020, 10, 2),
+                                                                                                     ValueOfSettlement = 1510.00m,
+                                                                                                     NumberOfTransactionsSettled = 65
+                                                                                                 }
+                                                                                             }
+                                                                  };
 
         public static TransactionsByWeekModel TransactionsByWeekModel = new TransactionsByWeekModel
         {
@@ -565,6 +596,29 @@
                                                                                                  }
         };
 
+        public static SettlementByWeekModel SettlementByWeekModel = new SettlementByWeekModel
+        {
+            SettlementWeekModels = new List<SettlementWeekModel>
+                                                                                                 {
+                                                                                                     new SettlementWeekModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         WeekNumber = 1,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfSettlement = 1000.00m,
+                                                                                                         NumberOfTransactionsSettled = 50
+                                                                                                     },
+                                                                                                     new SettlementWeekModel
+                                                                                                     {
+                                                                                                         CurrencyCode = TestData.CurrencyCode,
+                                                                                                         WeekNumber = 2,
+                                                                                                         Year = 2020,
+                                                                                                         ValueOfSettlement = 1510.00m,
+                                                                                                         NumberOfTransactionsSettled = 65
+                                                                                                     }
+                                                                                                 }
+        };
+
         public static TransactionsByWeekModel TransactionsByWeekModelNullTransactionWeekModelList = new TransactionsByWeekModel
         {
                                                                                                      TransactionWeekModels = null
@@ -575,12 +629,30 @@
                                                                                                         TransactionWeekModels = new List<TransactionWeekModel>()
                                                                                                     };
 
+        public static SettlementByWeekModel SettlementByWeekModelNullSettlementWeekModelList = new SettlementByWeekModel
+        {
+                                                                                                    SettlementWeekModels = null
+                                                                                                };
+
+        public static SettlementByWeekModel SettlementByWeekModelEmptySettlementWeekModelList = new SettlementByWeekModel
+        {
+                                                                                                     SettlementWeekModels = new List<SettlementWeekModel>()
+                                                                                                 };
+
         public static TransactionDayModel TransactionDayModel = new TransactionDayModel
                                                                 {
                                                                     CurrencyCode = TestData.CurrencyCode,
                                                                     Date = new DateTime(2020, 10, 1),
                                                                     ValueOfTransactions = 1000.00m,
                                                                     NumberOfTransactions = 50
+                                                                };
+
+        public static SettlementDayModel SettlementDayModel = new SettlementDayModel
+        {
+                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                    Date = new DateTime(2020, 10, 1),
+                                                                    ValueOfSettlement = 1000.00m,
+                                                                    NumberOfTransactionsSettled = 50
                                                                 };
 
         public static TransactionWeekModel TransactionWeekModel = new TransactionWeekModel
@@ -592,6 +664,15 @@
                                                                       NumberOfTransactions = 50
                                                                   };
 
+        public static SettlementWeekModel SettlementWeekModel = new SettlementWeekModel
+        {
+                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                    WeekNumber = 1,
+                                                                    Year = 2020,
+                                                                    ValueOfSettlement = 1000.00m,
+                                                                    NumberOfTransactionsSettled = 50
+                                                                };
+
         public static TransactionMonthModel TransactionMonthModel = new TransactionMonthModel
         {
                                                                     CurrencyCode = TestData.CurrencyCode,
@@ -600,6 +681,15 @@
                                                                     ValueOfTransactions = 1000.00m,
                                                                     NumberOfTransactions = 50
                                                                 };
+
+        public static SettlementMonthModel SettlementMonthModel = new SettlementMonthModel
+                                                                  {
+                                                                      CurrencyCode = TestData.CurrencyCode,
+                                                                      MonthNumber = 1,
+                                                                      Year = 2020,
+                                                                      ValueOfSettlement = 1000.00m,
+                                                                      NumberOfTransactionsSettled = 50
+                                                                  };
 
         public static TransactionsByMonthModel TransactionsByMonthModel = new TransactionsByMonthModel
         {
@@ -624,15 +714,48 @@
                                                                                                  }
         };
 
+        public static SettlementByMonthModel SettlementByMonthModel = new SettlementByMonthModel
+        {
+                                                                          SettlementMonthModels = new List<SettlementMonthModel>
+                                                                                                   {
+                                                                                                       new SettlementMonthModel
+                                                                                                       {
+                                                                                                           CurrencyCode = TestData.CurrencyCode,
+                                                                                                           MonthNumber = 1,
+                                                                                                           Year = 2020,
+                                                                                                           ValueOfSettlement = 1000.00m,
+                                                                                                           NumberOfTransactionsSettled = 50
+                                                                                                       },
+                                                                                                       new SettlementMonthModel
+                                                                                                       {
+                                                                                                           CurrencyCode = TestData.CurrencyCode,
+                                                                                                           MonthNumber = 2,
+                                                                                                           Year = 2020,
+                                                                                                           ValueOfSettlement = 1510.00m,
+                                                                                                           NumberOfTransactionsSettled = 65
+                                                                                                       }
+                                                                                                   }
+                                                                      };
+
         public static TransactionsByMonthModel TransactionsByMonthModelNullTransactionMonthModelList = new TransactionsByMonthModel
                                                                                                     {
                                                                                                         TransactionMonthModels = null
                                                                                                     };
 
+        public static SettlementByMonthModel SettlementByMonthModelNullSettlementMonthModelList = new SettlementByMonthModel
+        {
+                                                                                                       SettlementMonthModels = null
+                                                                                                   };
+
         public static TransactionsByMonthModel TransactionsByMonthModelEmptyTransactionMonthModelList = new TransactionsByMonthModel
                                                                                                         {
                                                                                                             TransactionMonthModels = new List<TransactionMonthModel>()
                                                                                                         };
+
+        public static SettlementByMonthModel SettlementByMonthModelEmptySettlementMonthModelList = new SettlementByMonthModel
+        {
+                                                                                                        SettlementMonthModels = new List<SettlementMonthModel>()
+                                                                                                    };
 
         private static DateTime VoucherRedeemedDate = new DateTime(2021, 12, 16);
 
@@ -653,15 +776,41 @@
                                                                                                                 }
                                                                                 };
 
+        public static SettlementByMerchantModel SettlementByMerchantModel = new SettlementByMerchantModel
+        {
+                                                                                SettlementMerchantModels = new List<SettlementMerchantModel>
+                                                                                                            {
+                                                                                                                new SettlementMerchantModel
+                                                                                                                {
+                                                                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                                                                    MerchantId = TestData.MerchantId,
+                                                                                                                    ValueOfSettlement = 1000.00m,
+                                                                                                                    NumberOfTransactionsSettled = 50,
+                                                                                                                    MerchantName = TestData.MerchantName
+                                                                                                                }
+                                                                                                            }
+                                                                            };
+
+
         public static TransactionsByMerchantModel TransactionsByMerchantModelNullTransactionMerchantModelList = new TransactionsByMerchantModel
                                                                                                                 {
                                                                                                                     TransactionMerchantModels = null
                                                                                                                 };
 
+        public static SettlementByMerchantModel SettlementByMerchantModelNullSettlementMerchantModelList = new SettlementByMerchantModel
+        {
+                                                                                                                SettlementMerchantModels = null
+                                                                                                            };
+
         public static TransactionsByMerchantModel TransactionsByMerchantModelEmptyTransactionMerchantModelList = new TransactionsByMerchantModel
                                                                                                                 {
                                                                                                                     TransactionMerchantModels = new List<TransactionMerchantModel>()
                                                                                                                 };
+
+        public static SettlementByMerchantModel SettlementByMerchantModelEmptySettlementMerchantModelList = new SettlementByMerchantModel
+        {
+                                                                                                                 SettlementMerchantModels = new List<SettlementMerchantModel>()
+                                                                                                             };
 
         public static TransactionMerchantModel TransactionMerchantModel = new TransactionMerchantModel
                                                                           {
@@ -671,6 +820,15 @@
                                                                               NumberOfTransactions = 50,
                                                                               MerchantName = TestData.MerchantName
                                                                           };
+
+        public static SettlementMerchantModel SettlementMerchantModel = new SettlementMerchantModel
+        {
+                                                                            CurrencyCode = TestData.CurrencyCode,
+                                                                            MerchantId = TestData.MerchantId,
+                                                                            ValueOfSettlement = 1000.00m,
+                                                                            NumberOfTransactionsSettled = 50,
+                                                                            MerchantName = TestData.MerchantName
+                                                                        };
 
         public static TransactionsByOperatorModel TransactionsByOperatorModel = new TransactionsByOperatorModel
                                                                                 {
@@ -686,15 +844,39 @@
                                                                                                                 }
                                                                                 };
 
+        public static SettlementByOperatorModel SettlementByOperatorModel = new SettlementByOperatorModel
+        {
+                                                                                SettlementOperatorModels = new List<SettlementOperatorModel>
+                                                                                                            {
+                                                                                                                new SettlementOperatorModel
+                                                                                                                {
+                                                                                                                    CurrencyCode = TestData.CurrencyCode,
+                                                                                                                    ValueOfSettlement = 1000.00m,
+                                                                                                                    NumberOfTransactionsSettled = 50,
+                                                                                                                    OperatorName = TestData.OperatorName
+                                                                                                                }
+                                                                                                            }
+                                                                            };
+
         public static TransactionsByOperatorModel TransactionsByOperatorModelNullTransactionOperatorModelList = new TransactionsByOperatorModel
         {
                                                                                                                     TransactionOperatorModels = null
                                                                                                                 };
 
+        public static SettlementByOperatorModel SettlementByOperatorModelNullSettlementOperatorModelList = new SettlementByOperatorModel
+        {
+                                                                                                                SettlementOperatorModels = null
+                                                                                                            };
+
         public static TransactionsByOperatorModel TransactionsByOperatorModelEmptyTransactionOperatorModelList = new TransactionsByOperatorModel
             {
                 TransactionOperatorModels = new List<TransactionOperatorModel>()
             };
+
+        public static SettlementByOperatorModel SettlementByOperatorModelEmptySettlementOperatorModelList = new SettlementByOperatorModel
+        {
+                                                                                                                 SettlementOperatorModels = new List<SettlementOperatorModel>()
+                                                                                                             };
 
         public static TransactionOperatorModel TransactionOperatorModel = new TransactionOperatorModel
                                                                           {
@@ -703,6 +885,14 @@
                                                                               NumberOfTransactions = 50,
                                                                               OperatorName = TestData.OperatorName
                                                                           };
+
+        public static SettlementOperatorModel SettlementOperatorModel = new SettlementOperatorModel
+        {
+                                                                            CurrencyCode = TestData.CurrencyCode,
+                                                                            ValueOfSettlement = 1000.00m,
+                                                                            NumberOfTransactionsSettled = 50,
+                                                                            OperatorName = TestData.OperatorName
+                                                                        };
 
         public static DateTime FeeCalculatedDateTime = new DateTime(2021,3,23);
         public static String FileLocation = "home/txnproc/bulkfiles/safaricom/ExampleFile.csv";

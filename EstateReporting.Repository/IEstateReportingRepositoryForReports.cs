@@ -23,6 +23,11 @@
                                                                     String endDate,
                                                                     CancellationToken cancellationToken);
 
+        Task<SettlementByDayModel> GetSettlementForEstateByDate(Guid estateId,
+                                                                    String startDate,
+                                                                    String endDate,
+                                                                    CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by month.
         /// </summary>
@@ -36,6 +41,11 @@
                                                                        String endDate,
                                                                        CancellationToken cancellationToken);
 
+        Task<SettlementByMonthModel> GetSettlementForEstateByMonth(Guid estateId,
+                                                                       String startDate,
+                                                                       String endDate,
+                                                                       CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by week.
         /// </summary>
@@ -45,6 +55,11 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByWeekModel> GetTransactionsForEstateByWeek(Guid estateId,
+                                                                     String startDate,
+                                                                     String endDate,
+                                                                     CancellationToken cancellationToken);
+
+        Task<SettlementByWeekModel> GetSettlementForEstateByWeek(Guid estateId,
                                                                      String startDate,
                                                                      String endDate,
                                                                      CancellationToken cancellationToken);
@@ -113,6 +128,14 @@
                                                                              SortDirection sortDirection,
                                                                              CancellationToken cancellationToken);
 
+        Task<SettlementByMerchantModel> GetSettlementForEstateByMerchant(Guid estateId,
+                                                                             String startDate,
+                                                                             String endDate,
+                                                                             Int32 recordCount,
+                                                                             SortField sortField,
+                                                                             SortDirection sortDirection,
+                                                                             CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by operator.
         /// </summary>
@@ -125,6 +148,14 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByOperatorModel> GetTransactionsForEstateByOperator(Guid estateId,
+                                                                             String startDate,
+                                                                             String endDate,
+                                                                             Int32 recordCount,
+                                                                             SortField sortField,
+                                                                             SortDirection sortDirection,
+                                                                             CancellationToken cancellationToken);
+
+        Task<SettlementByOperatorModel> GetSettlementForEstateByOperator(Guid estateId,
                                                                              String startDate,
                                                                              String endDate,
                                                                              Int32 recordCount,

@@ -45,6 +45,18 @@
 
         #region Methods
 
+        public async Task<SettlementByWeekModel> GetSettlementForEstateByWeek(Guid estateId,
+                                                                              String startDate,
+                                                                              String endDate,
+                                                                              CancellationToken cancellationToken)
+        {
+            SettlementByWeekModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForEstateByWeek(estateId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
         /// <summary>
         /// Gets the transactions for estate.
         /// </summary>
@@ -61,6 +73,18 @@
             TransactionsByDayModel model = null;
 
             model = await this.RepositoryForReports.GetTransactionsForEstateByDate(estateId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementByDayModel> GetSettlementForEstateByDate(Guid estateId,
+                                                                                 String startDate,
+                                                                                 String endDate,
+                                                                                 CancellationToken cancellationToken)
+        {
+            SettlementByDayModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForEstateByDate(estateId, startDate, endDate, cancellationToken);
 
             return model;
         }
@@ -212,6 +236,86 @@
             }
 
             model = await this.RepositoryForReports.GetTransactionsForEstateByMerchant(estateId,  startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementByMerchantModel> GetSettlementForEstateByMerchant(Guid estateId,
+                                                                                          String startDate,
+                                                                                          String endDate,
+                                                                                          Int32 recordCount,
+                                                                                          SortField sortField,
+                                                                                          SortDirection sortDirection,
+                                                                                          CancellationToken cancellationToken)
+        {
+            SettlementByMerchantModel model = null;
+            EstateReporting.Repository.SortDirection repoSortDirection = EstateReporting.Repository.SortDirection.NotSet;
+            if (sortDirection == SortDirection.Ascending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
+            }
+            else if (sortDirection == SortDirection.Descending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
+            }
+
+            EstateReporting.Repository.SortField repoSortField = EstateReporting.Repository.SortField.NotSet;
+            if (sortField == SortField.Count)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Count;
+            }
+            else if (sortField == SortField.Value)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Value;
+            }
+
+            model = await this.RepositoryForReports.GetSettlementForEstateByMerchant(estateId, startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementByMonthModel> GetSettlementForEstateByMonth(Guid estateId,
+                                                                                String startDate,
+                                                                                String endDate,
+                                                                                CancellationToken cancellationToken)
+        {
+            SettlementByMonthModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForEstateByMonth(estateId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementByOperatorModel> GetSettlementForEstateByOperator(Guid estateId,
+                                                                                      String startDate,
+                                                                                      String endDate,
+                                                                                      Int32 recordCount,
+                                                                                      SortField sortField,
+                                                                                      SortDirection sortDirection,
+                                                                                      CancellationToken cancellationToken)
+        {
+            SettlementByOperatorModel model = null;
+            EstateReporting.Repository.SortDirection repoSortDirection = EstateReporting.Repository.SortDirection.NotSet;
+            if (sortDirection == SortDirection.Ascending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Ascending;
+            }
+            else if (sortDirection == SortDirection.Descending)
+            {
+                repoSortDirection = EstateReporting.Repository.SortDirection.Descending;
+            }
+
+            EstateReporting.Repository.SortField repoSortField = EstateReporting.Repository.SortField.NotSet;
+            if (sortField == SortField.Count)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Count;
+            }
+            else if (sortField == SortField.Value)
+            {
+                repoSortField = EstateReporting.Repository.SortField.Value;
+            }
+
+            model = await this.RepositoryForReports.GetSettlementForEstateByOperator(estateId, startDate, endDate, recordCount, repoSortField, repoSortDirection, cancellationToken);
 
             return model;
         }

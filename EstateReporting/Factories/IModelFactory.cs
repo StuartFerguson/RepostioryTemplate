@@ -19,12 +19,16 @@
         /// <returns></returns>
         TransactionsByDayResponse ConvertFrom(TransactionsByDayModel model);
 
+        SettlementByDayResponse ConvertFrom(SettlementByDayModel model);
+
         /// <summary>
         /// Converts from.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionsByWeekResponse ConvertFrom(TransactionsByWeekModel model);
+
+        SettlementByWeekResponse ConvertFrom(SettlementByWeekModel model);
 
         /// <summary>
         /// Converts from.
@@ -33,12 +37,16 @@
         /// <returns></returns>
         TransactionsByMonthResponse ConvertFrom(TransactionsByMonthModel model);
 
+        SettlementByMonthResponse ConvertFrom(SettlementByMonthModel model);
+
         /// <summary>
         /// Converts from.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionWeekResponse ConvertFrom(TransactionWeekModel model);
+
+        SettlementWeekResponse ConvertFrom(SettlementWeekModel model);
 
         /// <summary>
         /// Converts from.
@@ -47,12 +55,16 @@
         /// <returns></returns>
         TransactionMonthResponse ConvertFrom(TransactionMonthModel model);
 
+        SettlementMonthResponse ConvertFrom(SettlementMonthModel model);
+
         /// <summary>
         /// Converts from.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionDayResponse ConvertFrom(TransactionDayModel model);
+
+        SettlementDayResponse ConvertFrom(SettlementDayModel model);
 
         /// <summary>
         /// Converts from.
@@ -61,12 +73,16 @@
         /// <returns></returns>
         TransactionMerchantResponse ConvertFrom(TransactionMerchantModel model);
 
+        SettlementMerchantResponse ConvertFrom(SettlementMerchantModel model);
+
         /// <summary>
         /// Converts from.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionsByMerchantResponse ConvertFrom(TransactionsByMerchantModel model);
+
+        SettlementByMerchantResponse ConvertFrom(SettlementByMerchantModel model);
 
         /// <summary>
         /// Converts from.
@@ -89,12 +105,16 @@
         /// <returns></returns>
         TransactionOperatorResponse ConvertFrom(TransactionOperatorModel model);
 
+        SettlementOperatorResponse ConvertFrom(SettlementOperatorModel model);
+
         /// <summary>
         /// Converts from.
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
         TransactionsByOperatorResponse ConvertFrom(TransactionsByOperatorModel model);
+
+        SettlementByOperatorResponse ConvertFrom(SettlementByOperatorModel model);
 
         #endregion
     }

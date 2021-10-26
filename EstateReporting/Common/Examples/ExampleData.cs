@@ -36,15 +36,21 @@
         /// </summary>
         internal static Int32 TransactionDayNumberOfTransactions = 10;
 
+        internal static Int32 SettlementDayNumberOfTransactions = 10;
+
         /// <summary>
         /// The transaction day response date
         /// </summary>
         internal static DateTime TransactionDayResponseDate = new DateTime(2021, 4, 15);
 
+        internal static DateTime SettlementDayResponseDate = new DateTime(2021, 4, 15);
+
         /// <summary>
         /// The transaction day value of transactions
         /// </summary>
         internal static Decimal TransactionDayValueOfTransactions = 1000.00m;
+
+        internal static Decimal SettlementDayValueOfTransactions = 1000.00m;
 
         /// <summary>
         /// The transaction merchant number of transactions
@@ -55,6 +61,17 @@
         /// The transaction merchant value of transactions
         /// </summary>
         internal static Decimal TransactionMerchantValueOfTransactions = 10000.00m;
+
+
+        /// <summary>
+        /// The transaction merchant number of transactions
+        /// </summary>
+        internal static Int32 SettlementMerchantNumberOfTransactions = 100;
+
+        /// <summary>
+        /// The transaction merchant value of transactions
+        /// </summary>
+        internal static Decimal SettlementMerchantValueOfTransactions = 10000.00m;
 
         /// <summary>
         /// The transaction month number of transactions
@@ -67,6 +84,16 @@
         internal static Decimal TransactionMonthValueOfTransactions = 10000.00m;
 
         /// <summary>
+        /// The transaction month number of transactions
+        /// </summary>
+        internal static Int32 SettlementMonthNumberOfTransactions = 100;
+
+        /// <summary>
+        /// The transaction month value of transactions
+        /// </summary>
+        internal static Decimal SettlementMonthValueOfTransactions = 10000.00m;
+
+        /// <summary>
         /// The transaction operator number of transactions
         /// </summary>
         internal static Int32 TransactionOperatorNumberOfTransactions = 50;
@@ -77,14 +104,28 @@
         internal static Decimal TransactionOperatorValueOfTransactions = 5000.00m;
 
         /// <summary>
+        /// The transaction operator number of transactions
+        /// </summary>
+        internal static Int32 SettlementOperatorNumberOfTransactions = 50;
+
+        /// <summary>
+        /// The transaction operator value of transactions
+        /// </summary>
+        internal static Decimal SettlementOperatorValueOfTransactions = 5000.00m;
+
+        /// <summary>
         /// The transaction week number of transactions
         /// </summary>
         internal static Int32 TransactionWeekNumberOfTransactions = 25;
+
+        internal static Int32 SettlementWeekNumberOfTransactions = 25;
 
         /// <summary>
         /// The transaction week value of transactions
         /// </summary>
         internal static Decimal TransactionWeekValueOfTransactions = 2500.00m;
+
+        internal static Decimal SettlementWeekValueOfTransactions = 2500.00m;
 
         /// <summary>
         /// The week number

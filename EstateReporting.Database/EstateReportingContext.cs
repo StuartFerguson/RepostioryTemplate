@@ -273,6 +273,8 @@
         /// </value>
         public virtual DbSet<TransactionsView> TransactionsView { get; set; }
 
+        public virtual DbSet<SettlementView> SettlementsView { get; set; }
+
         /// <summary>
         /// Gets or sets the vouchers.
         /// </summary>
@@ -532,6 +534,7 @@
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
             modelBuilder.Entity<FileImportLogView>().HasNoKey().ToView("uvwFileImportLog");
             modelBuilder.Entity<FileView>().HasNoKey().ToView("uvwFile");
+            modelBuilder.Entity<SettlementView>().HasNoKey().ToView("uvwSettlements");
 
             base.OnModelCreating(modelBuilder);
         }
@@ -565,7 +568,9 @@
                 nameof(FileImportLog),
                 nameof(FileImportLogFile),
                 nameof(File),
-                nameof(FileLine)
+                nameof(FileLine),
+                nameof(Settlement),
+                nameof(MerchantSettlementFees)
             };
 
             alterStatements = alterStatements.Select(x => $"ALTER TABLE [{x}]  REBUILD WITH (IGNORE_DUP_KEY = ON)").ToArray();

@@ -40,6 +40,48 @@
 
         #endregion
 
+        public async Task<SettlementByWeekModel> GetSettlementForEstateByWeek(Guid estateId,
+                                                                              String startDate,
+                                                                              String endDate,
+                                                                              CancellationToken cancellationToken)
+        {
+            SettlementByWeekModel model = new SettlementByWeekModel
+            {
+                                              SettlementWeekModels = new List<SettlementWeekModel>()
+                                          };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                   t.SettlementDate >= queryStartDate.Date && t.SettlementDate <= queryEndDate.Date)
+                                      .GroupBy(txn => new
+                                      {
+                                          WeekNumber = txn.WeekNumber,
+                                          Year = txn.YearNumber
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          WeekNumber = txns.Key.WeekNumber,
+                                          Year = txns.Key.Year,
+                                          NumberofTransactionsSettled = txns.Count(),
+                                          ValueOfSettlement = txns.Sum(t => t.CalculatedValue)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.SettlementWeekModels.Add(new SettlementWeekModel
+            {
+                CurrencyCode = "",
+                WeekNumber = r.WeekNumber,
+                Year = r.Year,
+                ValueOfSettlement = r.ValueOfSettlement,
+                NumberOfTransactionsSettled = r.NumberofTransactionsSettled
+            }));
+
+            return model;
+        }
+
         /// <summary>
         /// Gets the transactions for merchant by date.
         /// </summary>
@@ -84,6 +126,48 @@
                                                                    NumberOfTransactions = r.NumberofTransactions,
                                                                    ValueOfTransactions = r.ValueOfTransactions
                                                                }));
+
+            return model;
+        }
+
+        public async Task<SettlementByMonthModel> GetSettlementForEstateByMonth(Guid estateId,
+                                                                                String startDate,
+                                                                                String endDate,
+                                                                                CancellationToken cancellationToken)
+        {
+            SettlementByMonthModel model = new SettlementByMonthModel
+            {
+                                               SettlementMonthModels = new List<SettlementMonthModel>()
+                                           };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                   t.SettlementDate >= queryStartDate.Date && t.SettlementDate <= queryEndDate.Date)
+                                      .GroupBy(txn => new
+                                      {
+                                          MonthNumber = txn.MonthNumber,
+                                          Year = txn.YearNumber
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          MonthNumber = txns.Key.MonthNumber,
+                                          Year = txns.Key.Year,
+                                          NumberofTransactionsSettled = txns.Count(),
+                                          ValueOfSettlement = txns.Sum(t => t.CalculatedValue)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.SettlementMonthModels.Add(new SettlementMonthModel
+            {
+                CurrencyCode = "",
+                MonthNumber = r.MonthNumber,
+                Year = r.Year,
+                ValueOfSettlement = r.ValueOfSettlement,
+                NumberOfTransactionsSettled = r.NumberofTransactionsSettled
+            }));
 
             return model;
         }
@@ -206,7 +290,6 @@
         /// <param name="sortDirection">The sort direction.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        [ExcludeFromCodeCoverage]
         public async Task<TransactionsByMerchantModel> GetTransactionsForEstateByMerchant(Guid estateId,
                                                                                           String startDate,
                                                                                           String endDate,
@@ -282,6 +365,80 @@
             return model;
         }
 
+        public async Task<SettlementByMerchantModel> GetSettlementForEstateByMerchant(Guid estateId,
+                                                                                          String startDate,
+                                                                                          String endDate,
+                                                                                          Int32 recordCount,
+                                                                                          SortField sortField,
+                                                                                          SortDirection sortDirection,
+                                                                                          CancellationToken cancellationToken)
+        {
+            SettlementByMerchantModel model = new SettlementByMerchantModel
+            {
+                                                  SettlementMerchantModels = new List<SettlementMerchantModel>()
+                                              };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                   t.SettlementDate >= queryStartDate.Date && t.SettlementDate <= queryEndDate.Date)
+                                      .GroupBy(txn => new
+                                      {
+                                          MerchantId = txn.MerchantId,
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          MerchantId = txns.Key.MerchantId,
+                                          NumberofTransactionsSettled = txns.Count(),
+                                          ValueOfSettlement = txns.Sum(t => t.CalculatedValue)
+                                      }).ToListAsync(cancellationToken);
+
+            if (sortDirection == SortDirection.Ascending && sortField == SortField.Value)
+            {
+                result = result.OrderBy(o => o.ValueOfSettlement).ToList();
+            }
+            else if (sortDirection == SortDirection.Ascending && sortField == SortField.Count)
+            {
+                result = result.OrderBy(o => o.NumberofTransactionsSettled).ToList();
+            }
+            if (sortDirection == SortDirection.Descending && sortField == SortField.Value)
+            {
+                result = result.OrderByDescending(o => o.ValueOfSettlement).ToList();
+            }
+            else if (sortDirection == SortDirection.Descending && sortField == SortField.Count)
+            {
+                result = result.OrderByDescending(o => o.NumberofTransactionsSettled).ToList();
+            }
+
+            result = result.Take(recordCount).ToList();
+
+            var result2 = result.Join(context.Merchants,
+                                      x => x.MerchantId,
+                                      y => y.MerchantId,
+                                      (x,
+                                       y) => new
+                                       {
+                                           x.MerchantId,
+                                           x.NumberofTransactionsSettled,
+                                           x.ValueOfSettlement,
+                                           y.Name
+                                       }).ToList();
+
+            result2.ForEach(r => model.SettlementMerchantModels.Add(new SettlementMerchantModel
+            {
+                CurrencyCode = "",
+                MerchantId = r.MerchantId,
+                MerchantName = r.Name,
+                NumberOfTransactionsSettled = r.NumberofTransactionsSettled,
+                ValueOfSettlement = r.ValueOfSettlement
+            }));
+
+            return model;
+        }
+
         public async Task<TransactionsByOperatorModel> GetTransactionsForEstateByOperator(Guid estateId,
                                                                                           String startDate,
                                                                                           String endDate,
@@ -339,6 +496,67 @@
                 OperatorName = r.OperatorName,
                 NumberOfTransactions = r.NumberofTransactions,
                 ValueOfTransactions = r.ValueOfTransactions
+            }));
+
+            return model;
+        }
+
+        public async Task<SettlementByOperatorModel> GetSettlementForEstateByOperator(Guid estateId,
+                                                                                      String startDate,
+                                                                                      String endDate,
+                                                                                      Int32 recordCount,
+                                                                                      SortField sortField,
+                                                                                      SortDirection sortDirection,
+                                                                                      CancellationToken cancellationToken)
+        {
+            SettlementByOperatorModel model = new SettlementByOperatorModel
+            {
+                                                  SettlementOperatorModels = new List<SettlementOperatorModel>()
+                                              };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                   t.SettlementDate >= queryStartDate.Date && t.SettlementDate <= queryEndDate.Date)
+                                      .GroupBy(txn => new
+                                      {
+                                          OperatorName = txn.OperatorIdentifier,
+                                      })
+                                      .Select(txns => new
+                                      {
+                                          OperatorName = txns.Key.OperatorName,
+                                          NumberofTransactionsSettled = txns.Count(),
+                                          ValueOfSettlement = txns.Sum(t => t.CalculatedValue)
+                                      }).ToListAsync(cancellationToken);
+
+            if (sortDirection == SortDirection.Ascending && sortField == SortField.Value)
+            {
+                result = result.OrderBy(o => o.ValueOfSettlement).ToList();
+            }
+            else if (sortDirection == SortDirection.Ascending && sortField == SortField.Count)
+            {
+                result = result.OrderBy(o => o.NumberofTransactionsSettled).ToList();
+            }
+            if (sortDirection == SortDirection.Descending && sortField == SortField.Value)
+            {
+                result = result.OrderByDescending(o => o.ValueOfSettlement).ToList();
+            }
+            else if (sortDirection == SortDirection.Descending && sortField == SortField.Count)
+            {
+                result = result.OrderByDescending(o => o.NumberofTransactionsSettled).ToList();
+            }
+
+            result = result.Take(recordCount).ToList();
+
+            result.ForEach(r => model.SettlementOperatorModels.Add(new SettlementOperatorModel
+            {
+                CurrencyCode = "",
+                OperatorName = r.OperatorName,
+                ValueOfSettlement = r.ValueOfSettlement,
+                NumberOfTransactionsSettled = r.NumberofTransactionsSettled
             }));
 
             return model;
@@ -491,6 +709,43 @@
                                                                    NumberOfTransactions = r.NumberofTransactions,
                                                                    ValueOfTransactions = r.ValueOfTransactions
                                                                }));
+
+            return model;
+        }
+
+        public async Task<SettlementByDayModel> GetSettlementForEstateByDate(Guid estateId,
+                                                                                 String startDate,
+                                                                                 String endDate,
+                                                                                 CancellationToken cancellationToken)
+        {
+            SettlementByDayModel model = new SettlementByDayModel
+            {
+                                             SettlementDayModels = new List<SettlementDayModel>()
+                                         };
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            var result = await context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                   t.SettlementDate >= queryStartDate.Date && 
+                                                                   t.SettlementDate<= queryEndDate.Date)
+                                      .GroupBy(txn => txn.SettlementDate)
+                                      .Select(txns => new
+                                      {
+                                          Date = txns.Key,
+                                          NumberofTransactionsSettled = txns.Count(),
+                                          ValueOfSettlement = txns.Sum(t => t.CalculatedValue)
+                                      }).ToListAsync(cancellationToken);
+
+            result.ForEach(r => model.SettlementDayModels.Add(new SettlementDayModel()
+            {
+                CurrencyCode = "",
+                Date = r.Date,
+                NumberOfTransactionsSettled = r.NumberofTransactionsSettled,
+                ValueOfSettlement = r.ValueOfSettlement
+            }));
 
             return model;
         }
