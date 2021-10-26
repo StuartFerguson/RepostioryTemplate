@@ -569,7 +569,7 @@
                 nameof(FileImportLogFile),
                 nameof(File),
                 nameof(FileLine),
-                nameof(Settlements),
+                nameof(Settlement),
                 nameof(MerchantSettlementFees)
             };
 
