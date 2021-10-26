@@ -228,7 +228,7 @@
         }
 
         [HttpGet]
-        [Route("estates/{estateId}/settlement/bydate")]
+        [Route("estates/{estateId}/settlements/bydate")]
         [SwaggerResponse(200, "OK", typeof(SettlementByDayResponse))]
         [SwaggerResponseExample(200, typeof(SettlementByDayResponseExample))]
         public async Task<IActionResult> GetSettlementForEstateByDate([FromRoute] Guid estateId,
@@ -250,7 +250,7 @@
         }
 
         [HttpGet]
-        [Route("estates/{estateId}/settlement/bymerchant")]
+        [Route("estates/{estateId}/settlements/bymerchant")]
         [SwaggerResponse(200, "OK", typeof(SettlementByMerchantResponse))]
         [SwaggerResponseExample(200, typeof(SettlementByMerchantResponseExample))]
         public async Task<IActionResult> GetSettlementForEstateByMerchant([FromRoute] Guid estateId,
@@ -286,7 +286,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("estates/{estateId}/settlement/bymonth")]
+        [Route("estates/{estateId}/settlements/bymonth")]
         [SwaggerResponse(200, "OK", typeof(SettlementByMonthResponse))]
         [SwaggerResponseExample(200, typeof(SettlementByMonthResponseExample))]
         public async Task<IActionResult> GetSettlementForEstateByMonth([FromRoute] Guid estateId,
@@ -318,7 +318,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("estates/{estateId}/settlement/byoperator")]
+        [Route("estates/{estateId}/settlements/byoperator")]
         [SwaggerResponse(200, "OK", typeof(SettlementByOperatorResponse))]
         [SwaggerResponseExample(200, typeof(SettlementByOperatorResponseExample))]
         public async Task<IActionResult> GetSettlementForEstateByOperator([FromRoute] Guid estateId,
@@ -355,7 +355,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("estates/{estateId}/settlement/byweek")]
+        [Route("estates/{estateId}/settlements/byweek")]
         [SwaggerResponse(200, "OK", typeof(SettlementByWeekResponse))]
         [SwaggerResponseExample(200, typeof(SettlementByWeekResponseExample))]
         public async Task<IActionResult> GetSettlementForEstateByWeek([FromRoute] Guid estateId,

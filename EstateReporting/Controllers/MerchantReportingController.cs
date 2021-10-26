@@ -83,6 +83,26 @@
             return this.Ok(response);
         }
 
+        [HttpGet]
+        [Route("estates/{estateId}/merchants/{merchantId}/settlements/bydate")]
+        [SwaggerResponse(200, "OK", typeof(SettlementByDayResponse))]
+        [SwaggerResponseExample(200, typeof(SettlementByDayResponseExample))]
+        public async Task<IActionResult> GetSettlementForMerchantByDate([FromRoute] Guid estateId,
+                                                                         [FromRoute] Guid merchantId,
+                                                                         [FromQuery(Name = "start_date")] String startDate,
+                                                                         [FromQuery(Name = "end_date")] String endDate,
+                                                                         CancellationToken cancellationToken)
+        {
+            // Get the data grouped as requested
+            SettlementByDayModel settlementByDayModel =
+                await this.ReportingManager.GetSettlementForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            SettlementByDayResponse response = this.ModelFactory.ConvertFrom(settlementByDayModel);
+
+            return this.Ok(response);
+        }
+
         /// <summary>
         /// Gets the transaction for merchant by month.
         /// </summary>
@@ -115,6 +135,29 @@
             return this.Ok(response);
         }
 
+        [HttpGet]
+        [Route("estates/{estateId}/merchants/{merchantId}/settlements/bymonth")]
+        [SwaggerResponse(200, "OK", typeof(SettlementByMonthResponse))]
+        [SwaggerResponseExample(200, typeof(SettlementByMonthResponseExample))]
+        public async Task<IActionResult> GetSettlementForMerchantByMonth([FromRoute] Guid estateId,
+                                                                          [FromRoute] Guid merchantId,
+                                                                          [FromQuery(Name = "start_date")] String startDate,
+                                                                          [FromQuery(Name = "end_date")] String endDate,
+                                                                          CancellationToken cancellationToken)
+        {
+            if (this.IsTokenValid(estateId) == false)
+                return this.Forbid();
+
+            // Get the data grouped as requested
+            SettlementByMonthModel settlementByMonth =
+                await this.ReportingManager.GetSettlementForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            SettlementByMonthResponse response = this.ModelFactory.ConvertFrom(settlementByMonth);
+
+            return this.Ok(response);
+        }
+
         /// <summary>
         /// Gets the transaction for merchant by week.
         /// </summary>
@@ -143,6 +186,29 @@
 
             // Convert to a dto
             TransactionsByWeekResponse response = this.ModelFactory.ConvertFrom(transactionsByWeek);
+
+            return this.Ok(response);
+        }
+
+        [HttpGet]
+        [Route("estates/{estateId}/merchants/{merchantId}/settlements/byweek")]
+        [SwaggerResponse(200, "OK", typeof(TransactionsByWeekResponse))]
+        [SwaggerResponseExample(200, typeof(TransactionsByWeekResponseExample))]
+        public async Task<IActionResult> GetSettlementForMerchantByWeek([FromRoute] Guid estateId,
+                                                                         [FromRoute] Guid merchantId,
+                                                                         [FromQuery(Name = "start_date")] String startDate,
+                                                                         [FromQuery(Name = "end_date")] String endDate,
+                                                                         CancellationToken cancellationToken)
+        {
+            if (this.IsTokenValid(estateId) == false)
+                return this.Forbid();
+
+            // Get the data grouped as requested
+            SettlementByWeekModel settlementByWeek =
+                await this.ReportingManager.GetSettlementForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            // Convert to a dto
+            SettlementByWeekResponse response = this.ModelFactory.ConvertFrom(settlementByWeek);
 
             return this.Ok(response);
         }

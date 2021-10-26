@@ -111,6 +111,19 @@
             return model;
         }
 
+        public async Task<SettlementByDayModel> GetSettlementForMerchantByDate(Guid estateId,
+                                                                                   Guid merchantId,
+                                                                                   String startDate,
+                                                                                   String endDate,
+                                                                                   CancellationToken cancellationToken)
+        {
+            SettlementByDayModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForMerchantByDate(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
         /// <summary>
         /// Gets the transactions for estate by week.
         /// </summary>
@@ -153,6 +166,19 @@
             return model;
         }
 
+        public async Task<SettlementByWeekModel> GetSettlementForMerchantByWeek(Guid estateId,
+                                                                                    Guid merchantId,
+                                                                                    String startDate,
+                                                                                    String endDate,
+                                                                                    CancellationToken cancellationToken)
+        {
+            SettlementByWeekModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForMerchantByWeek(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
         /// <summary>
         /// Gets the transactions for estate by month.
         /// </summary>
@@ -191,6 +217,19 @@
             TransactionsByMonthModel model = null;
 
             model = await this.RepositoryForReports.GetTransactionsForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementByMonthModel> GetSettlementForMerchantByMonth(Guid estateId,
+                                                                                      Guid merchantId,
+                                                                                      String startDate,
+                                                                                      String endDate,
+                                                                                      CancellationToken cancellationToken)
+        {
+            SettlementByMonthModel model = null;
+
+            model = await this.RepositoryForReports.GetSettlementForMerchantByMonth(estateId, merchantId, startDate, endDate, cancellationToken);
 
             return model;
         }

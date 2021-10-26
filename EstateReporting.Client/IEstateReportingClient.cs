@@ -27,6 +27,12 @@
                                                                        String endDate,
                                                                        CancellationToken cancellationToken);
 
+        Task<SettlementByDayResponse> GetSettlementForEstateByDate(String accessToken,
+                                                                       Guid estateId,
+                                                                       String startDate,
+                                                                       String endDate,
+                                                                       CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by merchant.
         /// </summary>
@@ -48,6 +54,15 @@
                                                                                 SortField sortField,
                                                                                 CancellationToken cancellationToken);
 
+        Task<SettlementByMerchantResponse> GetSettlementForEstateByMerchant(String accessToken,
+                                                                                Guid estateId,
+                                                                                String startDate,
+                                                                                String endDate,
+                                                                                Int32 recordCount,
+                                                                                SortDirection sortDirection,
+                                                                                SortField sortField,
+                                                                                CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by month.
         /// </summary>
@@ -58,6 +73,12 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByMonthResponse> GetTransactionsForEstateByMonth(String accessToken,
+                                                                          Guid estateId,
+                                                                          String startDate,
+                                                                          String endDate,
+                                                                          CancellationToken cancellationToken);
+
+        Task<SettlementByMonthResponse> GetSettlementForEstateByMonth(String accessToken,
                                                                           Guid estateId,
                                                                           String startDate,
                                                                           String endDate,
@@ -84,6 +105,15 @@
                                                                                 SortField sortField,
                                                                                 CancellationToken cancellationToken);
 
+        Task<SettlementByOperatorResponse> GetSettlementForEstateByOperator(String accessToken,
+                                                                                Guid estateId,
+                                                                                String startDate,
+                                                                                String endDate,
+                                                                                Int32 recordCount,
+                                                                                SortDirection sortDirection,
+                                                                                SortField sortField,
+                                                                                CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by week.
         /// </summary>
@@ -94,6 +124,12 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByWeekResponse> GetTransactionsForEstateByWeek(String accessToken,
+                                                                        Guid estateId,
+                                                                        String startDate,
+                                                                        String endDate,
+                                                                        CancellationToken cancellationToken);
+
+        Task<SettlementByWeekResponse> GetSettlementForEstateByWeek(String accessToken,
                                                                         Guid estateId,
                                                                         String startDate,
                                                                         String endDate,
@@ -110,6 +146,13 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByDayResponse> GetTransactionsForMerchantByDate(String accessToken,
+                                                                         Guid estateId,
+                                                                         Guid merchantId,
+                                                                         String startDate,
+                                                                         String endDate,
+                                                                         CancellationToken cancellationToken);
+
+        Task<SettlementByDayResponse> GetSettlementForMerchantByDate(String accessToken,
                                                                          Guid estateId,
                                                                          Guid merchantId,
                                                                          String startDate,
@@ -133,6 +176,13 @@
                                                                             String endDate,
                                                                             CancellationToken cancellationToken);
 
+        Task<SettlementByMonthResponse> GetSettlementForMerchantByMonth(String accessToken,
+                                                                            Guid estateId,
+                                                                            Guid merchantId,
+                                                                            String startDate,
+                                                                            String endDate,
+                                                                            CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for merchant by week.
         /// </summary>
@@ -144,6 +194,13 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<TransactionsByWeekResponse> GetTransactionsForMerchantByWeek(String accessToken,
+                                                                          Guid estateId,
+                                                                          Guid merchantId,
+                                                                          String startDate,
+                                                                          String endDate,
+                                                                          CancellationToken cancellationToken);
+
+        Task<SettlementByWeekResponse> GetSettlementForMerchantByWeek(String accessToken,
                                                                           Guid estateId,
                                                                           Guid merchantId,
                                                                           String startDate,
