@@ -268,11 +268,11 @@
             BusinessLogic.SortField sortBy = this.ModelFactory.ConvertFrom(sortField);
 
             // Get the data grouped as requested
-            TransactionsByMerchantModel transactionsByMerchant =
-                await this.ReportingManager.GetTransactionsForEstateByMerchant(estateId, startDate, endDate, recordCount, sortBy, sortDir, cancellationToken);
+            SettlementByMerchantModel settlementByMerchant =
+                await this.ReportingManager.GetSettlementForEstateByMerchant(estateId, startDate, endDate, recordCount, sortBy, sortDir, cancellationToken);
 
             // Convert to a dto
-            TransactionsByMerchantResponse response = this.ModelFactory.ConvertFrom(transactionsByMerchant);
+            SettlementByMerchantResponse response = this.ModelFactory.ConvertFrom(settlementByMerchant);
 
             return this.Ok(response);
         }
