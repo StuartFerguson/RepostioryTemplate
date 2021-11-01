@@ -64,8 +64,6 @@
 
             try
             {
-                StringContent httpContent = new StringContent(string.Empty, Encoding.UTF8, "application/json");
-
                 // Add the access token to the client headers
                 this.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
