@@ -15,15 +15,7 @@
         public Decimal Amount { get; set; }
 
         public Decimal CalculatedValue { get; set; }
-
-        /// <summary>
-        /// Gets or sets the day number.
-        /// </summary>
-        /// <value>
-        /// The day number.
-        /// </value>
-        public Int32 DayNumber { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the day of week.
         /// </summary>
@@ -40,6 +32,12 @@
         /// </value>
         public Guid EstateId { get; set; }
 
+        public String FeeDescription { get; set; }
+
+        public Boolean IsCompleted { get; set; }
+
+        public Boolean IsSettled { get; set; }
+
         /// <summary>
         /// Gets or sets the merchant identifier.
         /// </summary>
@@ -47,6 +45,8 @@
         /// The merchant identifier.
         /// </value>
         public Guid MerchantId { get; set; }
+
+        public String MerchantName { get; set; }
 
         /// <summary>
         /// Gets or sets the month.

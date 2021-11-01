@@ -1,6 +1,7 @@
 ﻿namespace EstateReporting.Repository
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Models;
@@ -10,6 +11,17 @@
     /// </summary>
     public interface IEstateReportingRepositoryForReports
     {
+        Task<List<SettlementModel>> GetSettlements(Guid estateId,
+                                                   Guid? merchantId,
+                                                   String startDate,
+                                                   String endDate,
+                                                   CancellationToken cancellationToken);
+
+        Task<SettlementModel> GetSettlement(Guid estateId,
+                                                   Guid? merchantId,
+                                                   Guid settlementId,
+                                                   CancellationToken cancellationToken);
+
         /// <summary>
         /// Gets the transactions for estate by date.
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Models;
@@ -77,10 +78,31 @@
             return model;
         }
 
+        public async Task<List<SettlementModel>> GetSettlements(Guid estateId,
+                                                                Guid? merchantId,
+                                                                String startDate,
+                                                                String endDate,
+                                                                CancellationToken cancellationToken)
+        {
+            List<SettlementModel> model = await this.RepositoryForReports.GetSettlements(estateId, merchantId, startDate, endDate, cancellationToken);
+
+            return model;
+        }
+
+        public async Task<SettlementModel> GetSettlement(Guid estateId,
+                                                         Guid? merchantId,
+                                                         Guid settlementId,
+                                                         CancellationToken cancellationToken)
+        {
+            SettlementModel model = await this.RepositoryForReports.GetSettlement(estateId, merchantId,settlementId, cancellationToken);
+
+            return model;
+        }
+
         public async Task<SettlementByDayModel> GetSettlementForEstateByDate(Guid estateId,
-                                                                                 String startDate,
-                                                                                 String endDate,
-                                                                                 CancellationToken cancellationToken)
+                                                                             String startDate,
+                                                                             String endDate,
+                                                                             CancellationToken cancellationToken)
         {
             SettlementByDayModel model = null;
 

@@ -37,14 +37,6 @@ namespace EstateReporting.Database.ViewEntities
         public DateTime TransactionDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the day number.
-        /// </summary>
-        /// <value>
-        /// The day number.
-        /// </value>
-        public Int32 DayNumber { get; set; }
-
-        /// <summary>
         /// Gets or sets the day of week.
         /// </summary>
         /// <value>
