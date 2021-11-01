@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Database;
+    using Database.ViewEntities;
     using Microsoft.EntityFrameworkCore;
     using Models;
     using Shared.EntityFramework;
@@ -788,6 +789,92 @@
                 NumberOfTransactionsSettled = r.NumberOfTransactionsSettled,
                 ValueOfSettlement = r.ValueOfSettlement
             }));
+
+            return model;
+        }
+
+        public async Task<List<SettlementModel>> GetSettlements(Guid estateId,
+                                                                Guid? merchantId,
+                                                                String startDate,
+                                                                String endDate,
+                                                                CancellationToken cancellationToken)
+        {
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
+            DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
+
+            IQueryable<SettlementView> query = context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                                  t.SettlementDate >= queryStartDate.Date 
+                                                                                  && t.SettlementDate <= queryEndDate.Date).AsQueryable();
+
+            if (merchantId.HasValue)
+            {
+                query = query.Where(t => t.MerchantId == merchantId);
+            }
+            
+            List<SettlementModel> result = await query.GroupBy(t => new
+                                                                    {
+                                                                        t.SettlementId,
+                                                                        t.SettlementDate,
+                                                                        t.IsCompleted
+                                                                    })
+                                                      .Select(t => new SettlementModel
+                                                                   {
+                                                                       SettlementId = t.Key.SettlementId,
+                                                                       SettlementDate = t.Key.SettlementDate,
+                                                                       NumberOfFeesSettled = t.Count(),
+                                                                       ValueOfFeesSettled = t.Sum(x => x.CalculatedValue),
+                                                                       IsCompleted = t.Key.IsCompleted
+                                                                   })
+                                                      .OrderByDescending(t => t.SettlementDate)
+                                                      .ToListAsync(cancellationToken);
+
+            return result;
+        }
+
+        public async Task<SettlementModel> GetSettlement(Guid estateId,
+                                                         Guid? merchantId,
+                                                         Guid settlementId,
+                                                         CancellationToken cancellationToken)
+        {
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            
+            IQueryable<SettlementView> query = context.SettlementsView.Where(t => t.EstateId == estateId &&
+                                                                                  t.SettlementId == settlementId).AsQueryable();
+
+            if (merchantId.HasValue)
+            {
+                query = query.Where(t => t.MerchantId == merchantId);
+            }
+
+            var result = query.AsEnumerable().GroupBy(t => new
+            {
+                t.SettlementId,
+                t.SettlementDate,
+                t.IsCompleted
+            }).SingleOrDefault();
+            
+            SettlementModel model = new SettlementModel
+                                    {
+                                        SettlementDate = result.Key.SettlementDate,
+                                        SettlementId = result.Key.SettlementId,
+                                        NumberOfFeesSettled = result.Count(),
+                                        ValueOfFeesSettled = result.Sum(x => x.CalculatedValue),
+                                        IsCompleted = result.Key.IsCompleted
+                                    };
+
+            result.ToList().ForEach(f => model.SettlementFees.Add(new SettlementFeeModel
+                                                                  {
+                                                                      SettlementDate = f.SettlementDate,
+                                                                      SettlementId = f.SettlementId,
+                                                                      CalculatedValue = f.CalculatedValue,
+                                                                      MerchantId = f.MerchantId,
+                                                                      MerchantName = f.MerchantName,
+                                                                      FeeDescription = f.FeeDescription,
+                                                                      IsSettled = f.IsSettled,
+                                                                      TransactionId = f.TransactionId
+                                                                  }));
 
             return model;
         }

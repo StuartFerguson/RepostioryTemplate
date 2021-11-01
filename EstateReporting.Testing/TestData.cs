@@ -20,7 +20,60 @@
     public class TestData
     {
         #region Fields
-        
+
+        public static SettlementFeeModel SettlementFeeModel =>
+            new SettlementFeeModel
+            {
+                SettlementDate = TestData.SettlementDate,
+                SettlementId = TestData.SettlementId,
+                CalculatedValue = TestData.CalculatedValue,
+                MerchantId = TestData.MerchantId,
+                MerchantName = TestData.MerchantName,
+                FeeDescription = TestData.TransactionFeeDescription,
+                IsSettled = TestData.IsSettled,
+                TransactionId = TestData.TransactionId
+            };
+
+        public static List<SettlementFeeModel> SettlementFeeModels =>
+            new List<SettlementFeeModel>
+            {
+                new SettlementFeeModel
+                {
+                    SettlementDate = TestData.SettlementDate,
+                    SettlementId = TestData.SettlementId,
+                    CalculatedValue = TestData.CalculatedValue,
+                    MerchantId = TestData.MerchantId,
+                    MerchantName = TestData.MerchantName,
+                    FeeDescription = TestData.TransactionFeeDescription,
+                    IsSettled = TestData.IsSettled,
+                    TransactionId = TestData.TransactionId
+                }
+            };
+
+        public static SettlementModel SettlementModel =>
+            new SettlementModel
+            {
+                IsCompleted = TestData.SettlementIsCompleted,
+                SettlementDate = TestData.SettlementDate,
+                NumberOfFeesSettled = TestData.NumberOfFeesSettled,
+                SettlementId = TestData.SettlementId,
+                ValueOfFeesSettled = TestData.ValueOfFeesSettled,
+                SettlementFees = TestData.SettlementFeeModels
+            };
+
+        public static List<SettlementModel> SettlementModels =>
+            new List<SettlementModel>
+            {
+                new SettlementModel
+                {
+                    IsCompleted = TestData.SettlementIsCompleted,
+                    SettlementDate = TestData.SettlementDate,
+                    NumberOfFeesSettled = TestData.NumberOfFeesSettled,
+                    SettlementId = TestData.SettlementId,
+                    ValueOfFeesSettled = TestData.ValueOfFeesSettled
+                }
+            };
+
         /// <summary>
         /// The reconcilation transaction count
         /// </summary>
@@ -977,6 +1030,14 @@
         public static String EstateReference = "Estate1";
 
         public static String MerchantReference = "Merchant1";
+
+        public static Boolean SettlementIsCompleted = true;
+
+        public static Int32 NumberOfFeesSettled = 1;
+
+        public static Int32 ValueOfFeesSettled = 1;
+
+        public static Boolean IsSettled = true;
 
         public static MerchantReferenceAllocatedEvent MerchantReferenceAllocatedEvent =>
             new MerchantReferenceAllocatedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantReference);

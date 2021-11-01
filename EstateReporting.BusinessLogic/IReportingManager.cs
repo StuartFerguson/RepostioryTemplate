@@ -1,6 +1,7 @@
 ﻿namespace EstateReporting.BusinessLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Models;
@@ -11,6 +12,17 @@
     public interface IReportingManager
     {
         #region Methods
+
+        Task<List<SettlementModel>> GetSettlements(Guid estateId,
+                                                   Guid? merchantId,
+                                                   String startDate,
+                                                   String endDate,
+                                                   CancellationToken cancellationToken);
+
+        Task<SettlementModel> GetSettlement(Guid estateId,
+                                            Guid? merchantId,
+                                            Guid settlementId,
+                                            CancellationToken cancellationToken);
 
         Task<SettlementByDayModel> GetSettlementForEstateByDate(Guid estateId,
                                                                 String startDate,
