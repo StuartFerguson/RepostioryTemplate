@@ -535,7 +535,18 @@
                                                                                                                                                  TestData.ProductId,
                                                                                                                                                  TestData.TransactionFeeId);
 
-        public static MerchantFeeAddedToTransactionEnrichedEvent MerchantFeeAddedToTransactionEvent = new MerchantFeeAddedToTransactionEnrichedEvent(TestData.TransactionId,
+        public static MerchantFeeAddedToTransactionEvent MerchantFeeAddedToTransactionEvent = new MerchantFeeAddedToTransactionEvent(TestData.TransactionId,
+            TestData.EstateId,
+            TestData.MerchantId,
+            TestData.CalculatedValue,
+            TestData.FeeCalculationType,
+            TestData.TransactionFeeId,
+            TestData.FeeValue,
+            TestData.FeeCalculatedDateTime,
+             TestData.SettlementDueDate,
+            TestData.SettledDate);
+
+        public static MerchantFeeAddedToTransactionEnrichedEvent MerchantFeeAddedToTransactionEnrichedEvent = new MerchantFeeAddedToTransactionEnrichedEvent(TestData.TransactionId,
             Guid.Parse("9646B63F-1956-4261-99FF-E90B2F8BFC79"),
             TestData.EstateId,
             TestData.MerchantId,
@@ -1038,6 +1049,10 @@
         public static Int32 ValueOfFeesSettled = 1;
 
         public static Boolean IsSettled = true;
+
+        public static DateTime SettlementDueDate = new DateTime(2021, 10, 6);
+
+        public static DateTime SettledDate = new DateTime(2021, 10, 6,1,2,3);
 
         public static MerchantReferenceAllocatedEvent MerchantReferenceAllocatedEvent =>
             new MerchantReferenceAllocatedEvent(TestData.MerchantId, TestData.EstateId, TestData.MerchantReference);
