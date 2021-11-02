@@ -2,6 +2,7 @@ namespace EstateReporting.BusinessLogic.Tests
 {
     using System;
     using System.Threading;
+    using Events;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;
     using Repository;
@@ -9,6 +10,7 @@ namespace EstateReporting.BusinessLogic.Tests
     using Shouldly;
     using Testing;
     using TransactionProcessor.Settlement.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
     using Xunit;
 
     public class SettlementDomainEventHandlerTests
@@ -40,6 +42,19 @@ namespace EstateReporting.BusinessLogic.Tests
         public void SettlementDomainEventHandler_MerchantFeeAddedPendingSettlementEvent_EventIsHandled()
         {
             MerchantFeeAddedPendingSettlementEvent domainEvent = TestData.MerchantFeeAddedPendingSettlementEvent;
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            SettlementDomainEventHandler eventHandler = new SettlementDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () => { await eventHandler.Handle(domainEvent, CancellationToken.None); });
+        }
+
+        [Fact]
+        public void SettlementDomainEventHandler_MerchantFeeAddedToTransactionEvent_EventIsHandled()
+        {
+            MerchantFeeAddedToTransactionEvent domainEvent = TestData.MerchantFeeAddedToTransactionEvent;
             Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
 
             SettlementDomainEventHandler eventHandler = new SettlementDomainEventHandler(estateReportingRepository.Object);

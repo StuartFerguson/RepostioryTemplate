@@ -116,6 +116,31 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task AddSettledMerchantFeeToSettlement(Guid settlementId,
+                                                            MerchantFeeAddedToTransactionEvent domainEvent,
+                                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
+                                                          {
+                                                              SettlementId = settlementId,
+                                                              EstateId = domainEvent.EstateId,
+                                                              CalculatedValue = domainEvent.CalculatedValue,
+                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
+                                                              FeeId = domainEvent.FeeId,
+                                                              FeeValue = domainEvent.FeeValue,
+                                                              IsSettled = true,
+                                                              MerchantId = domainEvent.MerchantId,
+                                                              TransactionId = domainEvent.TransactionId
+                                                          };
+            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         public async Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
                                                    CancellationToken cancellationToken)
         {

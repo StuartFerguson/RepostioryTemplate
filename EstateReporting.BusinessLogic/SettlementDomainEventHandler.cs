@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace EstateReporting.BusinessLogic
 {
     using System.Threading;
+    using Events;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.EventHandling;
     using TransactionProcessor.Settlement.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
 
     public class SettlementDomainEventHandler : IDomainEventHandler
     {
@@ -53,6 +55,15 @@ namespace EstateReporting.BusinessLogic
             await this.EstateReportingRepository.CreateSettlement(domainEvent, cancellationToken);
         }
 
+        private async Task HandleSpecificDomainEvent(MerchantFeeAddedToTransactionEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            // Generate the settlement id from the date
+            Guid settlementId = GetSettlementId(domainEvent.SettlementDueDate);
+
+            await this.EstateReportingRepository.AddSettledMerchantFeeToSettlement(settlementId, domainEvent, cancellationToken);
+        }
+
         private async Task HandleSpecificDomainEvent(MerchantFeeAddedPendingSettlementEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
@@ -69,6 +80,15 @@ namespace EstateReporting.BusinessLogic
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.MarkSettlementAsCompleted(domainEvent, cancellationToken);
+        }
+
+        public static Guid GetSettlementId(DateTime dt)
+        {
+            Byte[] bytes = BitConverter.GetBytes(dt.Ticks);
+
+            Array.Resize(ref bytes, 16);
+
+            return new Guid(bytes);
         }
     }
 }

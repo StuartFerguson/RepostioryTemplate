@@ -2017,6 +2017,39 @@ namespace EstateReporting.Repository.Tests
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_MerchantFeeAddedToTransactionEvent_MerchantFeeAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.MerchantFeeAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<MerchantFeeAddedToTransactionEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddSettledMerchantFeeToSettlement(TestData.SettlementId, @event, CancellationToken.None);
+
+            var merchantSettlementFee = await context.MerchantSettlementFees.SingleOrDefaultAsync(s => s.SettlementId == TestData.SettlementId
+                                                                                                       && s.EstateId == @event.EstateId &&
+                                                                                                       s.MerchantId == @event.MerchantId &&
+                                                                                                       s.FeeId == @event.FeeId);
+            merchantSettlementFee.ShouldNotBeNull();
+            merchantSettlementFee.EstateId.ShouldBe(@event.EstateId);
+            merchantSettlementFee.SettlementId.ShouldBe(TestData.SettlementId);
+            merchantSettlementFee.FeeId.ShouldBe(@event.FeeId);
+            merchantSettlementFee.IsSettled.ShouldBeTrue();
+            merchantSettlementFee.MerchantId.ShouldBe(@event.MerchantId);
+            merchantSettlementFee.TransactionId.ShouldBe(@event.TransactionId);
+            merchantSettlementFee.CalculatedValue.ShouldBe(@event.CalculatedValue);
+            merchantSettlementFee.FeeCalculatedDateTime.ShouldBe(@event.FeeCalculatedDateTime);
+            merchantSettlementFee.FeeValue.ShouldBe(@event.FeeValue);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
         public async Task EstateReportingRepository_MarkMerchantFeeAsSettled_FeeMarkedAsSettled(TestDatabaseType testDatabaseType)
         {
             EstateReportingContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);

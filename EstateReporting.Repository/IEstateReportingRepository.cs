@@ -1,5 +1,6 @@
 ﻿namespace EstateReporting.Repository
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using BusinessLogic.Events;
@@ -24,6 +25,10 @@
                             CancellationToken cancellationToken);
 
         Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        Task AddSettledMerchantFeeToSettlement(Guid settlementId,
+                                               MerchantFeeAddedToTransactionEvent domainEvent,
                                                CancellationToken cancellationToken);
 
         Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
