@@ -23,6 +23,8 @@
         public Guid SettlementId { get; set; }
 
         public Guid TransactionId { get; set; }
+        
+        public String OperatorIdentifier { get; set; }
 
         #endregion
     }

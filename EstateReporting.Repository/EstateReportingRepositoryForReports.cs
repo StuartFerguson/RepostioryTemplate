@@ -873,7 +873,8 @@
                                                                       MerchantName = f.MerchantName,
                                                                       FeeDescription = f.FeeDescription,
                                                                       IsSettled = f.IsSettled,
-                                                                      TransactionId = f.TransactionId
+                                                                      TransactionId = f.TransactionId,
+                                                                      OperatorIdentifier = f.OperatorIdentifier
                                                                   }));
 
             return model;

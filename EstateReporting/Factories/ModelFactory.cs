@@ -31,7 +31,8 @@
                                                  MerchantName = model.MerchantName,
                                                  FeeDescription = model.FeeDescription,
                                                  TransactionId = model.TransactionId,
-                                                 IsSettled = model.IsSettled
+                                                 IsSettled = model.IsSettled,
+                                                 OperatorIdentifier = model.OperatorIdentifier
                                              };
 
             return response;
