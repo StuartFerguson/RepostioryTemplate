@@ -31,6 +31,9 @@
         [JsonProperty("transaction_id")]
         public Guid TransactionId { get; set; }
 
+        [JsonProperty("operator_identifier")]
+        public String OperatorIdentifier { get; set; }
+
         #endregion
     }
 }
