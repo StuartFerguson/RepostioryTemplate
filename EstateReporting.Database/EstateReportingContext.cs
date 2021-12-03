@@ -18,7 +18,7 @@
     /// 
     /// </summary>
     /// <seealso cref="Microsoft.EntityFrameworkCore.DbContext" />
-    public class EstateReportingContext : DbContext
+    public class EstateReportingContext_Old : DbContext
     {
         #region Fields
 
@@ -34,7 +34,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
-        public EstateReportingContext()
+        public EstateReportingContext_Old()
         {
             // This is the migration connection string
 
@@ -46,7 +46,7 @@
         /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public EstateReportingContext(String connectionString)
+        public EstateReportingContext_Old(String connectionString)
         {
             this.ConnectionString = connectionString;
         }
@@ -55,7 +55,7 @@
         /// Initializes a new instance of the <see cref="EstateReportingContext" /> class.
         /// </summary>
         /// <param name="dbContextOptions">The database context options.</param>
-        public EstateReportingContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public EstateReportingContext_Old(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
         }
 
@@ -330,7 +330,7 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
-            if (this.Database.IsSqlServer())
+            if (this.Database.IsSqlServer() || this.Database.IsMySql())
             {
                 await this.Database.MigrateAsync(cancellationToken);
                 await this.SetIgnoreDuplicates(cancellationToken);
@@ -357,7 +357,9 @@
         {
             if (!string.IsNullOrWhiteSpace(this.ConnectionString))
             {
-                optionsBuilder.UseSqlServer(this.ConnectionString);
+                // TODO: make this configurable
+                //optionsBuilder.UseSqlServer(this.ConnectionString);
+                optionsBuilder.UseMySql(ConnectionString, ServerVersion.Parse("8.0.27"));
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -543,7 +545,7 @@
         /// Sets the ignore duplicates.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task SetIgnoreDuplicates(CancellationToken cancellationToken)
+        protected async Task SetIgnoreDuplicates(CancellationToken cancellationToken)
         {
             String[] alterStatements =
             {

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
-    <DebugType>None</DebugType>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,17 +22,81 @@
     <Compile Remove="Migrations\20200226072926_InitialDatabase1.Designer.cs" />
     <Compile Remove="Migrations\20200227113254_InitialDatabase.cs" />
     <Compile Remove="Migrations\20200227113254_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200227160849_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200227160849_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200317104942_OperatorDataAdded.cs" />
+    <Compile Remove="Migrations\20200317104942_OperatorDataAdded.Designer.cs" />
+    <Compile Remove="Migrations\20200414131334_AddTransactions.cs" />
+    <Compile Remove="Migrations\20200414131334_AddTransactions.Designer.cs" />
+    <Compile Remove="Migrations\20200416080738_AdditionalTxnData.cs" />
+    <Compile Remove="Migrations\20200416080738_AdditionalTxnData.Designer.cs" />
+    <Compile Remove="Migrations\20200714164416_addcontractdata.cs" />
+    <Compile Remove="Migrations\20200714164416_addcontractdata.Designer.cs" />
+    <Compile Remove="Migrations\20200729085550_ChangeTransactionFeePrecision.cs" />
+    <Compile Remove="Migrations\20200729085550_ChangeTransactionFeePrecision.Designer.cs" />
+    <Compile Remove="Migrations\20200729102320_StoreContractProductWithTransaction.cs" />
+    <Compile Remove="Migrations\20200729102320_StoreContractProductWithTransaction.Designer.cs" />
+    <Compile Remove="Migrations\20200811193716_transactionfeeupdates.cs" />
+    <Compile Remove="Migrations\20200811193716_transactionfeeupdates.Designer.cs" />
+    <Compile Remove="Migrations\20200923175904_TransactionFeesAdded.cs" />
+    <Compile Remove="Migrations\20200923175904_TransactionFeesAdded.Designer.cs" />
+    <Compile Remove="Migrations\20200924082917_fixtransactionfee.cs" />
+    <Compile Remove="Migrations\20200924082917_fixtransactionfee.Designer.cs" />
+    <Compile Remove="Migrations\20201116212608_AddBalanceHistory.cs" />
+    <Compile Remove="Migrations\20201116212608_AddBalanceHistory.Designer.cs" />
+    <Compile Remove="Migrations\20201116231639_AddDateTimeToHistory.cs" />
+    <Compile Remove="Migrations\20201116231639_AddDateTimeToHistory.Designer.cs" />
+    <Compile Remove="Migrations\20201201171242_storereconciliations.cs" />
+    <Compile Remove="Migrations\20201201171242_storereconciliations.Designer.cs" />
+    <Compile Remove="Migrations\20201215214759_AddTxnIdToBalanceHistory.cs" />
+    <Compile Remove="Migrations\20201215214759_AddTxnIdToBalanceHistory.Designer.cs" />
+    <Compile Remove="Migrations\20201216065213_AddVoucher.cs" />
+    <Compile Remove="Migrations\20201216065213_AddVoucher.Designer.cs" />
+    <Compile Remove="Migrations\20201220140521_AdditionalVoucherData.cs" />
+    <Compile Remove="Migrations\20201220140521_AdditionalVoucherData.Designer.cs" />
+    <Compile Remove="Migrations\20210101194103_HandleRedemptionEvents.cs" />
+    <Compile Remove="Migrations\20210101194103_HandleRedemptionEvents.Designer.cs" />
+    <Compile Remove="Migrations\20210519180350_loadfileprocessordata.cs" />
+    <Compile Remove="Migrations\20210519180350_loadfileprocessordata.Designer.cs" />
+    <Compile Remove="Migrations\20211006140548_AddSettlement.cs" />
+    <Compile Remove="Migrations\20211006140548_AddSettlement.Designer.cs" />
+    <Compile Remove="Migrations\20211006154937_AddSettlementPendingFees.cs" />
+    <Compile Remove="Migrations\20211006154937_AddSettlementPendingFees.Designer.cs" />
+    <Compile Remove="Migrations\20211007100120_AddMerchantSettlementSchedule.cs" />
+    <Compile Remove="Migrations\20211007100120_AddMerchantSettlementSchedule.Designer.cs" />
+    <Compile Remove="Migrations\20211019170911_AddEstateandMerchantReferences.cs" />
+    <Compile Remove="Migrations\20211019170911_AddEstateandMerchantReferences.Designer.cs" />
+    <Compile Remove="Migrations\EstateReportingContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.2" />
-    <PackageReference Include="Shared" Version="1.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.12" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.3" />
+    <PackageReference Include="Shared" Version="1.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.12" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Views\MySql\Priority1\uvwFile.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\MySql\Priority1\uvwFileImportLog.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\MySql\Priority1\uvwMerchantBalance.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\MySql\Priority1\uvwMerchants.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\MySql\Priority1\uvwTransactions.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Priority1\uvwFile.View.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -48,6 +112,25 @@
     <None Update="Views\Priority1\uvwTransactions.View.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Views\SqlServer\Priority1\uvwFile.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\SqlServer\Priority1\uvwFileImportLog.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\SqlServer\Priority1\uvwMerchantBalance.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\SqlServer\Priority1\uvwMerchants.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\SqlServer\Priority1\uvwTransactions.View.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\MySql\" />
   </ItemGroup>
 
 </Project>

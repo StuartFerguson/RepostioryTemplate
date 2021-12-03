@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 namespace EstateReporting
 {
     using System.Data.Common;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Http;
@@ -18,10 +19,16 @@ namespace EstateReporting
     using System.Threading;
     using System.Xml.Serialization;
     using BusinessLogic;
+    using BusinessLogic.Events;
     using Common;
     using Database;
+    using EstateManagement.Contract.DomainEvents;
+    using EstateManagement.Estate.DomainEvents;
+    using EstateManagement.Merchant.DomainEvents;
     using EventStore.Client;
     using Factories;
+    using FileProcessor.File.DomainEvents;
+    using FileProcessor.FileImportLog.DomainEvents;
     using HealthChecks.UI.Client;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -39,14 +46,20 @@ namespace EstateReporting
     using Repository;
     using Shared.EntityFramework;
     using Shared.EntityFramework.ConnectionStringConfiguration;
+    using Shared.EventStore.Aggregate;
     using Shared.EventStore.EventHandling;
     using Shared.EventStore.EventStore;
+    using Shared.EventStore.SubscriptionWorker;
     using Shared.Extensions;
     using Shared.General;
     using Shared.Logger;
     using Shared.Repositories;
     using Swashbuckle.AspNetCore.Filters;
     using Swashbuckle.AspNetCore.SwaggerGen;
+    using TransactionProcessor.Reconciliation.DomainEvents;
+    using TransactionProcessor.Settlement.DomainEvents;
+    using TransactionProcessor.Transaction.DomainEvents;
+    using VoucherManagement.Voucher.DomainEvents;
     using ConnectionStringType = Shared.Repositories.ConnectionStringType;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -56,6 +69,8 @@ namespace EstateReporting
         public static IConfigurationRoot Configuration { get; set; }
 
         public static IWebHostEnvironment WebHostEnvironment { get; set; }
+
+        public static IServiceProvider ServiceProvider { get; set; }
 
         public Startup(IWebHostEnvironment webHostEnvironment)
         {
@@ -113,15 +128,27 @@ namespace EstateReporting
 
             services.AddSingleton<IEstateReportingRepository, EstateReportingRepository>();
             services.AddSingleton<IEstateReportingRepositoryForReports, EstateReportingRepositoryForReports>();
-            services.AddSingleton<IDbContextFactory<EstateReportingContext>, DbContextFactory<EstateReportingContext>>();
-            
+            services.AddSingleton<IDbContextFactory<EstateReportingGenericContext>, DbContextFactory<EstateReportingGenericContext>>();
+
             services.AddSingleton<Func<Type, IDomainEventHandler>>(container => (type) =>
                                                                                 {
                                                                                     IDomainEventHandler handler = container.GetService(type) as IDomainEventHandler;
                                                                                     return handler;
                                                                                 });
 
-            services.AddSingleton<Func<String, EstateReportingContext>>(cont => (connectionString) => { return new EstateReportingContext(connectionString); });
+            services.AddSingleton<Func<String, EstateReportingGenericContext>>(cont => (connectionString) =>
+                                                                                       {
+                                                                                           String databaseEngine =
+                                                                                               ConfigurationReader.GetValue("AppSettings", "DatabaseEngine");
+
+                                                                                           return databaseEngine switch
+                                                                                           {
+                                                                                               "MySql" => new EstateReportingMySqlContext(connectionString),
+                                                                                               "SqlServer" => new EstateReportingSqlServerContext(connectionString),
+                                                                                               _ => throw new
+                                                                                                   NotSupportedException($"Unsupported Database Engine {databaseEngine}")
+                                                                                           };
+                                                                                       });
             
             services.AddSingleton<EstateDomainEventHandler>();
             services.AddSingleton<MerchantDomainEventHandler>();
@@ -147,6 +174,8 @@ namespace EstateReporting
                                      };
             HttpClient httpClient = new HttpClient(httpMessageHandler);
             services.AddSingleton(httpClient);
+
+            Startup.ServiceProvider = services.BuildServiceProvider();
         }
 
         private static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
@@ -182,11 +211,11 @@ namespace EstateReporting
         private void ConfigureMiddlewareServices(IServiceCollection services)
         {
             services.AddHealthChecks()
-                    .AddSqlServer(connectionString: ConfigurationReader.GetConnectionString("HealthCheck"),
-                                  healthQuery: "SELECT 1;",
-                                  name: "Read Model Server",
-                                  failureStatus: HealthStatus.Degraded,
-                                  tags: new string[] { "db", "sql", "sqlserver" })
+                    //.AddSqlServer(connectionString: ConfigurationReader.GetConnectionString("HealthCheck"),
+                    //              healthQuery: "SELECT 1;",
+                    //              name: "Read Model Server",
+                    //              failureStatus: HealthStatus.Degraded,
+                    //              tags: new string[] { "db", "sql", "sqlserver" })
                     .AddUrlGroup(new Uri($"{ConfigurationReader.GetValue("SecurityConfiguration", "Authority")}/health"),
                                  name: "Security Service",
                                  httpMethod: HttpMethod.Get,
@@ -309,8 +338,118 @@ namespace EstateReporting
             app.UseSwagger();
 
             app.UseSwaggerUI();
+
+            app.PreWarm();
+        }
+
+        public static void LoadTypes()
+        {
+            VoucherIssuedEvent v = new VoucherIssuedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, "", "");
+
+            TransactionHasStartedEvent t = new TransactionHasStartedEvent(Guid.Parse("2AA2D43B-5E24-4327-8029-1135B20F35CE"), Guid.NewGuid(), Guid.NewGuid(),
+                                                                          DateTime.Now, "", "", "", "", null);
+
+            ReconciliationHasStartedEvent r =
+                new ReconciliationHasStartedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+
+            EstateCreatedEvent e = new EstateCreatedEvent(Guid.NewGuid(), "");
+            MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
+            ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
+            MerchantBalanceChangedEvent mb =
+                new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
+            ImportLogCreatedEvent i = new ImportLogCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.MinValue);
+            FileCreatedEvent f = new FileCreatedEvent(Guid.NewGuid(),
+                                                      Guid.NewGuid(),
+                                                      Guid.NewGuid(),
+                                                      Guid.NewGuid(),
+                                                      Guid.NewGuid(),
+                                                      Guid.NewGuid(),
+                                                      String.Empty,
+                                                      DateTime.MinValue);
+            SettlementCreatedForDateEvent s = new SettlementCreatedForDateEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+
+            TypeProvider.LoadDomainEventsTypeDynamically();
         }
     }
 
-    
+    public static class Extensions
+    {
+        static Action<TraceEventType, String, String> log = (tt, subType, message) => {
+            String logMessage = $"{subType} - {message}";
+            switch (tt)
+            {
+                case TraceEventType.Critical:
+                    Logger.LogCritical(new Exception(logMessage));
+                    break;
+                case TraceEventType.Error:
+                    Logger.LogError(new Exception(logMessage));
+                    break;
+                case TraceEventType.Warning:
+                    Logger.LogWarning(logMessage);
+                    break;
+                case TraceEventType.Information:
+                    Logger.LogInformation(logMessage);
+                    break;
+                case TraceEventType.Verbose:
+                    Logger.LogDebug(logMessage);
+                    break;
+            }
+        };
+
+        static Action<TraceEventType, String> concurrentLog = (tt,message) => log(tt, "CONCURRENT", message);
+
+        public static void PreWarm(this IApplicationBuilder applicationBuilder)
+        {
+            Startup.LoadTypes();
+
+            //SubscriptionWorker worker = new SubscriptionWorker()
+            var internalSubscriptionService = Boolean.Parse(ConfigurationReader.GetValue("InternalSubscriptionService"));
+
+            if (internalSubscriptionService)
+            {
+                String eventStoreConnectionString = ConfigurationReader.GetValue("EventStoreSettings","ConnectionString");
+                Int32 inflightMessages = Int32.Parse(ConfigurationReader.GetValue("AppSettings", "InflightMessages"));
+                Int32 persistentSubscriptionPollingInSeconds = Int32.Parse(ConfigurationReader.GetValue("AppSettings", "PersistentSubscriptionPollingInSeconds"));
+                String filter = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionServiceFilter");
+                String ignore = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionServiceIgnore");
+                String streamName = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionFilterOnStreamName");
+
+                ISubscriptionRepository subscriptionRepository = SubscriptionRepository.Create(eventStoreConnectionString);
+
+                ((SubscriptionRepository)subscriptionRepository).Trace += (sender, s) => Extensions.log(TraceEventType.Information, "REPOSITORY", s);
+
+                // init our SubscriptionRepository
+                subscriptionRepository.PreWarm(CancellationToken.None).Wait();
+
+                var eventHandlerResolver = Startup.ServiceProvider.GetService<IDomainEventHandlerResolver>();
+                    
+                SubscriptionWorker concurrentSubscriptions = SubscriptionWorker.CreateConcurrentSubscriptionWorker(eventStoreConnectionString, eventHandlerResolver, subscriptionRepository, inflightMessages, persistentSubscriptionPollingInSeconds);
+
+                concurrentSubscriptions.Trace += (_, args) => concurrentLog(TraceEventType.Information, args.Message);
+                concurrentSubscriptions.Warning += (_, args) => concurrentLog(TraceEventType.Warning, args.Message);
+                concurrentSubscriptions.Error += (_, args) => concurrentLog(TraceEventType.Error, args.Message);
+
+                if (!String.IsNullOrEmpty(ignore))
+                {
+                    concurrentSubscriptions = concurrentSubscriptions.IgnoreSubscriptions(ignore);
+                }
+
+                if (!String.IsNullOrEmpty(filter))
+                {
+                    //NOTE: Not overly happy with this design, but
+                    //the idea is if we supply a filter, this overrides ignore
+                    concurrentSubscriptions = concurrentSubscriptions.FilterSubscriptions(filter)
+                                                                     .IgnoreSubscriptions(null);
+
+                }
+
+                if (!String.IsNullOrEmpty(streamName))
+                {
+                    concurrentSubscriptions = concurrentSubscriptions.FilterByStreamName(streamName);
+                }
+
+                concurrentSubscriptions.StartAsync(CancellationToken.None).Wait();
+            }
+        }
+    }
 }

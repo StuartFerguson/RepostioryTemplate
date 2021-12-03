@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Data.SqlClient;
+    using MySqlConnector;
     using Shared.General;
     using Shared.Repositories;
 
@@ -59,7 +60,10 @@
         {
             String connectionString = string.Empty;
             String databaseName = string.Empty;
-            switch(connectionStringType)
+
+            String databaseEngine = ConfigurationReader.GetValue("AppSettings","DatabaseEngine");
+
+            switch (connectionStringType)
             {
                 case ConnectionStringType.ReadModel:
                     databaseName = "EstateReportingReadModel" + externalIdentifier;
@@ -69,10 +73,23 @@
                     throw new NotSupportedException($"Connection String type [{connectionStringType}] is not supported");
             }
 
-            DbConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString)
-                                                {
-                                                    InitialCatalog = databaseName
-                                                };
+            DbConnectionStringBuilder builder = null;
+
+            if (databaseEngine == "MySql")
+            {
+                builder = new MySqlConnectionStringBuilder(connectionString)
+                          {
+                              Database = databaseName
+                          };
+            }
+            else
+            {
+                // Default to SQL Server
+                builder = new SqlConnectionStringBuilder(connectionString)
+                          {
+                              InitialCatalog = databaseName
+                          };
+            }
 
             return builder.ToString();
         }
