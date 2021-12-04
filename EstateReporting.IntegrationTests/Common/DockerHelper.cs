@@ -206,13 +206,7 @@
             this.TestNetworks.Add(testNetwork);
             IContainerService eventStoreContainer = DockerHelper.SetupEventStoreContainer(this.EventStoreContainerName, this.Logger, "eventstore/eventstore:20.10.0-bionic", testNetwork, traceFolder);
             this.EventStoreHttpPort = eventStoreContainer.ToHostExposedEndpoint("2113/tcp").Port;
-
-            await Retry.For(async () =>
-                            {
-                                await this.PopulateSubscriptionServiceConfiguration().ConfigureAwait(false);
-                            }, retryFor:TimeSpan.FromMinutes(2), retryInterval:TimeSpan.FromSeconds(30));
             
-
             IContainerService estateManagementContainer = DockerHelper.SetupEstateManagementContainer(this.EstateManagementContainerName, this.Logger,
                                                                                                       "stuartferguson/estatemanagement", new List<INetworkService>
                                                                                                                           {
@@ -372,18 +366,16 @@
         }
 
         protected String VoucherManagementContainerName;
-        protected async Task PopulateSubscriptionServiceConfiguration()
+
+        public async Task PopulateSubscriptionServiceConfiguration(String estateName)
         {
             EventStorePersistentSubscriptionsClient client = new EventStorePersistentSubscriptionsClient(ConfigureEventStoreSettings(this.EventStoreHttpPort));
 
-            PersistentSubscriptionSettings settings = new PersistentSubscriptionSettings(resolveLinkTos:true);
-            await client.CreateAsync("$ce-EstateAggregate", "Reporting", settings);
-            await client.CreateAsync("$ce-MerchantAggregate", "Reporting", settings);
-            await client.CreateAsync("$ce-ContractAggregate", "Reporting", settings);
-            await client.CreateAsync("$ce-TransactionAggregate", "Reporting", settings);
-            await client.CreateAsync("$et-TransactionHasBeenCompletedEvent", "TransactionProcessor", settings);
-            await client.CreateAsync("$ce-MerchantBalanceHistory", "Reporting", settings);
+            PersistentSubscriptionSettings settings = new PersistentSubscriptionSettings(resolveLinkTos: true, StreamPosition.Start);
+            await client.CreateAsync(estateName.Replace(" ", ""), "Reporting", settings);
+            await client.CreateAsync($"EstateManagementSubscriptionStream_{estateName.Replace(" ", "")}", "Estate Management", settings);
         }
+
         private async Task RemoveEstateReadModel()
         {
             List<Guid> estateIdList = this.TestingContext.GetAllEstateIds();
