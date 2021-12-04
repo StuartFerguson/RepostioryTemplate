@@ -443,8 +443,8 @@ namespace EstateReporting.Database
             String executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
             String executingAssemblyFolder = Path.GetDirectoryName(executingAssemblyLocation);
 
-            String scriptsFolder = $@"{executingAssemblyFolder}\Views\{this.DatabaseEngine}";
-
+            String scriptsFolder = $@"{executingAssemblyFolder}/Views/{this.DatabaseEngine}";
+            
             String[] directiories = Directory.GetDirectories(scriptsFolder);
             directiories = directiories.OrderBy(d => d).ToArray();
 
