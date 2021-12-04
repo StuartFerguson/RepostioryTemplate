@@ -78,51 +78,50 @@ namespace EstateReporting
                                          {
                                              logging.AddConsole();
 
-                                         })
-            .ConfigureWebHostDefaults(webBuilder =>
-                                                 {
-                                                     webBuilder.UseStartup<Startup>();
-                                                     webBuilder.UseConfiguration(config);
-                                                     webBuilder.UseKestrel();
-                                                 })
-            .ConfigureServices(services =>
-                               {
-                                   VoucherIssuedEvent v = new VoucherIssuedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, "", "");
+                                         }).ConfigureWebHostDefaults(webBuilder =>
+                                                                     {
+                                                                         webBuilder.UseStartup<Startup>();
+                                                                         webBuilder.UseConfiguration(config);
+                                                                         webBuilder.UseKestrel();
+                                                                     });
+            //.ConfigureServices(services =>
+            //                   {
+            //                       VoucherIssuedEvent v = new VoucherIssuedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, "", "");
 
-                                   TransactionHasStartedEvent t = new TransactionHasStartedEvent(Guid.Parse("2AA2D43B-5E24-4327-8029-1135B20F35CE"), Guid.NewGuid(), Guid.NewGuid(),
-                                                                                                 DateTime.Now, "", "", "", "", null);
+            //                       TransactionHasStartedEvent t = new TransactionHasStartedEvent(Guid.Parse("2AA2D43B-5E24-4327-8029-1135B20F35CE"), Guid.NewGuid(), Guid.NewGuid(),
+            //                                                                                     DateTime.Now, "", "", "", "", null);
 
-                                   ReconciliationHasStartedEvent r =
-                                       new ReconciliationHasStartedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+            //                       ReconciliationHasStartedEvent r =
+            //                           new ReconciliationHasStartedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
 
-                                   EstateCreatedEvent e = new EstateCreatedEvent(Guid.NewGuid(), "");
-                                   MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
-                                   ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
-                                   MerchantBalanceChangedEvent mb =
-                                       new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
-                                   ImportLogCreatedEvent i = new ImportLogCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.MinValue);
-                                   FileCreatedEvent f = new FileCreatedEvent(Guid.NewGuid(),
-                                                                             Guid.NewGuid(),
-                                                                             Guid.NewGuid(),
-                                                                             Guid.NewGuid(),
-                                                                             Guid.NewGuid(),
-                                                                             Guid.NewGuid(),
-                                                                             String.Empty,
-                                                                             DateTime.MinValue);
-                                   SettlementCreatedForDateEvent s = new SettlementCreatedForDateEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+            //                       EstateCreatedEvent e = new EstateCreatedEvent(Guid.NewGuid(), "");
+            //                       MerchantCreatedEvent m = new MerchantCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now);
+            //                       ContractCreatedEvent c = new ContractCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "");
+            //                       MerchantBalanceChangedEvent mb =
+            //                           new MerchantBalanceChangedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now, Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0, "");
+            //                       ImportLogCreatedEvent i = new ImportLogCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.MinValue);
+            //                       FileCreatedEvent f = new FileCreatedEvent(Guid.NewGuid(),
+            //                                                                 Guid.NewGuid(),
+            //                                                                 Guid.NewGuid(),
+            //                                                                 Guid.NewGuid(),
+            //                                                                 Guid.NewGuid(),
+            //                                                                 Guid.NewGuid(),
+            //                                                                 String.Empty,
+            //                                                                 DateTime.MinValue);
+            //                       SettlementCreatedForDateEvent s = new SettlementCreatedForDateEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
 
-                                   TypeProvider.LoadDomainEventsTypeDynamically();
-                                   services.AddHostedService<SubscriptionWorker>(provider =>
-                                                                                 {
-                                                                                     IDomainEventHandlerResolver r =
-                                                                                         provider.GetRequiredService<IDomainEventHandlerResolver>();
-                                                                                     EventStorePersistentSubscriptionsClient p = provider.GetRequiredService<EventStorePersistentSubscriptionsClient>();
-                                                                                     HttpClient h = provider.GetRequiredService<HttpClient>();
-                                                                                     SubscriptionWorker worker = new SubscriptionWorker(r, p, h);
-                                                                                     worker.TraceGenerated += Worker_TraceGenerated;
-                                                                                     return worker;
-                                                                                 });
-                               });
+            //                       TypeProvider.LoadDomainEventsTypeDynamically();
+            //                       services.AddHostedService<SubscriptionWorker>(provider =>
+            //                                                                     {
+            //                                                                         IDomainEventHandlerResolver r =
+            //                                                                             provider.GetRequiredService<IDomainEventHandlerResolver>();
+            //                                                                         EventStorePersistentSubscriptionsClient p = provider.GetRequiredService<EventStorePersistentSubscriptionsClient>();
+            //                                                                         HttpClient h = provider.GetRequiredService<HttpClient>();
+            //                                                                         SubscriptionWorker worker = new SubscriptionWorker(r, p, h);
+            //                                                                         worker.TraceGenerated += Worker_TraceGenerated;
+            //                                                                         return worker;
+            //                                                                     });
+            //                   });
             
             return hostBuilder;
         }

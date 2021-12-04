@@ -24,7 +24,7 @@
         /// <summary>
         /// The database context factory
         /// </summary>
-        private readonly Shared.EntityFramework.IDbContextFactory<EstateReportingContext> DbContextFactory;
+        private readonly Shared.EntityFramework.IDbContextFactory<EstateReportingGenericContext> DbContextFactory;
 
         #endregion
 
@@ -34,7 +34,7 @@
         /// Initializes a new instance of the <see cref="EstateReportingRepository" /> class.
         /// </summary>
         /// <param name="dbContextFactory">The database context factory.</param>
-        public EstateReportingRepositoryForReports(Shared.EntityFramework.IDbContextFactory<EstateReportingContext> dbContextFactory)
+        public EstateReportingRepositoryForReports(Shared.EntityFramework.IDbContextFactory<EstateReportingGenericContext> dbContextFactory)
         {
             this.DbContextFactory = dbContextFactory;
         }
@@ -51,7 +51,7 @@
                                               SettlementWeekModels = new List<SettlementWeekModel>()
                                           };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -103,7 +103,7 @@
                                                TransactionDayModels = new List<TransactionDayModel>()
                                            };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -141,7 +141,7 @@
                                              SettlementDayModels = new List<SettlementDayModel>()
                                          };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -178,7 +178,7 @@
                                                SettlementMonthModels = new List<SettlementMonthModel>()
                                            };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -229,7 +229,7 @@
                                                 TransactionWeekModels = new List<TransactionWeekModel>()
                                             };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -282,7 +282,7 @@
                                                 TransactionWeekModels = new List<TransactionWeekModel>()
                                             };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -327,7 +327,7 @@
                                               SettlementWeekModels = new List<SettlementWeekModel>()
                                           };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -384,7 +384,7 @@
                                                     TransactionMerchantModels = new List<TransactionMerchantModel>()
                                                 };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -459,7 +459,7 @@
                                                   SettlementMerchantModels = new List<SettlementMerchantModel>()
                                               };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -533,7 +533,7 @@
                                                     TransactionOperatorModels = new List<TransactionOperatorModel>()
                                                 };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -595,7 +595,7 @@
                                                   SettlementOperatorModels = new List<SettlementOperatorModel>()
                                               };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -662,7 +662,7 @@
                                                  TransactionMonthModels = new List<TransactionMonthModel>()
                                              };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -715,7 +715,7 @@
                                                  TransactionMonthModels = new List<TransactionMonthModel>()
                                              };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -760,7 +760,7 @@
                 SettlementMonthModels = new List<SettlementMonthModel>()
             };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -799,7 +799,7 @@
                                                                 String endDate,
                                                                 CancellationToken cancellationToken)
         {
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -838,7 +838,7 @@
                                                          Guid settlementId,
                                                          CancellationToken cancellationToken)
         {
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
             
             IQueryable<SettlementView> query = context.SettlementsView.Where(t => t.EstateId == estateId &&
                                                                                   t.SettlementId == settlementId).AsQueryable();
@@ -898,7 +898,7 @@
                                                TransactionDayModels = new List<TransactionDayModel>()
                                            };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);
@@ -934,7 +934,7 @@
                                              SettlementDayModels = new List<SettlementDayModel>()
                                          };
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             DateTime queryStartDate = DateTime.ParseExact(startDate, "yyyyMMdd", null);
             DateTime queryEndDate = DateTime.ParseExact(endDate, "yyyyMMdd", null);

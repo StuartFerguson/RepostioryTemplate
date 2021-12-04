@@ -53,7 +53,7 @@
         /// <summary>
         /// The database context factory
         /// </summary>
-        private readonly Shared.EntityFramework.IDbContextFactory<EstateReportingContext> DbContextFactory;
+        private readonly Shared.EntityFramework.IDbContextFactory<EstateReportingGenericContext> DbContextFactory;
 
         #endregion
 
@@ -63,7 +63,7 @@
         /// Initializes a new instance of the <see cref="EstateReportingRepository" /> class.
         /// </summary>
         /// <param name="dbContextFactory">The database context factory.</param>
-        public EstateReportingRepository(Shared.EntityFramework.IDbContextFactory<EstateReportingContext> dbContextFactory)
+        public EstateReportingRepository(Shared.EntityFramework.IDbContextFactory<EstateReportingGenericContext> dbContextFactory)
         {
             this.DbContextFactory = dbContextFactory;
         }
@@ -77,7 +77,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Settlement settlement = new Settlement
                                     {
@@ -97,7 +97,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
                                                           {
@@ -122,7 +122,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
                                                           {
@@ -146,7 +146,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var merchantFee = await context.MerchantSettlementFees.Where(m => m.EstateId == domainEvent.EstateId &&
                                                                         m.MerchantId == domainEvent.MerchantId && m.TransactionId == domainEvent.TransactionId &&
@@ -166,7 +166,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == domainEvent.SettlementId, cancellationToken);
 
@@ -189,7 +189,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Contract contract = new Contract
                                 {
@@ -214,7 +214,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProduct contractProduct = new ContractProduct
                                               {
@@ -242,7 +242,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(t => t.TransactionFeeId == domainEvent.TransactionFeeId);
 
@@ -266,7 +266,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProduct contractProduct = new ContractProduct
                                               {
@@ -293,7 +293,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             ContractProductTransactionFee contractProductTransactionFee = new ContractProductTransactionFee
                                                                           {
@@ -323,7 +323,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             // Add the estate to the read model
             Estate estate = new Estate
@@ -347,7 +347,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             EstateOperator estateOperator = new EstateOperator
                                             {
@@ -368,7 +368,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var estate = await context.Estates.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId);
 
@@ -394,7 +394,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             EstateSecurityUser estateSecurityUser = new EstateSecurityUser
                                                     {
@@ -420,7 +420,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             File file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
 
@@ -454,7 +454,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             FileImportLog fileImportLog = await context.FileImportLogs.SingleOrDefaultAsync(f => f.FileImportLogId == domainEvent.FileImportLogId);
 
@@ -491,7 +491,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Voucher voucher = new Voucher
                               {
@@ -522,7 +522,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Merchant merchant = new Merchant
                                 {
@@ -542,7 +542,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
 
@@ -560,7 +560,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
 
@@ -583,7 +583,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantAddress merchantAddress = new MerchantAddress
                                               {
@@ -616,7 +616,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantContact merchantContact = new MerchantContact
                                               {
@@ -644,7 +644,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantDevice merchantDevice = new MerchantDevice
                                             {
@@ -670,7 +670,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantOperator merchantOperator = new MerchantOperator
                                                 {
@@ -697,7 +697,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             MerchantSecurityUser merchantSecurityUser = new MerchantSecurityUser
                                                         {
@@ -724,7 +724,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -751,7 +751,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
                 await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -777,7 +777,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -814,7 +814,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -850,7 +850,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             File file = new File
                         {
@@ -879,7 +879,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             FileImportLog fileImportLog = new FileImportLog
                                       {
@@ -904,7 +904,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -929,7 +929,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Logger.LogInformation($"About to run migrations on Read Model database for estate [{estateId}]");
 
@@ -949,7 +949,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             TransactionAdditionalRequestData additionalRequestData = new TransactionAdditionalRequestData
                                                                      {
@@ -1002,7 +1002,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             TransactionAdditionalResponseData additionalResponseData = new TransactionAdditionalResponseData
                                                                        {
@@ -1040,7 +1040,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation = new Reconciliation
                                       {
@@ -1067,7 +1067,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction = new Transaction
                                       {
@@ -1114,7 +1114,7 @@
                                                           String newStatus,
                                                           CancellationToken cancellationToken)
         {
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             var fileLine = await context.FileLines.SingleOrDefaultAsync(f => f.FileId == fileId && f.LineNumber == lineNumber);
 
@@ -1161,7 +1161,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
                 await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -1188,7 +1188,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
                 await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -1216,7 +1216,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
                 await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
@@ -1244,7 +1244,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -1273,7 +1273,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -1301,7 +1301,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -1331,7 +1331,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Transaction transaction =
                 await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
@@ -1360,7 +1360,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(v => v.VoucherId == domainEvent.VoucherId);
 
@@ -1388,7 +1388,7 @@
         {
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Voucher voucher = await context.Vouchers.SingleOrDefaultAsync(v => v.VoucherId == domainEvent.VoucherId);
 
@@ -1406,7 +1406,7 @@
         public async Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
                                                CancellationToken cancellationToken)
         {
-            EstateReportingContext context = await this.DbContextFactory.GetContext(domainEvent.EstateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(domainEvent.EstateId, cancellationToken);
 
             var file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
 
@@ -1432,7 +1432,7 @@
 
             Guid estateId = domainEvent.EstateId;
 
-            EstateReportingContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             // Find the existing event
             MerchantBalanceHistory balanceRecord = await context.MerchantBalanceHistories.SingleOrDefaultAsync(m => m.EventId == domainEvent.EventId, cancellationToken);
