@@ -413,8 +413,9 @@ namespace EstateReporting
                 String filter = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionServiceFilter");
                 String ignore = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionServiceIgnore");
                 String streamName = ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionFilterOnStreamName");
+                Int32 cacheDuration = Int32.Parse(ConfigurationReader.GetValue("AppSettings", "InternalSubscriptionServiceCacheDuration"));
 
-                ISubscriptionRepository subscriptionRepository = SubscriptionRepository.Create(eventStoreConnectionString);
+                ISubscriptionRepository subscriptionRepository = SubscriptionRepository.Create(eventStoreConnectionString, cacheDuration);
 
                 ((SubscriptionRepository)subscriptionRepository).Trace += (sender, s) => Extensions.log(TraceEventType.Information, "REPOSITORY", s);
 
