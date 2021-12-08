@@ -146,8 +146,6 @@
             this.Logger.LogInformation("Loaded projections");
         }
 
-        
-        public const Int32 VoucherManagementDockerPort = 5007;
         private Int32 VoucherManagementPort;
 
         #region Methods
@@ -328,9 +326,7 @@
             settings.DefaultCredentials = new UserCredentials("admin","changeit");
             return settings;
         }
-
-        protected String VoucherManagementContainerName;
-
+        
         public async Task PopulateSubscriptionServiceConfiguration(String estateName)
         {
             EventStorePersistentSubscriptionsClient client = new EventStorePersistentSubscriptionsClient(ConfigureEventStoreSettings(this.EventStoreHttpPort));
