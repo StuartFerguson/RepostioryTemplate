@@ -11,6 +11,7 @@ namespace EstateReporting.Database
     using System.Threading;
     using Entities;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Configuration;
     using Shared.Logger;
     using ViewEntities;
@@ -509,5 +510,26 @@ namespace EstateReporting.Database
                                            nameof(MerchantSettlementFees)
                                        };
         }
+    }
+
+    public static class Extensions
+    {
+        #region Methods
+
+        /// <summary>
+        /// Decimals the precision.
+        /// </summary>
+        /// <param name="propertyBuilder">The property builder.</param>
+        /// <param name="precision">The precision.</param>
+        /// <param name="scale">The scale.</param>
+        /// <returns></returns>
+        public static PropertyBuilder DecimalPrecision(this PropertyBuilder propertyBuilder,
+                                                       Int32 precision,
+                                                       Int32 scale)
+        {
+            return propertyBuilder.HasColumnType($"decimal({precision},{scale})");
+        }
+
+        #endregion
     }
 }
