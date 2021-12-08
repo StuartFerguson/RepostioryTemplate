@@ -234,7 +234,8 @@
                                                                                                           {
                                                                                                               insecureEventStoreEnvironmentVariable,
                                                                                                               persistentSubscriptionPollingInSeconds,
-                                                                                                              internalSubscriptionServiceCacheDuration
+                                                                                                              internalSubscriptionServiceCacheDuration,
+                                                                                                              $"AppSettings:VoucherManagementApi=http://{this.VoucherManagementContainerName}:{DockerHelper.VoucherManagementDockerPort}"
                                                                                                           });
             
             IContainerService estateReportingContainer = this.SetupEstateReportingContainer("estatereporting",
