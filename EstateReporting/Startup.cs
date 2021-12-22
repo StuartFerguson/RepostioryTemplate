@@ -19,12 +19,14 @@ namespace EstateReporting
     using System.Threading;
     using System.Xml.Serialization;
     using BusinessLogic;
+    using BusinessLogic.EventHandling;
     using BusinessLogic.Events;
     using Common;
     using Database;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using EventStore.Client;
     using Factories;
     using FileProcessor.File.DomainEvents;
@@ -156,6 +158,7 @@ namespace EstateReporting
             services.AddSingleton<ContractDomainEventHandler>();
             services.AddSingleton<SettlementDomainEventHandler>();
             services.AddSingleton<FileProcessorDomainEventHandler>();
+            services.AddSingleton<MerchantStatementDomainEventHandler>();
             services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
             services.AddSingleton<IReportingManager, ReportingManager>();
             services.AddSingleton<IModelFactory,ModelFactory>();
@@ -367,6 +370,7 @@ namespace EstateReporting
                                                       String.Empty,
                                                       DateTime.MinValue);
             SettlementCreatedForDateEvent s = new SettlementCreatedForDateEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
+            StatementCreatedEvent ms = new StatementCreatedEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.Now);
 
             TypeProvider.LoadDomainEventsTypeDynamically();
         }

@@ -1,6 +1,7 @@
 namespace EstateReporting.BusinessLogic.Tests
 {
     using System.Threading;
+    using EventHandling;
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using Moq;

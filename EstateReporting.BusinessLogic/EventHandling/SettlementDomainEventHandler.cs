@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EstateReporting.BusinessLogic
+﻿namespace EstateReporting.BusinessLogic.EventHandling
 {
+    using System;
     using System.Threading;
-    using Events;
+    using System.Threading.Tasks;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.EventHandling;
@@ -59,7 +54,7 @@ namespace EstateReporting.BusinessLogic
                                                      CancellationToken cancellationToken)
         {
             // Generate the settlement id from the date
-            Guid settlementId = GetSettlementId(domainEvent.SettlementDueDate);
+            Guid settlementId = SettlementDomainEventHandler.GetSettlementId(domainEvent.SettlementDueDate);
 
             await this.EstateReportingRepository.AddSettledMerchantFeeToSettlement(settlementId, domainEvent, cancellationToken);
         }
