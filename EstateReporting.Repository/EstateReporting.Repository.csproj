@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.16.2" />
+    <PackageReference Include="EstateManagement.MerchantStatement.DomainEvents" Version="1.0.17-build93" />
     <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.0.5" />
     <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.0.5" />
     <PackageReference Include="Shared" Version="1.1.0" />
