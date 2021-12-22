@@ -493,7 +493,7 @@ namespace EstateReporting.Database.Migrations.MySql
 
                     b.HasKey("EstateId", "SettlementId", "TransactionId", "FeeId");
 
-                    b.ToTable("merchantsettlementfees");
+                    b.ToTable("merchantsettlementfee");
                 });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Reconciliation", b =>
@@ -560,6 +560,63 @@ namespace EstateReporting.Database.Migrations.MySql
                     b.HasKey("EstateId", "SettlementId");
 
                     b.ToTable("settlement");
+                });
+
+            modelBuilder.Entity("EstateReporting.Database.Entities.StatementHeader", b =>
+                {
+                    b.Property<Guid>("StatementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EstateId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("StatementCreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("StatementGeneratedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("StatementId");
+
+                    b.ToTable("statementheader");
+                });
+
+            modelBuilder.Entity("EstateReporting.Database.Entities.StatementLine", b =>
+                {
+                    b.Property<Guid>("StatementId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ActivityDateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ActivityType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ActivityDescription")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("EstateId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("InAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("OutAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("StatementId", "TransactionId", "ActivityDateTime", "ActivityType");
+
+                    b.ToTable("statementline");
                 });
 
             modelBuilder.Entity("EstateReporting.Database.Entities.Transaction", b =>

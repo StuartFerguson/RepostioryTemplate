@@ -2,6 +2,7 @@ namespace EstateReporting.BusinessLogic.Tests
 {
     using System.Threading;
     using EstateManagement.Merchant.DomainEvents;
+    using EventHandling;
     using Events;
     using Moq;
     using Repository;

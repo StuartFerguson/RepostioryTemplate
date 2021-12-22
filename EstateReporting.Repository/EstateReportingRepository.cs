@@ -2,25 +2,21 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
     using BusinessLogic.Events;
     using Database;
     using Database.Entities;
+    using Database.ViewEntities;
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using Microsoft.EntityFrameworkCore;
-    using Models;
-    using Newtonsoft.Json;
-    using Shared.EntityFramework;
     using Shared.Exceptions;
     using Shared.Logger;
     using TransactionProcessor.Reconciliation.DomainEvents;
@@ -72,113 +68,6 @@
 
         #region Methods
 
-        public async Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
-                                           CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            Settlement settlement = new Settlement
-                                    {
-                                        EstateId = estateId,
-                                        IsCompleted = false,
-                                        SettlementDate = domainEvent.SettlementDate.Date,
-                                        SettlementId = domainEvent.SettlementId
-                                    };
-
-            await context.Settlements.AddAsync(settlement, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
-                                                            CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
-                                                          {
-                                                              SettlementId = domainEvent.SettlementId,
-                                                              EstateId = domainEvent.EstateId,
-                                                              CalculatedValue = domainEvent.CalculatedValue,
-                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
-                                                              FeeId = domainEvent.FeeId,
-                                                              FeeValue = domainEvent.FeeValue,
-                                                              IsSettled = false,
-                                                              MerchantId = domainEvent.MerchantId,
-                                                              TransactionId = domainEvent.TransactionId
-                                                          };
-            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task AddSettledMerchantFeeToSettlement(Guid settlementId,
-                                                            MerchantFeeAddedToTransactionEvent domainEvent,
-                                                            CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
-                                                          {
-                                                              SettlementId = settlementId,
-                                                              EstateId = domainEvent.EstateId,
-                                                              CalculatedValue = domainEvent.CalculatedValue,
-                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
-                                                              FeeId = domainEvent.FeeId,
-                                                              FeeValue = domainEvent.FeeValue,
-                                                              IsSettled = true,
-                                                              MerchantId = domainEvent.MerchantId,
-                                                              TransactionId = domainEvent.TransactionId
-                                                          };
-            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
-                                                   CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var merchantFee = await context.MerchantSettlementFees.Where(m => m.EstateId == domainEvent.EstateId &&
-                                                                        m.MerchantId == domainEvent.MerchantId && m.TransactionId == domainEvent.TransactionId &&
-                                                                        m.SettlementId == domainEvent.SettlementId && m.FeeId == domainEvent.FeeId)
-                                     .SingleOrDefaultAsync(cancellationToken);
-            if (merchantFee == null)
-            {
-                throw new NotFoundException("Merchant Fee not found to update as settled");
-            }
-
-            merchantFee.IsSettled = true;
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
-                                                    CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == domainEvent.SettlementId, cancellationToken);
-
-            if (settlement == null)
-            {
-                throw new NotFoundException($"No settlement with Id {domainEvent.SettlementId} found to mark as completed");
-            }
-
-            settlement.IsCompleted = true;
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
         /// <summary>
         /// Adds the contract.
         /// </summary>
@@ -227,31 +116,6 @@
                                               };
 
             await context.ContractProducts.AddAsync(contractProduct, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Disables the contract product transaction fee.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <exception cref="NotFoundException">Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model</exception>
-        public async Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
-                                                               CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            ContractProductTransactionFee transactionFee = await context.ContractProductTransactionFees.SingleOrDefaultAsync(t => t.TransactionFeeId == domainEvent.TransactionFeeId);
-
-            if (transactionFee == null)
-            {
-                throw new NotFoundException($"Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model");
-            }
-
-            transactionFee.IsEnabled = false;
 
             await context.SaveChangesAsync(cancellationToken);
         }
@@ -363,27 +227,6 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent,
-                                       CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var estate = await context.Estates.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId);
-
-            if (estate == null)
-            {
-                throw new NotFoundException($"Estate not found with Id {domainEvent.EstateId}");
-            }
-
-            estate.Reference = domainEvent.EstateReference;
-
-            await context.SaveChangesAsync(cancellationToken);
-
-
-        }
-
         /// <summary>
         /// Adds the estate security user.
         /// </summary>
@@ -410,10 +253,140 @@
         }
 
         /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            TransactionFee transactionFee = new TransactionFee
+                                            {
+                                                FeeId = domainEvent.FeeId,
+                                                CalculatedValue = domainEvent.CalculatedValue,
+                                                CalculationType = domainEvent.FeeCalculationType,
+                                                EventId = domainEvent.EventId,
+                                                FeeType = 0,
+                                                FeeValue = domainEvent.FeeValue,
+                                                TransactionId = domainEvent.TransactionId
+                                            };
+
+            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the fee details to transaction.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
+        public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            TransactionFee transactionFee = new TransactionFee
+                                            {
+                                                FeeId = domainEvent.FeeId,
+                                                CalculatedValue = domainEvent.CalculatedValue,
+                                                CalculationType = domainEvent.FeeCalculationType,
+                                                EventId = domainEvent.EventId,
+                                                FeeType = 1,
+                                                FeeValue = domainEvent.FeeValue,
+                                                TransactionId = domainEvent.TransactionId
+                                            };
+
+            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the file.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddFile(FileCreatedEvent domainEvent,
+                                  CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            File file = new File
+                        {
+                            MerchantId = domainEvent.MerchantId,
+                            FileImportLogId = domainEvent.FileImportLogId,
+                            EstateId = domainEvent.EstateId,
+                            UserId = domainEvent.UserId,
+                            FileId = domainEvent.FileId,
+                            FileProfileId = domainEvent.FileProfileId,
+                            FileLocation = domainEvent.FileLocation,
+                            FileReceivedDateTime = domainEvent.FileReceivedDateTime,
+                        };
+
+            await context.Files.AddAsync(file, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the file import log.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddFileImportLog(ImportLogCreatedEvent domainEvent,
+                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            FileImportLog fileImportLog = new FileImportLog
+                                          {
+                                              EstateId = domainEvent.EstateId,
+                                              FileImportLogId = domainEvent.FileImportLogId,
+                                              ImportLogDateTime = domainEvent.ImportLogDateTime
+                                          };
+
+            await context.FileImportLogs.AddAsync(fileImportLog, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Adds the file line to file.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">File with Id {domainEvent.FileId} not found for estate Id {estateId}</exception>
         /// <exception cref="NotFoundException">File with Id {domainEvent.FileId} not found for estate Id {estateId}</exception>
         public async Task AddFileLineToFile(FileLineAddedEvent domainEvent,
                                             CancellationToken cancellationToken)
@@ -435,7 +408,7 @@
                                     FileId = domainEvent.FileId,
                                     LineNumber = domainEvent.LineNumber,
                                     FileLineData = domainEvent.FileLine,
-                                    Status = "P"  // Pending
+                                    Status = "P" // Pending
                                 };
 
             await context.FileLines.AddAsync(fileLine, cancellationToken);
@@ -448,6 +421,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Import log with Id {domainEvent.FileImportLogId} not found for estate Id {estateId}</exception>
         /// <exception cref="NotFoundException">Import log with Id {domainEvent.FileImportLogId} not found for estate Id {estateId}</exception>
         public async Task AddFileToImportLog(FileAddedToImportLogEvent domainEvent,
                                              CancellationToken cancellationToken)
@@ -530,46 +504,10 @@
                                     MerchantId = domainEvent.MerchantId,
                                     Name = domainEvent.MerchantName,
                                     CreatedDateTime = domainEvent.DateCreated
-            };
+                                };
 
             await context.Merchants.AddAsync(merchant, cancellationToken);
 
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
-                                         CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
-
-            if (merchant == null)
-            {
-                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
-            }
-
-            merchant.SettlementSchedule = domainEvent.SettlementSchedule;
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
-                                         CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
-
-            if (merchant == null)
-            {
-                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
-            }
-
-            merchant.Reference = domainEvent.MerchantReference;
             await context.SaveChangesAsync(cancellationToken);
         }
 
@@ -627,7 +565,7 @@
                                                   EmailAddress = domainEvent.ContactEmailAddress,
                                                   PhoneNumber = domainEvent.ContactPhoneNumber,
                                                   CreatedDateTime = domainEvent.EventTimestamp.DateTime
-            };
+                                              };
 
             await context.MerchantContacts.AddAsync(merchantContact, cancellationToken);
 
@@ -653,7 +591,7 @@
                                                 DeviceId = domainEvent.DeviceId,
                                                 DeviceIdentifier = domainEvent.DeviceIdentifier,
                                                 CreatedDateTime = domainEvent.EventTimestamp.DateTime
-            };
+                                            };
 
             await context.MerchantDevices.AddAsync(merchantDevice, cancellationToken);
 
@@ -706,9 +644,38 @@
                                                             EmailAddress = domainEvent.EmailAddress,
                                                             SecurityUserId = domainEvent.SecurityUserId,
                                                             CreatedDateTime = domainEvent.EventTimestamp.DateTime
-            };
+                                                        };
 
             await context.MerchantSecurityUsers.AddAsync(merchantSecurityUser, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the pending merchant fee to settlement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
+                                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
+                                                          {
+                                                              SettlementId = domainEvent.SettlementId,
+                                                              EstateId = domainEvent.EstateId,
+                                                              CalculatedValue = domainEvent.CalculatedValue,
+                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
+                                                              FeeId = domainEvent.FeeId,
+                                                              FeeValue = domainEvent.FeeValue,
+                                                              IsSettled = false,
+                                                              MerchantId = domainEvent.MerchantId,
+                                                              TransactionId = domainEvent.TransactionId
+                                                          };
+            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }
@@ -718,6 +685,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -741,10 +709,118 @@
         }
 
         /// <summary>
+        /// Adds the settled fee to statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id {domainEvent.TransactionId} not found for estate Id {estateId}</exception>
+        public async Task AddSettledFeeToStatement(SettledFeeAddedToStatementEvent domainEvent,
+                                                   CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            // Find the corresponding transaction
+            TransactionsView transaction = await context.TransactionsView.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id {domainEvent.TransactionId} not found for estate Id {estateId}");
+            }
+
+            StatementLine line = new StatementLine
+                                 {
+                                     EstateId = domainEvent.EstateId,
+                                     MerchantId = domainEvent.MerchantId,
+                                     StatementId = domainEvent.MerchantStatementId,
+                                     ActivityDateTime = domainEvent.SettledDateTime,
+                                     ActivityDescription = $"{transaction.OperatorIdentifier} Transaction Fee",
+                                     ActivityType = 2, // Transaction Fee
+                                     TransactionId = domainEvent.TransactionId,
+                                     InAmount = domainEvent.SettledValue
+                                 };
+
+            await context.StatementLines.AddAsync(line, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the settled merchant fee to settlement.
+        /// </summary>
+        /// <param name="settlementId">The settlement identifier.</param>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task AddSettledMerchantFeeToSettlement(Guid settlementId,
+                                                            MerchantFeeAddedToTransactionEvent domainEvent,
+                                                            CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            MerchantSettlementFee merchantSettlementFee = new MerchantSettlementFee
+                                                          {
+                                                              SettlementId = settlementId,
+                                                              EstateId = domainEvent.EstateId,
+                                                              CalculatedValue = domainEvent.CalculatedValue,
+                                                              FeeCalculatedDateTime = domainEvent.FeeCalculatedDateTime,
+                                                              FeeId = domainEvent.FeeId,
+                                                              FeeValue = domainEvent.FeeValue,
+                                                              IsSettled = true,
+                                                              MerchantId = domainEvent.MerchantId,
+                                                              TransactionId = domainEvent.TransactionId
+                                                          };
+            await context.MerchantSettlementFees.AddAsync(merchantSettlementFee, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the transaction to statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id {domainEvent.TransactionId} not found for estate Id {estateId}</exception>
+        public async Task AddTransactionToStatement(TransactionAddedToStatementEvent domainEvent,
+                                                    CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            // Find the corresponding transaction
+            TransactionsView transaction = await context.TransactionsView.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id {domainEvent.TransactionId} not found for estate Id {estateId}");
+            }
+
+            StatementLine line = new StatementLine
+                                 {
+                                     EstateId = domainEvent.EstateId,
+                                     MerchantId = domainEvent.MerchantId,
+                                     StatementId = domainEvent.MerchantStatementId,
+                                     ActivityDateTime = domainEvent.TransactionDateTime,
+                                     ActivityDescription = $"{transaction.OperatorIdentifier} Transaction",
+                                     ActivityType = 1, // Transaction
+                                     TransactionId = domainEvent.TransactionId,
+                                     OutAmount = domainEvent.TransactionValue
+                                 };
+
+            await context.StatementLines.AddAsync(line, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Completes the reconciliation.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task CompleteReconciliation(ReconciliationHasCompletedEvent domainEvent,
                                                  CancellationToken cancellationToken)
@@ -754,7 +830,7 @@
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
-                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (reconciliation == null)
             {
@@ -767,137 +843,11 @@
         }
 
         /// <summary>
-        /// Adds the fee details to transaction.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
-        public async Task AddFeeDetailsToTransaction(MerchantFeeAddedToTransactionEnrichedEvent domainEvent,
-                                                     CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            Transaction transaction =
-                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
-
-            if (transaction == null)
-            {
-                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
-            }
-
-            TransactionFee transactionFee = new TransactionFee
-                                            {
-                                                FeeId = domainEvent.FeeId,
-                                                CalculatedValue = domainEvent.CalculatedValue,
-                                                CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = domainEvent.EventId,
-                                                FeeType = 0,
-                                                FeeValue = domainEvent.FeeValue,
-                                                TransactionId = domainEvent.TransactionId
-                                            };
-
-            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Adds the fee details to transaction.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
-        public async Task AddFeeDetailsToTransaction(ServiceProviderFeeAddedToTransactionEnrichedEvent domainEvent,
-                                                     CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            Transaction transaction =
-                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
-
-            if (transaction == null)
-            {
-                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
-            }
-
-            TransactionFee transactionFee = new TransactionFee
-                                            {
-                                                FeeId = domainEvent.FeeId,
-                                                CalculatedValue = domainEvent.CalculatedValue,
-                                                CalculationType = domainEvent.FeeCalculationType,
-                                                EventId = domainEvent.EventId,
-                                                FeeType = 1,
-                                                FeeValue = domainEvent.FeeValue,
-                                                TransactionId = domainEvent.TransactionId
-                                            };
-
-            await context.TransactionFees.AddAsync(transactionFee, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Adds the file.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task AddFile(FileCreatedEvent domainEvent,
-                                  CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            File file = new File
-                        {
-                            MerchantId = domainEvent.MerchantId,
-                            FileImportLogId = domainEvent.FileImportLogId,
-                            EstateId = domainEvent.EstateId,
-                            UserId = domainEvent.UserId,
-                            FileId = domainEvent.FileId,
-                            FileProfileId = domainEvent.FileProfileId,
-                            FileLocation = domainEvent.FileLocation,
-                            FileReceivedDateTime = domainEvent.FileReceivedDateTime,
-                        };
-
-            await context.Files.AddAsync(file, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Adds the file import log.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task AddFileImportLog(ImportLogCreatedEvent domainEvent,
-                                           CancellationToken cancellationToken)
-        {
-            Guid estateId = domainEvent.EstateId;
-
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            FileImportLog fileImportLog = new FileImportLog
-                                      {
-                                          EstateId = domainEvent.EstateId,
-                                          FileImportLogId = domainEvent.FileImportLogId,
-                                          ImportLogDateTime = domainEvent.ImportLogDateTime
-                                      };
-
-            await context.FileImportLogs.AddAsync(fileImportLog, cancellationToken);
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <summary>
         /// Completes the transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task CompleteTransaction(TransactionHasBeenCompletedEvent domainEvent,
                                               CancellationToken cancellationToken)
@@ -937,6 +887,204 @@
             await context.MigrateAsync(cancellationToken);
 
             Logger.LogInformation($"Read Model database for estate [{estateId}] migrated to latest version");
+        }
+
+        /// <summary>
+        /// Creates the settlement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
+                                           CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Settlement settlement = new Settlement
+                                    {
+                                        EstateId = estateId,
+                                        IsCompleted = false,
+                                        SettlementDate = domainEvent.SettlementDate.Date,
+                                        SettlementId = domainEvent.SettlementId
+                                    };
+
+            await context.Settlements.AddAsync(settlement, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates the statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task CreateStatement(StatementCreatedEvent domainEvent,
+                                          CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            StatementHeader header = new StatementHeader
+                                     {
+                                         EstateId = domainEvent.EstateId,
+                                         MerchantId = domainEvent.MerchantId,
+                                         StatementCreatedDate = domainEvent.DateCreated,
+                                         StatementId = domainEvent.MerchantStatementId
+                                     };
+
+            await context.StatementHeaders.AddAsync(header, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Disables the contract product transaction fee.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model</exception>
+        /// <exception cref="NotFoundException">Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model</exception>
+        public async Task DisableContractProductTransactionFee(TransactionFeeForProductDisabledEvent domainEvent,
+                                                               CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            ContractProductTransactionFee transactionFee =
+                await context.ContractProductTransactionFees.SingleOrDefaultAsync(t => t.TransactionFeeId == domainEvent.TransactionFeeId);
+
+            if (transactionFee == null)
+            {
+                throw new NotFoundException($"Transaction Fee with Id [{domainEvent.TransactionFeeId}] not found in the Read Model");
+            }
+
+            transactionFee.IsEnabled = false;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Inserts the merchant balance record.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
+                                                      CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            // Find the existing event
+            MerchantBalanceHistory balanceRecord = await context.MerchantBalanceHistories.SingleOrDefaultAsync(m => m.EventId == domainEvent.EventId, cancellationToken);
+
+            if (balanceRecord == null)
+            {
+                MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
+                                                                {
+                                                                    AvailableBalance = domainEvent.AvailableBalance,
+                                                                    Balance = domainEvent.Balance,
+                                                                    ChangeAmount = domainEvent.ChangeAmount,
+                                                                    EstateId = domainEvent.EstateId,
+                                                                    EventId = domainEvent.EventId,
+                                                                    MerchantId = domainEvent.MerchantId,
+                                                                    Reference = domainEvent.Reference,
+                                                                    EntryDateTime = domainEvent.EventCreatedDateTime,
+                                                                    TransactionId = domainEvent.AggregateId == domainEvent.MerchantId
+                                                                        ? Guid.Empty
+                                                                        : domainEvent.AggregateId
+                                                                };
+
+                await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
+            }
+            else
+            {
+                balanceRecord.AvailableBalance = domainEvent.AvailableBalance;
+                balanceRecord.Balance = domainEvent.Balance;
+                balanceRecord.ChangeAmount = domainEvent.ChangeAmount;
+                balanceRecord.Reference = domainEvent.Reference;
+                balanceRecord.EntryDateTime = domainEvent.EventCreatedDateTime;
+                balanceRecord.TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId;
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Marks the merchant fee as settled.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Merchant Fee not found to update as settled</exception>
+        public async Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
+                                                   CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchantFee = await context.MerchantSettlementFees.Where(m => m.EstateId == domainEvent.EstateId &&
+                                                                              m.MerchantId == domainEvent.MerchantId && m.TransactionId == domainEvent.TransactionId &&
+                                                                              m.SettlementId == domainEvent.SettlementId && m.FeeId == domainEvent.FeeId)
+                                           .SingleOrDefaultAsync(cancellationToken);
+            if (merchantFee == null)
+            {
+                throw new NotFoundException("Merchant Fee not found to update as settled");
+            }
+
+            merchantFee.IsSettled = true;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Marks the settlement as completed.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">No settlement with Id {domainEvent.SettlementId} found to mark as completed</exception>
+        public async Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
+                                                    CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var settlement = await context.Settlements.SingleOrDefaultAsync(s => s.SettlementId == domainEvent.SettlementId, cancellationToken);
+
+            if (settlement == null)
+            {
+                throw new NotFoundException($"No settlement with Id {domainEvent.SettlementId} found to mark as completed");
+            }
+
+            settlement.IsCompleted = true;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Marks the statement as generated.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">No statement with Id {domainEvent.MerchantStatementId} found to mark as generated</exception>
+        public async Task MarkStatementAsGenerated(StatementGeneratedEvent domainEvent,
+                                                   CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var statementHeader = await context.StatementHeaders.SingleOrDefaultAsync(s => s.StatementId == domainEvent.MerchantStatementId, cancellationToken);
+
+            if (statementHeader == null)
+            {
+                throw new NotFoundException($"No statement with Id {domainEvent.MerchantStatementId} found to mark as generated");
+            }
+
+            statementHeader.StatementGeneratedDate = domainEvent.DateGenerated;
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1020,7 +1168,8 @@
 
                     if (propertyInfo != null)
                     {
-                        propertyInfo.SetValue(additionalResponseData, domainEvent.AdditionalTransactionResponseMetadata.Single(m => m.Key.ToLower() == additionalResponseField.ToLower()).Value);
+                        propertyInfo.SetValue(additionalResponseData,
+                                              domainEvent.AdditionalTransactionResponseMetadata.Single(m => m.Key.ToLower() == additionalResponseField.ToLower()).Value);
                     }
                 }
             }
@@ -1043,14 +1192,14 @@
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation = new Reconciliation
-                                      {
-                                          EstateId = domainEvent.EstateId,
-                                          MerchantId = domainEvent.MerchantId,
-                                          TransactionDate = domainEvent.TransactionDateTime.Date,
-                                          TransactionDateTime = domainEvent.TransactionDateTime,
-                                          TransactionTime = domainEvent.TransactionDateTime.TimeOfDay,
-                                          TransactionId = domainEvent.TransactionId,
-                                      };
+                                            {
+                                                EstateId = domainEvent.EstateId,
+                                                MerchantId = domainEvent.MerchantId,
+                                                TransactionDate = domainEvent.TransactionDateTime.Date,
+                                                TransactionDateTime = domainEvent.TransactionDateTime,
+                                                TransactionTime = domainEvent.TransactionDateTime.TimeOfDay,
+                                                TransactionId = domainEvent.TransactionId,
+                                            };
 
             await context.Reconciliations.AddAsync(reconciliation, cancellationToken);
 
@@ -1089,6 +1238,54 @@
         }
 
         /// <summary>
+        /// Updates the estate.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Estate not found with Id {domainEvent.EstateId}</exception>
+        public async Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent,
+                                       CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var estate = await context.Estates.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId);
+
+            if (estate == null)
+            {
+                throw new NotFoundException($"Estate not found with Id {domainEvent.EstateId}");
+            }
+
+            estate.Reference = domainEvent.EstateReference;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the file as complete.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">File Id {domainEvent.FileId} not found for estate Id {domainEvent.EstateId}</exception>
+        public async Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
+                                               CancellationToken cancellationToken)
+        {
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(domainEvent.EstateId, cancellationToken);
+
+            var file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
+
+            if (file == null)
+            {
+                throw new NotFoundException($"File Id {domainEvent.FileId} not found for estate Id {domainEvent.EstateId}");
+            }
+
+            file.IsCompleted = true;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Updates the file line.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -1097,35 +1294,6 @@
                                          CancellationToken cancellationToken)
         {
             await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "S", cancellationToken);
-        }
-
-        /// <summary>
-        /// Updates the file line status.
-        /// </summary>
-        /// <param name="estateId">The estate identifier.</param>
-        /// <param name="fileId">The file identifier.</param>
-        /// <param name="lineNumber">The line number.</param>
-        /// <param name="newStatus">The new status.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <exception cref="NotFoundException">FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}</exception>
-        private async Task UpdateFileLineStatus(Guid estateId,
-                                                          Guid fileId,
-                                                          Int32 lineNumber,
-                                                          String newStatus,
-                                                          CancellationToken cancellationToken)
-        {
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
-
-            var fileLine = await context.FileLines.SingleOrDefaultAsync(f => f.FileId == fileId && f.LineNumber == lineNumber);
-
-            if (fileLine == null)
-            {
-                throw new NotFoundException($"FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}");
-            }
-
-            fileLine.Status = newStatus;
-
-            await context.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1151,10 +1319,59 @@
         }
 
         /// <summary>
+        /// Updates the merchant.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Merchant not found with Id {domainEvent.MerchantId}</exception>
+        public async Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
+
+            if (merchant == null)
+            {
+                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
+            }
+
+            merchant.SettlementSchedule = domainEvent.SettlementSchedule;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the merchant.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Merchant not found with Id {domainEvent.MerchantId}</exception>
+        public async Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            var merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
+
+            if (merchant == null)
+            {
+                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
+            }
+
+            merchant.Reference = domainEvent.MerchantReference;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Updates the reconciliation overall totals.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateReconciliationOverallTotals(OverallTotalsRecordedEvent domainEvent,
                                                             CancellationToken cancellationToken)
@@ -1164,7 +1381,7 @@
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
-                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (reconciliation == null)
             {
@@ -1182,6 +1399,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyAuthorisedEvent domainEvent,
                                                      CancellationToken cancellationToken)
@@ -1191,7 +1409,7 @@
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
-                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (reconciliation == null)
             {
@@ -1210,6 +1428,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Reconciliation with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateReconciliationStatus(ReconciliationHasBeenLocallyDeclinedEvent domainEvent,
                                                      CancellationToken cancellationToken)
@@ -1219,7 +1438,7 @@
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
             Reconciliation reconciliation =
-                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+                await context.Reconciliations.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken:cancellationToken);
 
             if (reconciliation == null)
             {
@@ -1238,6 +1457,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyAuthorisedEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -1267,6 +1487,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionHasBeenLocallyDeclinedEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -1295,6 +1516,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionAuthorisedByOperatorEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -1325,6 +1547,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model</exception>
         public async Task UpdateTransactionAuthorisation(TransactionDeclinedByOperatorEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -1354,6 +1577,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
         public async Task UpdateVoucherIssueDetails(VoucherIssuedEvent domainEvent,
                                                     CancellationToken cancellationToken)
@@ -1382,6 +1606,7 @@
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
         /// <exception cref="NotFoundException">Voucher with Id [{domainEvent.VoucherId}] not found in the Read Model</exception>
         public async Task UpdateVoucherRedemptionDetails(VoucherFullyRedeemedEvent domainEvent,
                                                          CancellationToken cancellationToken)
@@ -1403,72 +1628,35 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
-                                               CancellationToken cancellationToken)
-        {
-            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(domainEvent.EstateId, cancellationToken);
-
-            var file = await context.Files.SingleOrDefaultAsync(f => f.FileId == domainEvent.FileId);
-
-            if (file == null)
-            {
-                throw new NotFoundException($"File Id {domainEvent.FileId} not found for estate Id {domainEvent.EstateId}");
-            }
-
-            file.IsCompleted = true;
-
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
         /// <summary>
-        /// Inserts the merchant balance record.
+        /// Updates the file line status.
         /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="estateId">The estate identifier.</param>
+        /// <param name="fileId">The file identifier.</param>
+        /// <param name="lineNumber">The line number.</param>
+        /// <param name="newStatus">The new status.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
-                                                      CancellationToken cancellationToken)
+        /// <exception cref="Shared.Exceptions.NotFoundException">FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}</exception>
+        /// <exception cref="NotFoundException">FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}</exception>
+        private async Task UpdateFileLineStatus(Guid estateId,
+                                                Guid fileId,
+                                                Int32 lineNumber,
+                                                String newStatus,
+                                                CancellationToken cancellationToken)
         {
-            
-
-            Guid estateId = domainEvent.EstateId;
-
             EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
 
-            // Find the existing event
-            MerchantBalanceHistory balanceRecord = await context.MerchantBalanceHistories.SingleOrDefaultAsync(m => m.EventId == domainEvent.EventId, cancellationToken);
+            var fileLine = await context.FileLines.SingleOrDefaultAsync(f => f.FileId == fileId && f.LineNumber == lineNumber);
 
-            if (balanceRecord == null)
+            if (fileLine == null)
             {
-                MerchantBalanceHistory merchantBalanceHistory = new MerchantBalanceHistory
-                                                                {
-                                                                    AvailableBalance = domainEvent.AvailableBalance,
-                                                                    Balance = domainEvent.Balance,
-                                                                    ChangeAmount = domainEvent.ChangeAmount,
-                                                                    EstateId = domainEvent.EstateId,
-                                                                    EventId = domainEvent.EventId,
-                                                                    MerchantId = domainEvent.MerchantId,
-                                                                    Reference = domainEvent.Reference,
-                                                                    EntryDateTime = domainEvent.EventCreatedDateTime,
-                                                                    TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId
-                                                                };
+                throw new NotFoundException($"FileLine number {lineNumber} in File Id {fileId} not found for estate Id {estateId}");
+            }
 
-                await context.MerchantBalanceHistories.AddAsync(merchantBalanceHistory, cancellationToken);
-            }
-            else
-            {
-                balanceRecord.AvailableBalance = domainEvent.AvailableBalance;
-                balanceRecord.Balance = domainEvent.Balance;
-                balanceRecord.ChangeAmount = domainEvent.ChangeAmount;
-                balanceRecord.Reference = domainEvent.Reference;
-                balanceRecord.EntryDateTime = domainEvent.EventCreatedDateTime;
-                balanceRecord.TransactionId = domainEvent.AggregateId == domainEvent.MerchantId ? Guid.Empty : domainEvent.AggregateId;
-            }
-            
+            fileLine.Status = newStatus;
+
             await context.SaveChangesAsync(cancellationToken);
-
         }
-
-        
 
         #endregion
     }

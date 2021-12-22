@@ -2,6 +2,7 @@ namespace EstateReporting.BusinessLogic.Tests
 {
     using System;
     using System.Threading;
+    using EventHandling;
     using Events;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Moq;

@@ -7,6 +7,7 @@
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using TransactionProcessor.Reconciliation.DomainEvents;
@@ -20,22 +21,6 @@
     public interface IEstateReportingRepository
     {
         #region Methods
-
-        Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
-                            CancellationToken cancellationToken);
-
-        Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
-                                               CancellationToken cancellationToken);
-
-        Task AddSettledMerchantFeeToSettlement(Guid settlementId,
-                                               MerchantFeeAddedToTransactionEvent domainEvent,
-                                               CancellationToken cancellationToken);
-
-        Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
-                                               CancellationToken cancellationToken);
-
-        Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
-                                       CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the contract.
@@ -90,11 +75,6 @@
         /// <returns></returns>
         Task AddEstateOperator(OperatorAddedToEstateEvent domainEvent,
                                CancellationToken cancellationToken);
-
-        Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent, CancellationToken cancellationToken);
-
-        Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
-                            CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the estate security user.
@@ -176,9 +156,6 @@
         /// <returns></returns>
         Task AddMerchant(MerchantCreatedEvent domainEvent,
                          CancellationToken cancellationToken);
-        
-        Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
-                         CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds the merchant address.
@@ -226,6 +203,15 @@
                                      CancellationToken cancellationToken);
 
         /// <summary>
+        /// Adds the pending merchant fee to settlement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddPendingMerchantFeeToSettlement(MerchantFeeAddedPendingSettlementEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        /// <summary>
         /// Adds the product details to transaction.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -233,6 +219,35 @@
         /// <returns></returns>
         Task AddProductDetailsToTransaction(ProductDetailsAddedToTransactionEvent domainEvent,
                                             CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the settled fee to statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddSettledFeeToStatement(SettledFeeAddedToStatementEvent domainEvent,
+                                      CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the settled merchant fee to settlement.
+        /// </summary>
+        /// <param name="settlementId">The settlement identifier.</param>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddSettledMerchantFeeToSettlement(Guid settlementId,
+                                               MerchantFeeAddedToTransactionEvent domainEvent,
+                                               CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds the transaction to statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task AddTransactionToStatement(TransactionAddedToStatementEvent domainEvent,
+                                       CancellationToken cancellationToken);
 
         /// <summary>
         /// Completes the reconciliation.
@@ -262,6 +277,24 @@
                              CancellationToken cancellationToken);
 
         /// <summary>
+        /// Creates the settlement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CreateSettlement(SettlementCreatedForDateEvent domainEvent,
+                              CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates the statement.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CreateStatement(StatementCreatedEvent domainEvent,
+                             CancellationToken cancellationToken);
+
+        /// <summary>
         /// Disables the contract product transaction fee.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -278,6 +311,33 @@
         /// <returns></returns>
         Task InsertMerchantBalanceRecord(MerchantBalanceChangedEvent domainEvent,
                                          CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Marks the merchant fee as settled.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task MarkMerchantFeeAsSettled(MerchantFeeSettledEvent domainEvent,
+                                      CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Marks the settlement as completed.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task MarkSettlementAsCompleted(SettlementCompletedEvent domainEvent,
+                                       CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Marks the statement as generated.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task MarkStatementAsGenerated(StatementGeneratedEvent domainEvent,
+                                      CancellationToken cancellationToken);
 
         /// <summary>
         /// Records the transaction additional request data.
@@ -316,6 +376,24 @@
                               CancellationToken cancellationToken);
 
         /// <summary>
+        /// Updates the estate.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateEstate(EstateReferenceAllocatedEvent domainEvent,
+                          CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the file as complete.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
+                                  CancellationToken cancellationToken);
+
+        /// <summary>
         /// Updates the file line.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
@@ -340,6 +418,24 @@
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task UpdateFileLine(FileLineProcessingIgnoredEvent domainEvent,
+                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the merchant.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
+                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the merchant.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
                             CancellationToken cancellationToken);
 
         /// <summary>
@@ -422,15 +518,6 @@
         /// <returns></returns>
         Task UpdateVoucherRedemptionDetails(VoucherFullyRedeemedEvent domainEvent,
                                             CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Updates the file as complete.
-        /// </summary>
-        /// <param name="domainEvent">The domain event.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        Task UpdateFileAsComplete(FileProcessingCompletedEvent domainEvent,
-                                  CancellationToken cancellationToken);
 
         #endregion
     }

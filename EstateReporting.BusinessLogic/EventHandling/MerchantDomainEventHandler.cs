@@ -1,4 +1,4 @@
-﻿namespace EstateReporting.BusinessLogic
+﻿namespace EstateReporting.BusinessLogic.EventHandling
 {
     using System.Threading;
     using System.Threading.Tasks;
