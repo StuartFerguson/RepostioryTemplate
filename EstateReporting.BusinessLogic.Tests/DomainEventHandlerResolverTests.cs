@@ -20,7 +20,7 @@ namespace EstateReporting.BusinessLogic.Tests
         {
             Dictionary<String, String[]> eventHandlerConfiguration = new Dictionary<String, String[]>();
 
-            eventHandlerConfiguration.Add("TestEventType1", new String[] { "EstateReporting.BusinessLogic.EstateDomainEventHandler, EstateReporting.BusinessLogic" });
+            eventHandlerConfiguration.Add("TestEventType1", new String[] { "EstateReporting.BusinessLogic.EventHandling.EstateDomainEventHandler, EstateReporting.BusinessLogic" });
 
             Mock<IDomainEventHandler> domainEventHandler = new Mock<IDomainEventHandler>();
             Func<Type, IDomainEventHandler> createDomainEventHandlerFunc = (type) => { return domainEventHandler.Object; };
@@ -34,7 +34,7 @@ namespace EstateReporting.BusinessLogic.Tests
         {
             Dictionary<String, String[]> eventHandlerConfiguration = new Dictionary<String, String[]>();
 
-            eventHandlerConfiguration.Add("TestEventType1", new String[] { "EstateReporting.BusinessLogic.NonExistantDomainEventHandler, EstateReporting.BusinessLogic" });
+            eventHandlerConfiguration.Add("TestEventType1", new String[] { "EstateReporting.BusinessLogic.EventHandling.NonExistantDomainEventHandler, EstateReporting.BusinessLogic" });
 
             Mock<IDomainEventHandler> domainEventHandler = new Mock<IDomainEventHandler>();
             Func<Type, IDomainEventHandler> createDomainEventHandlerFunc = (type) => { return domainEventHandler.Object; };
@@ -45,7 +45,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void DomainEventHandlerResolver_GetDomainEventHandlers_EstateCreatedEvent_EventHandlersReturned()
         {
-            String handlerTypeName = "EstateReporting.BusinessLogic.EstateDomainEventHandler, EstateReporting.BusinessLogic";
+            String handlerTypeName = "EstateReporting.BusinessLogic.EventHandling.EstateDomainEventHandler, EstateReporting.BusinessLogic";
             Dictionary<String, String[]> eventHandlerConfiguration = new Dictionary<String, String[]>();
 
             EstateCreatedEvent estateCreatedEvent = TestData.EstateCreatedEvent;
@@ -67,7 +67,7 @@ namespace EstateReporting.BusinessLogic.Tests
         [Fact]
         public void DomainEventHandlerResolver_GetDomainEventHandlers_EstateCreatedEvent_EventNotConfigured_EventHandlersReturned()
         {
-            String handlerTypeName = "EstateReporting.BusinessLogic.EstateDomainEventHandler, EstateReporting.BusinessLogic";
+            String handlerTypeName = "EstateReporting.BusinessLogic.EventHandling.EstateDomainEventHandler, EstateReporting.BusinessLogic";
             Dictionary<String, String[]> eventHandlerConfiguration = new Dictionary<String, String[]>();
 
             EstateCreatedEvent estateCreatedEvent = TestData.EstateCreatedEvent;

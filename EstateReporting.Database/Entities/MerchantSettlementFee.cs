@@ -3,7 +3,7 @@
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("merchantsettlementfees")]
+    [Table("merchantsettlementfee")]
     public class MerchantSettlementFee
     {
         #region Properties

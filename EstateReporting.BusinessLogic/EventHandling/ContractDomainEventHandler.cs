@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EstateReporting.BusinessLogic
+﻿namespace EstateReporting.BusinessLogic.EventHandling
 {
     using System.Threading;
     using System.Threading.Tasks;

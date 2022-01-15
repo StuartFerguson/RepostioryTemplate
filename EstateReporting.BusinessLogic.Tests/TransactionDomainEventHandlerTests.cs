@@ -1,6 +1,7 @@
 namespace EstateReporting.BusinessLogic.Tests
 {
     using System.Threading;
+    using EventHandling;
     using Events;
     using Moq;
     using Repository;

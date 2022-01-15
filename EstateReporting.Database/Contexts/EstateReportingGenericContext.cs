@@ -67,6 +67,8 @@ namespace EstateReporting.Database
         /// </value>
         public DbSet<Estate> Estates { get; set; }
 
+        public DbSet<StatementHeader> StatementHeaders { get; set; }
+        public DbSet<StatementLine> StatementLines { get; set; }
         /// <summary>
         /// Gets or sets the estate security users.
         /// </summary>
@@ -414,6 +416,19 @@ namespace EstateReporting.Database
                 s.FeeId
             });
 
+            modelBuilder.Entity<StatementHeader>().HasKey(t => new
+                                                      {
+                                                          t.StatementId
+                                                      });
+
+            modelBuilder.Entity<StatementLine>().HasKey(t => new
+                                                               {
+                                                                   t.StatementId,
+                                                                   t.TransactionId,
+                                                                   t.ActivityDateTime,
+                                                                   t.ActivityType
+                                                               });
+
             modelBuilder.Entity<TransactionsView>().HasNoKey().ToView("uvwTransactions");
             modelBuilder.Entity<MerchantBalanceView>().HasNoKey().ToView("uvwMerchantBalance");
             modelBuilder.Entity<FileImportLogView>().HasNoKey().ToView("uvwFileImportLog");
@@ -507,7 +522,9 @@ namespace EstateReporting.Database
                                            nameof(File),
                                            nameof(FileLine),
                                            nameof(Settlement),
-                                           nameof(MerchantSettlementFees)
+                                           nameof(MerchantSettlementFee),
+                                           nameof(StatementHeader),
+                                           nameof(StatementLine)
                                        };
         }
     }

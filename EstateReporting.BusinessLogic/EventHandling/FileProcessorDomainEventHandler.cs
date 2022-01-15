@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EstateReporting.BusinessLogic
+﻿namespace EstateReporting.BusinessLogic.EventHandling
 {
     using System.Threading;
+    using System.Threading.Tasks;
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using Repository;
