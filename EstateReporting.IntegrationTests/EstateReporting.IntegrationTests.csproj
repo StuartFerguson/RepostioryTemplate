@@ -15,15 +15,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByDayReports - Copy.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMerchantReports - Copy.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMonthReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\TransactionsByDayReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\TransactionsByWeekReports - Copy.feature.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClientProxyBase" Version="1.1.0" />
+    <PackageReference Include="ClientProxyBase" Version="1.1.2" />
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.7" />
-    <PackageReference Include="EstateManagement.Client" Version="1.0.16.2" />
-    <PackageReference Include="EstateReporting.Database" Version="1.0.18.2" />
+    <PackageReference Include="EstateManagement.Client" Version="1.0.19-build99" />
+    <PackageReference Include="EstateReporting.Database" Version="1.0.19" />
     <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="21.2.0" />
     <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="21.2.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.41.0" />
@@ -34,14 +37,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="SecurityService.Client" Version="1.0.8" />
-    <PackageReference Include="Shared" Version="1.1.0" />
-    <PackageReference Include="Shared.IntegrationTesting" Version="1.1.0" />
+    <PackageReference Include="SecurityService.Client" Version="1.0.9" />
+    <PackageReference Include="Shared" Version="1.1.2" />
+    <PackageReference Include="Shared.IntegrationTesting" Version="1.1.2" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
     <PackageReference Include="SpecFlow" Version="3.5.14" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.5.14" />
     <PackageReference Include="SpecFlow.xUnit" Version="3.5.14" />
-    <PackageReference Include="TransactionProcessor.Client" Version="1.0.17-build76" />
+    <PackageReference Include="TransactionProcessor.Client" Version="1.0.18-build81" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -112,6 +115,18 @@
     <SpecFlowFeatureFiles Update="LogonTransaction\LogonTransaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>LogonTransaction.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\SettlementByOperatorReports.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\SettlementByWeekReports.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
+    <SpecFlowFeatureFiles Update="Reporting\SettlementByMonthReports.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Reporting\TransactionsByMerchantReports.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

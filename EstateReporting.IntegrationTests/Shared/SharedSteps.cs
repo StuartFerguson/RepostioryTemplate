@@ -18,6 +18,7 @@
     using TechTalk.SpecFlow;
     using TransactionProcessor.DataTransferObjects;
     using ClientDetails = Common.ClientDetails;
+    using SettlementResponse = TransactionProcessor.DataTransferObjects.SettlementResponse;
     using SortDirection = DataTransferObjects.SortDirection;
 
     [Binding]
@@ -29,7 +30,7 @@
         private readonly TestingContext TestingContext;
 
         public SharedSteps(ScenarioContext scenarioContext,
-                         TestingContext testingContext)
+                           TestingContext testingContext)
         {
             this.ScenarioContext = scenarioContext;
             this.TestingContext = testingContext;
@@ -44,8 +45,8 @@
                 String estateName = SpecflowTableHelper.GetStringRowValue(tableRow, "EstateName");
                 // Setup the subscriptions for the estate
                 await Retry.For(async () => { await this.TestingContext.DockerHelper.PopulateSubscriptionServiceConfiguration(estateName).ConfigureAwait(false); },
-                                retryFor: TimeSpan.FromMinutes(2),
-                                retryInterval: TimeSpan.FromSeconds(30));
+                                retryFor:TimeSpan.FromMinutes(2),
+                                retryInterval:TimeSpan.FromSeconds(30));
             }
 
             foreach (TableRow tableRow in table.Rows)
@@ -58,7 +59,9 @@
                                                               EstateName = estateName
                                                           };
 
-                CreateEstateResponse response = await this.TestingContext.DockerHelper.EstateClient.CreateEstate(this.TestingContext.AccessToken, createEstateRequest, CancellationToken.None).ConfigureAwait(false);
+                CreateEstateResponse response = await this.TestingContext.DockerHelper.EstateClient
+                                                          .CreateEstate(this.TestingContext.AccessToken, createEstateRequest, CancellationToken.None)
+                                                          .ConfigureAwait(false);
 
                 response.ShouldNotBeNull();
                 response.EstateId.ShouldNotBe(Guid.Empty);
@@ -79,7 +82,8 @@
                                     estate = await this.TestingContext.DockerHelper.EstateClient
                                                        .GetEstate(this.TestingContext.AccessToken, estateDetails.EstateId, CancellationToken.None).ConfigureAwait(false);
                                     estate.ShouldNotBeNull();
-                                }, retryFor:TimeSpan.FromSeconds(90)).ConfigureAwait(false);
+                                },
+                                retryFor:TimeSpan.FromSeconds(90)).ConfigureAwait(false);
 
                 estate.EstateName.ShouldBe(estateDetails.EstateName);
             }
@@ -108,13 +112,18 @@
                 Guid operatorId = estateDetails.GetOperatorId(operatorName);
 
                 AssignOperatorRequest assignOperatorRequest = new AssignOperatorRequest
-                {
-                    OperatorId = operatorId,
-                    MerchantNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantNumber"),
-                    TerminalNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "TerminalNumber"),
-                };
+                                                              {
+                                                                  OperatorId = operatorId,
+                                                                  MerchantNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantNumber"),
+                                                                  TerminalNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "TerminalNumber"),
+                                                              };
 
-                AssignOperatorResponse assignOperatorResponse = await this.TestingContext.DockerHelper.EstateClient.AssignOperatorToMerchant(token, estateDetails.EstateId, merchantId, assignOperatorRequest, CancellationToken.None).ConfigureAwait(false);
+                AssignOperatorResponse assignOperatorResponse = await this.TestingContext.DockerHelper.EstateClient
+                                                                          .AssignOperatorToMerchant(token,
+                                                                                                    estateDetails.EstateId,
+                                                                                                    merchantId,
+                                                                                                    assignOperatorRequest,
+                                                                                                    CancellationToken.None).ConfigureAwait(false);
 
                 assignOperatorResponse.EstateId.ShouldBe(estateDetails.EstateId);
                 assignOperatorResponse.MerchantId.ShouldBe(merchantId);
@@ -136,16 +145,20 @@
                 Boolean requireCustomTerminalNumber = SpecflowTableHelper.GetBooleanValue(tableRow, "RequireCustomTerminalNumber");
 
                 CreateOperatorRequest createOperatorRequest = new CreateOperatorRequest
-                {
-                    Name = operatorName,
-                    RequireCustomMerchantNumber = requireCustomMerchantNumber,
-                    RequireCustomTerminalNumber = requireCustomTerminalNumber
-                };
+                                                              {
+                                                                  Name = operatorName,
+                                                                  RequireCustomMerchantNumber = requireCustomMerchantNumber,
+                                                                  RequireCustomTerminalNumber = requireCustomTerminalNumber
+                                                              };
 
                 // lookup the estate id based on the name in the table
                 EstateDetails estateDetails = this.TestingContext.GetEstateDetails(tableRow);
 
-                CreateOperatorResponse response = await this.TestingContext.DockerHelper.EstateClient.CreateOperator(this.TestingContext.AccessToken, estateDetails.EstateId, createOperatorRequest, CancellationToken.None).ConfigureAwait(false);
+                CreateOperatorResponse response = await this.TestingContext.DockerHelper.EstateClient
+                                                            .CreateOperator(this.TestingContext.AccessToken,
+                                                                            estateDetails.EstateId,
+                                                                            createOperatorRequest,
+                                                                            CancellationToken.None).ConfigureAwait(false);
 
                 response.ShouldNotBeNull();
                 response.EstateId.ShouldNotBe(Guid.Empty);
@@ -173,25 +186,36 @@
                 }
 
                 String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
-                CreateMerchantRequest createMerchantRequest = new CreateMerchantRequest
+
+                var settlementSchedule = SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementSchedule");
+
+                SettlementSchedule schedule = SettlementSchedule.Immediate;
+                if (String.IsNullOrEmpty(settlementSchedule) == false)
                 {
-                    Name = merchantName,
-                    Contact = new Contact
-                    {
-                        ContactName = SpecflowTableHelper.GetStringRowValue(tableRow, "ContactName"),
-                        EmailAddress = SpecflowTableHelper.GetStringRowValue(tableRow, "EmailAddress")
-                    },
-                    Address = new Address
-                    {
-                        AddressLine1 = SpecflowTableHelper.GetStringRowValue(tableRow, "AddressLine1"),
-                        Town = SpecflowTableHelper.GetStringRowValue(tableRow, "Town"),
-                        Region = SpecflowTableHelper.GetStringRowValue(tableRow, "Region"),
-                        Country = SpecflowTableHelper.GetStringRowValue(tableRow, "Country")
-                    }
-                };
+                    schedule = Enum.Parse<SettlementSchedule>(settlementSchedule);
+                }
+
+                CreateMerchantRequest createMerchantRequest = new CreateMerchantRequest
+                                                              {
+                                                                  Name = merchantName,
+                                                                  Contact = new Contact
+                                                                            {
+                                                                                ContactName = SpecflowTableHelper.GetStringRowValue(tableRow, "ContactName"),
+                                                                                EmailAddress = SpecflowTableHelper.GetStringRowValue(tableRow, "EmailAddress")
+                                                                            },
+                                                                  Address = new Address
+                                                                            {
+                                                                                AddressLine1 = SpecflowTableHelper.GetStringRowValue(tableRow, "AddressLine1"),
+                                                                                Town = SpecflowTableHelper.GetStringRowValue(tableRow, "Town"),
+                                                                                Region = SpecflowTableHelper.GetStringRowValue(tableRow, "Region"),
+                                                                                Country = SpecflowTableHelper.GetStringRowValue(tableRow, "Country")
+                                                                            },
+                                                                  SettlementSchedule = schedule
+                                                              };
 
                 CreateMerchantResponse response = await this.TestingContext.DockerHelper.EstateClient
-                                                            .CreateMerchant(token, estateDetails.EstateId, createMerchantRequest, CancellationToken.None).ConfigureAwait(false);
+                                                            .CreateMerchant(token, estateDetails.EstateId, createMerchantRequest, CancellationToken.None)
+                                                            .ConfigureAwait(false);
 
                 response.ShouldNotBeNull();
                 response.EstateId.ShouldBe(estateDetails.EstateId);
@@ -227,7 +251,7 @@
                                 });
             }
         }
-        
+
         [When(@"I perform the following transactions")]
         public async Task WhenIPerformTheFollowingTransactions(Table table)
         {
@@ -241,22 +265,22 @@
                 String transactionNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "TransactionNumber");
                 String transactionType = SpecflowTableHelper.GetStringRowValue(tableRow, "TransactionType");
                 String deviceIdentifier = SpecflowTableHelper.GetStringRowValue(tableRow, "DeviceIdentifier");
-                
+
                 EstateDetails estateDetails = this.TestingContext.GetEstateDetails(tableRow);
-                
+
                 // Lookup the merchant id
                 Guid merchantId = estateDetails.GetMerchantId(merchantName);
                 SerialisedMessage transactionResponse = null;
-                switch (transactionType)
+                switch(transactionType)
                 {
                     case "Logon":
                         transactionResponse = await this.PerformLogonTransaction(estateDetails.EstateId,
-                                                           merchantId,
-                                                           transactionDateTime,
-                                                           transactionType,
-                                                           transactionNumber,
-                                                           deviceIdentifier,
-                                                           CancellationToken.None);
+                                                                                 merchantId,
+                                                                                 transactionDateTime,
+                                                                                 transactionType,
+                                                                                 transactionNumber,
+                                                                                 deviceIdentifier,
+                                                                                 CancellationToken.None);
                         break;
                     case "Sale":
 
@@ -294,7 +318,7 @@
                                                                                 recipientMobile,
                                                                                 CancellationToken.None);
                         break;
-                        
+
                 }
 
                 estateDetails.AddTransactionResponse(merchantId, transactionNumber, transactionResponse);
@@ -348,23 +372,26 @@
                 String productValue = SpecflowTableHelper.GetStringRowValue(tableRow, "Value");
 
                 AddProductToContractRequest addProductToContractRequest = new AddProductToContractRequest
-                {
-                    ProductName = SpecflowTableHelper.GetStringRowValue(tableRow, "ProductName"),
-                    DisplayText = SpecflowTableHelper.GetStringRowValue(tableRow, "DisplayText"),
-                    Value = null
-                };
+                                                                          {
+                                                                              ProductName = SpecflowTableHelper.GetStringRowValue(tableRow, "ProductName"),
+                                                                              DisplayText = SpecflowTableHelper.GetStringRowValue(tableRow, "DisplayText"),
+                                                                              Value = null
+                                                                          };
                 if (String.IsNullOrEmpty(productValue) == false)
                 {
                     addProductToContractRequest.Value = Decimal.Parse(productValue);
                 }
 
-                AddProductToContractResponse addProductToContractResponse = await this.TestingContext.DockerHelper.EstateClient.AddProductToContract(token,
-                                                                                                                                                     estateDetails.EstateId,
-                                                                                                                                                     contract.ContractId,
-                                                                                                                                                     addProductToContractRequest,
-                                                                                                                                                     CancellationToken.None);
+                AddProductToContractResponse addProductToContractResponse =
+                    await this.TestingContext.DockerHelper.EstateClient.AddProductToContract(token,
+                                                                                             estateDetails.EstateId,
+                                                                                             contract.ContractId,
+                                                                                             addProductToContractRequest,
+                                                                                             CancellationToken.None);
 
-                contract.AddProduct(addProductToContractResponse.ProductId, addProductToContractRequest.ProductName, addProductToContractRequest.DisplayText,
+                contract.AddProduct(addProductToContractResponse.ProductId,
+                                    addProductToContractRequest.ProductName,
+                                    addProductToContractRequest.DisplayText,
                                     addProductToContractRequest.Value);
             }
         }
@@ -389,18 +416,18 @@
                 Product product = contract.GetProduct(productName);
 
                 AddTransactionFeeForProductToContractRequest addTransactionFeeForProductToContractRequest = new AddTransactionFeeForProductToContractRequest
-                {
-                    Value =
+                                                                                                            {
+                                                                                                                Value =
                                                                                                                     SpecflowTableHelper
                                                                                                                         .GetDecimalValue(tableRow, "Value"),
-                    Description =
+                                                                                                                Description =
                                                                                                                     SpecflowTableHelper.GetStringRowValue(tableRow,
-                                                                                                                                                          "FeeDescription"),
-                    CalculationType =
+                                                                                                                        "FeeDescription"),
+                                                                                                                CalculationType =
                                                                                                                     SpecflowTableHelper
                                                                                                                         .GetEnumValue<CalculationType>(tableRow,
-                                                                                                                                                       "CalculationType")
-                };
+                                                                                                                            "CalculationType")
+                                                                                                            };
 
                 AddTransactionFeeForProductToContractResponse addTransactionFeeForProductToContractResponse =
                     await this.TestingContext.DockerHelper.EstateClient.AddTransactionFeeForProductToContract(token,
@@ -428,7 +455,13 @@
         /// <param name="deviceIdentifier">The device identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        private async Task<SerialisedMessage> PerformLogonTransaction(Guid estateId, Guid merchantId, DateTime transactionDateTime, String transactionType, String transactionNumber, String deviceIdentifier, CancellationToken cancellationToken)
+        private async Task<SerialisedMessage> PerformLogonTransaction(Guid estateId,
+                                                                      Guid merchantId,
+                                                                      DateTime transactionDateTime,
+                                                                      String transactionType,
+                                                                      String transactionNumber,
+                                                                      String deviceIdentifier,
+                                                                      CancellationToken cancellationToken)
         {
             LogonTransactionRequest logonTransactionRequest = new LogonTransactionRequest
                                                               {
@@ -443,10 +476,11 @@
             SerialisedMessage serialisedMessage = new SerialisedMessage();
             serialisedMessage.Metadata.Add(MetadataContants.KeyNameEstateId, estateId.ToString());
             serialisedMessage.Metadata.Add(MetadataContants.KeyNameMerchantId, merchantId.ToString());
-            serialisedMessage.SerialisedData = JsonConvert.SerializeObject(logonTransactionRequest, new JsonSerializerSettings
-                                                                                                    {
-                                                                                                        TypeNameHandling = TypeNameHandling.All
-                                                                                                    });
+            serialisedMessage.SerialisedData = JsonConvert.SerializeObject(logonTransactionRequest,
+                                                                           new JsonSerializerSettings
+                                                                           {
+                                                                               TypeNameHandling = TypeNameHandling.All
+                                                                           });
 
             SerialisedMessage responseSerialisedMessage =
                 await this.TestingContext.DockerHelper.TransactionProcessorClient.PerformTransaction(this.TestingContext.AccessToken,
@@ -456,9 +490,15 @@
             return responseSerialisedMessage;
         }
 
-        private async Task<SerialisedMessage> PerformSaleTransaction(Guid estateId, Guid merchantId, DateTime transactionDateTime, 
-                                                                     String transactionType, String transactionNumber, String deviceIdentifier, 
-                                                                     String operatorIdentifier, Decimal transactionAmount, String customerAccountNumber, 
+        private async Task<SerialisedMessage> PerformSaleTransaction(Guid estateId,
+                                                                     Guid merchantId,
+                                                                     DateTime transactionDateTime,
+                                                                     String transactionType,
+                                                                     String transactionNumber,
+                                                                     String deviceIdentifier,
+                                                                     String operatorIdentifier,
+                                                                     Decimal transactionAmount,
+                                                                     String customerAccountNumber,
                                                                      String customerEmailAddress,
                                                                      Guid contractId,
                                                                      Guid productId,
@@ -497,15 +537,16 @@
                                                                 CustomerEmailAddress = customerEmailAddress,
                                                                 ProductId = productId,
                                                                 ContractId = contractId
-            };
+                                                            };
 
             SerialisedMessage serialisedMessage = new SerialisedMessage();
             serialisedMessage.Metadata.Add(MetadataContants.KeyNameEstateId, estateId.ToString());
             serialisedMessage.Metadata.Add(MetadataContants.KeyNameMerchantId, merchantId.ToString());
-            serialisedMessage.SerialisedData = JsonConvert.SerializeObject(saleTransactionRequest, new JsonSerializerSettings
-                                                                                                   {
-                                                                                                       TypeNameHandling = TypeNameHandling.All
-                                                                                                   });
+            serialisedMessage.SerialisedData = JsonConvert.SerializeObject(saleTransactionRequest,
+                                                                           new JsonSerializerSettings
+                                                                           {
+                                                                               TypeNameHandling = TypeNameHandling.All
+                                                                           });
 
             SerialisedMessage responseSerialisedMessage =
                 await this.TestingContext.DockerHelper.TransactionProcessorClient.PerformTransaction(this.TestingContext.AccessToken,
@@ -525,20 +566,21 @@
 
                 String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
                 Guid merchantId = estateDetails.GetMerchantId(merchantName);
-                
+
                 String transactionNumber = SpecflowTableHelper.GetStringRowValue(tableRow, "TransactionNumber");
                 SerialisedMessage serialisedMessage = estateDetails.GetTransactionResponse(merchantId, transactionNumber);
                 Object transactionResponse = JsonConvert.DeserializeObject(serialisedMessage.SerialisedData,
-                                                      new JsonSerializerSettings
-                                                      {
-                                                          TypeNameHandling = TypeNameHandling.All
-                                                      });
+                                                                           new JsonSerializerSettings
+                                                                           {
+                                                                               TypeNameHandling = TypeNameHandling.All
+                                                                           });
                 this.ValidateTransactionResponse(transactionNumber, (dynamic)transactionResponse, tableRow);
             }
         }
 
-        private void ValidateTransactionResponse(String transactionNumber, LogonTransactionResponse logonTransactionResponse,
-                                           TableRow tableRow)
+        private void ValidateTransactionResponse(String transactionNumber,
+                                                 LogonTransactionResponse logonTransactionResponse,
+                                                 TableRow tableRow)
         {
             String expectedResponseCode = SpecflowTableHelper.GetStringRowValue(tableRow, "ResponseCode");
             String expectedResponseMessage = SpecflowTableHelper.GetStringRowValue(tableRow, "ResponseMessage");
@@ -547,7 +589,8 @@
             logonTransactionResponse.ResponseMessage.ShouldBe(expectedResponseMessage, $"Transaction Number [{transactionNumber}]");
         }
 
-        private void ValidateTransactionResponse(String transactionNumber, SaleTransactionResponse saleTransactionResponse,
+        private void ValidateTransactionResponse(String transactionNumber,
+                                                 SaleTransactionResponse saleTransactionResponse,
                                                  TableRow tableRow)
         {
             String expectedResponseCode = SpecflowTableHelper.GetStringRowValue(tableRow, "ResponseCode");
@@ -568,8 +611,7 @@
                                                                   Description = SpecflowTableHelper.GetStringRowValue(tableRow, "Description"),
                                                                   DisplayName = SpecflowTableHelper.GetStringRowValue(tableRow, "DisplayName")
                                                               };
-                var createApiScopeResponse =
-                    await this.CreateApiScope(createApiScopeRequest, CancellationToken.None).ConfigureAwait(false);
+                var createApiScopeResponse = await this.CreateApiScope(createApiScopeRequest, CancellationToken.None).ConfigureAwait(false);
 
                 createApiScopeResponse.ShouldNotBeNull();
                 createApiScopeResponse.ApiScopeName.ShouldNotBeNullOrEmpty();
@@ -579,7 +621,8 @@
         private async Task<CreateApiScopeResponse> CreateApiScope(CreateApiScopeRequest createApiScopeRequest,
                                                                   CancellationToken cancellationToken)
         {
-            CreateApiScopeResponse createApiScopeResponse = await this.TestingContext.DockerHelper.SecurityServiceClient.CreateApiScope(createApiScopeRequest, cancellationToken).ConfigureAwait(false);
+            CreateApiScopeResponse createApiScopeResponse = await this.TestingContext.DockerHelper.SecurityServiceClient
+                                                                      .CreateApiScope(createApiScopeRequest, cancellationToken).ConfigureAwait(false);
             return createApiScopeResponse;
         }
 
@@ -598,24 +641,20 @@
                 List<String> splitUserClaims = userClaims.Split(",").ToList();
 
                 CreateApiResourceRequest createApiResourceRequest = new CreateApiResourceRequest
-                {
-                    Description = String.Empty,
-                    DisplayName = displayName,
-                    Name = resourceName,
-                    Scopes = new List<String>(),
-                    Secret = secret,
-                    UserClaims = new List<String>()
-                };
-                splitScopes.ForEach(a =>
-                {
-                    createApiResourceRequest.Scopes.Add(a.Trim());
-                });
-                splitUserClaims.ForEach(a =>
-                {
-                    createApiResourceRequest.UserClaims.Add(a.Trim());
-                });
+                                                                    {
+                                                                        Description = String.Empty,
+                                                                        DisplayName = displayName,
+                                                                        Name = resourceName,
+                                                                        Scopes = new List<String>(),
+                                                                        Secret = secret,
+                                                                        UserClaims = new List<String>()
+                                                                    };
+                splitScopes.ForEach(a => { createApiResourceRequest.Scopes.Add(a.Trim()); });
+                splitUserClaims.ForEach(a => { createApiResourceRequest.UserClaims.Add(a.Trim()); });
 
-                CreateApiResourceResponse createApiResourceResponse = await this.TestingContext.DockerHelper.SecurityServiceClient.CreateApiResource(createApiResourceRequest, CancellationToken.None).ConfigureAwait(false);
+                CreateApiResourceResponse createApiResourceResponse = await this.TestingContext.DockerHelper.SecurityServiceClient
+                                                                                .CreateApiResource(createApiResourceRequest, CancellationToken.None)
+                                                                                .ConfigureAwait(false);
 
                 createApiResourceResponse.ApiResourceName.ShouldBe(resourceName);
             }
@@ -636,25 +675,20 @@
                 List<String> splitAllowedGrantTypes = allowedGrantTypes.Split(",").ToList();
 
                 CreateClientRequest createClientRequest = new CreateClientRequest
-                {
-                    Secret = secret,
-                    AllowedGrantTypes = new List<String>(),
-                    AllowedScopes = new List<String>(),
-                    ClientDescription = String.Empty,
-                    ClientId = clientId,
-                    ClientName = clientName
-                };
+                                                          {
+                                                              Secret = secret,
+                                                              AllowedGrantTypes = new List<String>(),
+                                                              AllowedScopes = new List<String>(),
+                                                              ClientDescription = String.Empty,
+                                                              ClientId = clientId,
+                                                              ClientName = clientName
+                                                          };
 
-                splitAllowedScopes.ForEach(a =>
-                {
-                    createClientRequest.AllowedScopes.Add(a.Trim());
-                });
-                splitAllowedGrantTypes.ForEach(a =>
-                {
-                    createClientRequest.AllowedGrantTypes.Add(a.Trim());
-                });
+                splitAllowedScopes.ForEach(a => { createClientRequest.AllowedScopes.Add(a.Trim()); });
+                splitAllowedGrantTypes.ForEach(a => { createClientRequest.AllowedGrantTypes.Add(a.Trim()); });
 
-                CreateClientResponse createClientResponse = await this.TestingContext.DockerHelper.SecurityServiceClient.CreateClient(createClientRequest, CancellationToken.None).ConfigureAwait(false);
+                CreateClientResponse createClientResponse = await this.TestingContext.DockerHelper.SecurityServiceClient
+                                                                      .CreateClient(createClientRequest, CancellationToken.None).ConfigureAwait(false);
 
                 createClientResponse.ClientId.ShouldBe(clientId);
 
@@ -673,7 +707,8 @@
 
                 if (clientDetails.GrantType == "client_credentials")
                 {
-                    TokenResponse tokenResponse = await this.TestingContext.DockerHelper.SecurityServiceClient.GetToken(clientId, clientDetails.ClientSecret, CancellationToken.None).ConfigureAwait(false);
+                    TokenResponse tokenResponse = await this.TestingContext.DockerHelper.SecurityServiceClient
+                                                            .GetToken(clientId, clientDetails.ClientSecret, CancellationToken.None).ConfigureAwait(false);
 
                     this.TestingContext.AccessToken = tokenResponse.AccessToken;
                 }
@@ -705,7 +740,12 @@
                                                                         DeviceIdentifier = deviceIdentifier
                                                                     };
 
-                AddMerchantDeviceResponse addMerchantDeviceResponse = await this.TestingContext.DockerHelper.EstateClient.AddDeviceToMerchant(token, estateDetails.EstateId, merchantId, addMerchantDeviceRequest, CancellationToken.None).ConfigureAwait(false);
+                AddMerchantDeviceResponse addMerchantDeviceResponse = await this.TestingContext.DockerHelper.EstateClient
+                                                                                .AddDeviceToMerchant(token,
+                                                                                                     estateDetails.EstateId,
+                                                                                                     merchantId,
+                                                                                                     addMerchantDeviceRequest,
+                                                                                                     CancellationToken.None).ConfigureAwait(false);
 
                 addMerchantDeviceResponse.EstateId.ShouldBe(estateDetails.EstateId);
                 addMerchantDeviceResponse.MerchantId.ShouldBe(merchantId);
@@ -733,16 +773,25 @@
                 Guid merchantId = estateDetails.GetMerchantId(merchantName);
 
                 // Get current balance
-                MerchantBalanceResponse previousMerchantBalance = await this.TestingContext.DockerHelper.EstateClient.GetMerchantBalance(token, estateDetails.EstateId, merchantId, CancellationToken.None);
-                
+                MerchantBalanceResponse previousMerchantBalance =
+                    await this.TestingContext.DockerHelper.EstateClient.GetMerchantBalance(token, estateDetails.EstateId, merchantId, CancellationToken.None);
+
                 MakeMerchantDepositRequest makeMerchantDepositRequest = new MakeMerchantDepositRequest
                                                                         {
-                                                                            DepositDateTime = SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "DateTime"), this.TestingContext.DateToUseForToday),
+                                                                            DepositDateTime =
+                                                                                SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow,
+                                                                                        "DateTime"),
+                                                                                    this.TestingContext.DateToUseForToday),
                                                                             Reference = SpecflowTableHelper.GetStringRowValue(tableRow, "Reference"),
                                                                             Amount = SpecflowTableHelper.GetDecimalValue(tableRow, "Amount")
                                                                         };
 
-                MakeMerchantDepositResponse makeMerchantDepositResponse = await this.TestingContext.DockerHelper.EstateClient.MakeMerchantDeposit(token, estateDetails.EstateId, merchantId, makeMerchantDepositRequest, CancellationToken.None).ConfigureAwait(false);
+                MakeMerchantDepositResponse makeMerchantDepositResponse = await this.TestingContext.DockerHelper.EstateClient
+                                                                                    .MakeMerchantDeposit(token,
+                                                                                                         estateDetails.EstateId,
+                                                                                                         merchantId,
+                                                                                                         makeMerchantDepositRequest,
+                                                                                                         CancellationToken.None).ConfigureAwait(false);
 
                 makeMerchantDepositResponse.EstateId.ShouldBe(estateDetails.EstateId);
                 makeMerchantDepositResponse.MerchantId.ShouldBe(merchantId);
@@ -766,7 +815,10 @@
         }
 
         [When(@"I get the Estate Transactions By Date Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheEstateTransactionsByDateReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        public async Task WhenIGetTheEstateTransactionsByDateReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName,
+            String startDateString,
+            String endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
 
@@ -783,10 +835,10 @@
                             {
                                 TransactionsByDayResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
                                                                                .GetTransactionsForEstateByDate(token,
-                                                                                                      estateDetails.EstateId,
-                                                                                                      startDate,
-                                                                                                      endDate,
-                                                                                                      CancellationToken.None).ConfigureAwait(false);
+                                                                                                               estateDetails.EstateId,
+                                                                                                               startDate,
+                                                                                                               endDate,
+                                                                                                               CancellationToken.None).ConfigureAwait(false);
 
                                 response.ShouldNotBeNull();
                                 response.TransactionDayResponses.ShouldNotBeNull();
@@ -808,7 +860,11 @@
         }
 
         [When(@"I get the Merchant Transactions By Date Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheMerchantTransactionsByDateReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String merchantName, String startDateString, String endDateString, Table table)
+        public async Task WhenIGetTheMerchantTransactionsByDateReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName,
+            String merchantName,
+            String startDateString,
+            String endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             Guid merchantId = estateDetails.GetMerchantId(merchantName);
@@ -822,36 +878,39 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByDayResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                               .GetTransactionsForMerchantByDate(token,
-                                                                                      estateDetails.EstateId,
-                                                                                      merchantId,
-                                                                                      startDate,
-                                                                                      endDate,
-                                                                                      CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByDayResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                               .GetTransactionsForMerchantByDate(token,
+                                                                                                                     estateDetails.EstateId,
+                                                                                                                     merchantId,
+                                                                                                                     startDate,
+                                                                                                                     endDate,
+                                                                                                                     CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionDayResponses.ShouldNotBeNull();
-                response.TransactionDayResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionDayResponses.ShouldNotBeNull();
+                                response.TransactionDayResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], this.TestingContext.DateToUseForToday);
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    DateTime date = SpecflowTableHelper.GetDateForDateString(tableRow["Date"], this.TestingContext.DateToUseForToday);
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionDayResponse transactionDayResponse = response.TransactionDayResponses.SingleOrDefault(t => t.Date == date);
+                                    TransactionDayResponse transactionDayResponse = response.TransactionDayResponses.SingleOrDefault(t => t.Date == date);
 
-                    transactionDayResponse.ShouldNotBeNull();
-                    transactionDayResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionDayResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionDayResponse.ShouldNotBeNull();
+                                    transactionDayResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionDayResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
         [When(@"I get the Estate Transactions By Operator Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheEstateTransactionsByOperatorReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        public async Task WhenIGetTheEstateTransactionsByOperatorReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName,
+            String startDateString,
+            String endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
 
@@ -865,39 +924,43 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByOperatorResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                    .GetTransactionsForEstateByOperator(token,
-                                                                                                        estateDetails.EstateId,
-                                                                                                        startDate,
-                                                                                                        endDate,
-                                                                                                        5,
-                                                                                                        SortDirection.Ascending,
-                                                                                                        SortField.Value,
-                                                                                                        CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByOperatorResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                    .GetTransactionsForEstateByOperator(token,
+                                                                                        estateDetails.EstateId,
+                                                                                        startDate,
+                                                                                        endDate,
+                                                                                        5,
+                                                                                        SortDirection.Ascending,
+                                                                                        SortField.Value,
+                                                                                        CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionOperatorResponses.ShouldNotBeNull();
-                response.TransactionOperatorResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionOperatorResponses.ShouldNotBeNull();
+                                response.TransactionOperatorResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    String operatorName = SpecflowTableHelper.GetStringRowValue(tableRow, "OperatorName");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    String operatorName = SpecflowTableHelper.GetStringRowValue(tableRow, "OperatorName");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionOperatorResponse transactionOperatorResponse = response.TransactionOperatorResponses.SingleOrDefault(t => t.OperatorName == operatorName);
+                                    TransactionOperatorResponse transactionOperatorResponse =
+                                        response.TransactionOperatorResponses.SingleOrDefault(t => t.OperatorName == operatorName);
 
-                    transactionOperatorResponse.ShouldNotBeNull();
-                    transactionOperatorResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionOperatorResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionOperatorResponse.ShouldNotBeNull();
+                                    transactionOperatorResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionOperatorResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
 
         [When(@"I get the Estate Transactions By Merchant Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheEstateTransactionsByMerchantReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        public async Task WhenIGetTheEstateTransactionsByMerchantReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName,
+            String startDateString,
+            String endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
 
@@ -911,34 +974,35 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByMerchantResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                    .GetTransactionsForEstateByMerchant(token,
-                                                                                                        estateDetails.EstateId,
-                                                                                                        startDate,
-                                                                                                        endDate,
-                                                                                                        5,
-                                                                                                        SortDirection.Ascending,
-                                                                                                        SortField.Value,
-                                                                                                        CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByMerchantResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                    .GetTransactionsForEstateByMerchant(token,
+                                                                                        estateDetails.EstateId,
+                                                                                        startDate,
+                                                                                        endDate,
+                                                                                        5,
+                                                                                        SortDirection.Ascending,
+                                                                                        SortField.Value,
+                                                                                        CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionMerchantResponses.ShouldNotBeNull();
-                response.TransactionMerchantResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionMerchantResponses.ShouldNotBeNull();
+                                response.TransactionMerchantResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionMerchantResponse transactionMerchantResponse = response.TransactionMerchantResponses.SingleOrDefault(t => t.MerchantName == merchantName);
+                                    TransactionMerchantResponse transactionMerchantResponse =
+                                        response.TransactionMerchantResponses.SingleOrDefault(t => t.MerchantName == merchantName);
 
-                    transactionMerchantResponse.ShouldNotBeNull();
-                    transactionMerchantResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionMerchantResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionMerchantResponse.ShouldNotBeNull();
+                                    transactionMerchantResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionMerchantResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
 
@@ -953,12 +1017,15 @@
             else
             {
                 // Just use parse so that an exception is thrown if an incorrect date format us used.
-                this.TestingContext.DateToUseForToday = DateTime.ParseExact(dateForToday,"dd/MM/yyyy", null);
+                this.TestingContext.DateToUseForToday = DateTime.ParseExact(dateForToday, "dd/MM/yyyy", null);
             }
         }
 
         [When(@"I get the Estate Transactions By Week Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheEstateTransactionsByWeekReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName, String startDateString, String endDateString, Table table)
+        public async Task WhenIGetTheEstateTransactionsByWeekReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(String estateName,
+            String startDateString,
+            String endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             String token = this.TestingContext.AccessToken;
@@ -971,36 +1038,41 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                               .GetTransactionsForEstateByWeek(token,
-                                                                                      estateDetails.EstateId,
-                                                                                      startDate,
-                                                                                      endDate,
-                                                                                      CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                .GetTransactionsForEstateByWeek(token,
+                                                                                                                estateDetails.EstateId,
+                                                                                                                startDate,
+                                                                                                                endDate,
+                                                                                                                CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionWeekResponses.ShouldNotBeNull();
-                response.TransactionWeekResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionWeekResponses.ShouldNotBeNull();
+                                response.TransactionWeekResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
-                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
+                                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionWeekResponse transactionWeekResponse = response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
+                                    TransactionWeekResponse transactionWeekResponse =
+                                        response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
 
-                    transactionWeekResponse.ShouldNotBeNull();
-                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionWeekResponse.ShouldNotBeNull();
+                                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
         [When(@"I get the Merchant Transactions By Week Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheMerchantTransactionsByWeekReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string merchantName, string startDateString, string endDateString, Table table)
+        public async Task WhenIGetTheMerchantTransactionsByWeekReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             Guid merchantId = estateDetails.GetMerchantId(merchantName);
@@ -1014,37 +1086,41 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                .GetTransactionsForMerchantByWeek(token,
-                                                                                                estateDetails.EstateId,
-                                                                                                merchantId,
-                                                                                                startDate,
-                                                                                                endDate,
-                                                                                                CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByWeekResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                .GetTransactionsForMerchantByWeek(token,
+                                                                                    estateDetails.EstateId,
+                                                                                    merchantId,
+                                                                                    startDate,
+                                                                                    endDate,
+                                                                                    CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionWeekResponses.ShouldNotBeNull();
-                response.TransactionWeekResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionWeekResponses.ShouldNotBeNull();
+                                response.TransactionWeekResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
-                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    Int32 weekNumber = SpecflowTableHelper.GetIntValue(tableRow, "WeekNumber");
+                                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionWeekResponse transactionWeekResponse = response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
+                                    TransactionWeekResponse transactionWeekResponse =
+                                        response.TransactionWeekResponses.SingleOrDefault(t => t.WeekNumber == weekNumber && t.Year == year);
 
-                    transactionWeekResponse.ShouldNotBeNull();
-                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionWeekResponse.ShouldNotBeNull();
+                                    transactionWeekResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionWeekResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
         [When(@"I get the Estate Transactions By Month Report for Estate '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheEstateTransactionsByMonthReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string startDateString, string endDateString, Table table)
+        public async Task WhenIGetTheEstateTransactionsByMonthReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             String token = this.TestingContext.AccessToken;
@@ -1057,36 +1133,41 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
-            {
-                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                .GetTransactionsForEstateByMonth(token,
-                                                                                                estateDetails.EstateId,
-                                                                                                startDate,
-                                                                                                endDate,
-                                                                                                CancellationToken.None).ConfigureAwait(false);
+                            {
+                                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                 .GetTransactionsForEstateByMonth(token,
+                                                                                     estateDetails.EstateId,
+                                                                                     startDate,
+                                                                                     endDate,
+                                                                                     CancellationToken.None).ConfigureAwait(false);
 
-                response.ShouldNotBeNull();
-                response.TransactionMonthResponses.ShouldNotBeNull();
-                response.TransactionMonthResponses.ShouldNotBeEmpty();
+                                response.ShouldNotBeNull();
+                                response.TransactionMonthResponses.ShouldNotBeNull();
+                                response.TransactionMonthResponses.ShouldNotBeEmpty();
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
-                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
+                                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
 
-                    TransactionMonthResponse transactionMonthResponse = response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber== monthNumber && t.Year == year);
+                                    TransactionMonthResponse transactionMonthResponse =
+                                        response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber == monthNumber && t.Year == year);
 
-                    transactionMonthResponse.ShouldNotBeNull();
-                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+                                    transactionMonthResponse.ShouldNotBeNull();
+                                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
         }
 
         [When(@"I get the Merchant Transactions By Month Report for Estate '(.*)' and Merchant '(.*)' with the Start Date '(.*)' and the End Date '(.*)' the following data is returned")]
-        public async Task WhenIGetTheMerchantTransactionsByMonthReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName, string merchantName, string startDateString, string endDateString, Table table)
+        public async Task WhenIGetTheMerchantTransactionsByMonthReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
         {
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             Guid merchantId = estateDetails.GetMerchantId(merchantName);
@@ -1100,36 +1181,635 @@
             String endDate = SpecflowTableHelper.GetDateForDateString(endDateString, this.TestingContext.DateToUseForToday).ToString("yyyyMMdd");
 
             await Retry.For(async () =>
+                            {
+                                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
+                                                                                 .GetTransactionsForMerchantByMonth(token,
+                                                                                     estateDetails.EstateId,
+                                                                                     merchantId,
+                                                                                     startDate,
+                                                                                     endDate,
+                                                                                     CancellationToken.None).ConfigureAwait(false);
+
+                                response.ShouldNotBeNull();
+                                response.TransactionMonthResponses.ShouldNotBeNull();
+                                response.TransactionMonthResponses.ShouldNotBeEmpty();
+
+                                foreach (TableRow tableRow in table.Rows)
+                                {
+                                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
+                                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
+                                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
+                                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+
+                                    TransactionMonthResponse transactionMonthResponse =
+                                        response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber == monthNumber && t.Year == year);
+
+                                    transactionMonthResponse.ShouldNotBeNull();
+                                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
+                                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
+                                }
+                            });
+        }
+
+        [When(@"I get the pending settlements the following information should be returned")]
+        public async Task WhenIGetThePendingSettlementsTheFollowingInformationShouldBeReturned(Table table)
+        {
+            foreach (TableRow tableRow in table.Rows)
             {
-                TransactionsByMonthResponse response = await this.TestingContext.DockerHelper.EstateReportingClient
-                                                                .GetTransactionsForMerchantByMonth(token,
+                // Get the merchant name
+                EstateDetails estateDetails = this.TestingContext.GetEstateDetails(tableRow);
+                String settlementDateString = SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementDate");
+                Int32 numberOfFees = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFees");
+                DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
+
+                var aggregateid = settlementDate.ToGuid();
+                await Retry.For(async () =>
+                                {
+                                    SettlementResponse settlements =
+                                        await this.TestingContext.DockerHelper.TransactionProcessorClient.GetSettlementByDate(this.TestingContext.AccessToken,
+                                            settlementDate,
+                                            estateDetails.EstateId,
+                                            CancellationToken.None);
+
+                                    settlements.NumberOfFeesPendingSettlement.ShouldBe(numberOfFees, $"Settlment date {settlementDate}");
+                                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I process the settlement for '([^']*)' on Estate '([^']*)' then (.*) fees are marked as settled and the settlement is completed")]
+        public async Task WhenIProcessTheSettlementForOnEstateThenFeesAreMarkedAsSettledAndTheSettlementIsCompleted(String dateString,
+            String estateName,
+            Int32 numberOfFeesSettled)
+        {
+            DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(dateString, DateTime.UtcNow.Date);
+
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            await this.TestingContext.DockerHelper.TransactionProcessorClient.ProcessSettlement(this.TestingContext.AccessToken,
+                                                                                                settlementDate,
                                                                                                 estateDetails.EstateId,
-                                                                                                merchantId,
-                                                                                                startDate,
-                                                                                                endDate,
-                                                                                                CancellationToken.None).ConfigureAwait(false);
+                                                                                                CancellationToken.None);
 
-                response.ShouldNotBeNull();
-                response.TransactionMonthResponses.ShouldNotBeNull();
-                response.TransactionMonthResponses.ShouldNotBeEmpty();
+            await Retry.For(async () =>
+                            {
+                                SettlementResponse settlement =
+                                    await this.TestingContext.DockerHelper.TransactionProcessorClient.GetSettlementByDate(this.TestingContext.AccessToken,
+                                        settlementDate,
+                                        estateDetails.EstateId,
+                                        CancellationToken.None);
 
-                foreach (TableRow tableRow in table.Rows)
-                {
-                    Int32 monthNumber = SpecflowTableHelper.GetIntValue(tableRow, "MonthNumber");
-                    Int32 year = SpecflowTableHelper.GetIntValue(tableRow, "Year");
-                    Int32 numberOfTransactions = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfTransactions");
-                    Decimal valueOfTransactions = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfTransactions");
+                                settlement.NumberOfFeesPendingSettlement.ShouldBe(0);
+                                settlement.NumberOfFeesSettled.ShouldBe(numberOfFeesSettled);
+                                settlement.SettlementCompleted.ShouldBeTrue();
+                            },
+                            TimeSpan.FromMinutes(2));
+        }
 
-                    TransactionMonthResponse transactionMonthResponse = response.TransactionMonthResponses.SingleOrDefault(t => t.MonthNumber == monthNumber && t.Year == year);
+        [When(@"I get the Estate Settlement Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime stateDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
 
-                    transactionMonthResponse.ShouldNotBeNull();
-                    transactionMonthResponse.NumberOfTransactions.ShouldBe(numberOfTransactions);
-                    transactionMonthResponse.ValueOfTransactions.ShouldBe(valueOfTransactions);
-                }
-            });
+            foreach (TableRow tableRow in table.Rows)
+            {
+                DateTime settlementDate =
+                    SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementDate"), DateTime.UtcNow.Date);
+                Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                await Retry.For(async () =>
+                                {
+
+                                    List<DataTransferObjects.SettlementResponse> settlementList =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlements(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            null,
+                                            stateDate.ToString("yyyyMMdd"),
+                                            endDate.ToString("yyyyMMdd"),
+                                            CancellationToken.None);
+
+                                    settlementList.ShouldNotBeNull();
+                                    settlementList.ShouldNotBeEmpty();
+
+                                    DataTransferObjects.SettlementResponse settlement =
+                                        settlementList.SingleOrDefault(s => s.SettlementDate == settlementDate && s.NumberOfFeesSettled == numberOfFeesSettled &&
+                                                                            s.ValueOfFeesSettled == valueOfFeesSettled && s.IsCompleted == isCompleted);
+
+                                    settlement.ShouldNotBeNull();
+
+                                },
+                                TimeSpan.FromMinutes(2));
+            }
+        }
+
+        [When(@"I get the Estate Settlement Report for Estate '([^']*)' with the Date '([^']*)' the following fees are settled")]
+        public void WhenIGetTheEstateSettlementReportForEstateWithTheDateTheFollowingFeesAreSettled(string p0,
+                                                                                                    string p1)
+        {
+            throw new PendingStepException();
+        }
+
+
+        [When(@"I get the Estate Settlement Report for Estate '([^']*)' with the Date '([^']*)' the following fees are settled")]
+        public async Task WhenIGetTheEstateSettlementReportForEstateWithTheDateTheFollowingFeesAreSettled(string estateName,
+                                                                                                          string settlementDateString,
+                                                                                                          Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                Guid settlementId = settlementDate.ToGuid();
+                DataTransferObjects.SettlementResponse settlement =
+                    await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlement(this.TestingContext.AccessToken,
+                                                                                               estateDetails.EstateId,
+                                                                                               null,
+                                                                                               settlementId,
+                                                                                               CancellationToken.None);
+
+                settlement.ShouldNotBeNull();
+
+                settlement.SettlementFees.ShouldNotBeNull();
+                settlement.SettlementFees.ShouldNotBeEmpty();
+
+                String feeDescription = SpecflowTableHelper.GetStringRowValue(tableRow, "FeeDescription");
+                Boolean isSettled = SpecflowTableHelper.GetBooleanValue(tableRow, "IsSettled");
+                String merchantName = SpecflowTableHelper.GetStringRowValue(tableRow, "MerchantName");
+                String operatorName = SpecflowTableHelper.GetStringRowValue(tableRow, "Operator");
+                Decimal calculatedValue = SpecflowTableHelper.GetDecimalValue(tableRow, "CalculatedValue");
+
+                SettlementFeeResponse settlementFee = settlement.SettlementFees.SingleOrDefault(sf => sf.FeeDescription == feeDescription && sf.IsSettled == isSettled &&
+                                                                                                      sf.MerchantName == merchantName &&
+                                                                                                      sf.OperatorIdentifier == operatorName &&
+                                                                                                      sf.CalculatedValue == calculatedValue);
+
+                settlementFee.ShouldNotBeNull();
+            }
+        }
+
+        [When(@"I get the Estate Settlement Report for Estate '([^']*)' for Merchant '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementReportForEstateForMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            Guid merchantId = estateDetails.GetMerchantId(merchantName);
+            DateTime stateDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                DateTime settlementDate =
+                    SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementDate"), DateTime.UtcNow.Date);
+                Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                await Retry.For(async () =>
+                                {
+                                    List<DataTransferObjects.SettlementResponse> settlementList =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlements(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            merchantId,
+                                            stateDate.ToString("yyyyMMdd"),
+                                            endDate.ToString("yyyyMMdd"),
+                                            CancellationToken.None);
+
+                                    settlementList.ShouldNotBeNull();
+                                    settlementList.ShouldNotBeEmpty();
+
+                                    DataTransferObjects.SettlementResponse settlement =
+                                        settlementList.SingleOrDefault(s => s.SettlementDate == settlementDate && s.NumberOfFeesSettled == numberOfFeesSettled &&
+                                                                            s.ValueOfFeesSettled == valueOfFeesSettled && s.IsCompleted == isCompleted);
+
+                                    settlement.ShouldNotBeNull();
+
+                                },
+                                TimeSpan.FromMinutes(2));
+            }
+        }
+
+        [When(@"I get the Estate Settlement Report for Estate '([^']*)' for Merchant '([^']*)' with the Date '([^']*)' the following fees are settled")]
+        public async Task WhenIGetTheEstateSettlementReportForEstateForMerchantWithTheDateTheFollowingFeesAreSettled(string estateName,
+            string merchantName,
+            string settlementDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            Guid merchantId = estateDetails.GetMerchantId(merchantName);
+            DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                                {
+                                    Guid settlementId = settlementDate.ToGuid();
+                                    DataTransferObjects.SettlementResponse settlement =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlement(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            merchantId,
+                                            settlementId,
+                                            CancellationToken.None);
+
+                                    settlement.ShouldNotBeNull();
+
+                                    settlement.SettlementFees.ShouldNotBeNull();
+                                    settlement.SettlementFees.ShouldNotBeEmpty();
+
+                                    String feeDescription = SpecflowTableHelper.GetStringRowValue(tableRow, "FeeDescription");
+                                    Boolean isSettled = SpecflowTableHelper.GetBooleanValue(tableRow, "IsSettled");
+                                    String operatorName = SpecflowTableHelper.GetStringRowValue(tableRow, "Operator");
+                                    Decimal calculatedValue = SpecflowTableHelper.GetDecimalValue(tableRow, "CalculatedValue");
+
+                                    SettlementFeeResponse settlementFee =
+                                        settlement.SettlementFees.SingleOrDefault(sf => sf.FeeDescription == feeDescription && sf.IsSettled == isSettled &&
+                                                                                        sf.MerchantName == merchantName && sf.OperatorIdentifier == operatorName &&
+                                                                                        sf.CalculatedValue == calculatedValue);
+
+                                    settlementFee.ShouldNotBeNull();
+                                },
+                                TimeSpan.FromMinutes(3));
+            }
         }
 
 
 
+        private DateTime GetSettlementDate(DateTime now,
+                                           String nextSettlementDate)
+        {
+            if (nextSettlementDate == "Yesterday")
+            {
+                return now.AddDays(-1).Date;
+            }
+
+            if (nextSettlementDate == "NextWeek")
+            {
+                return now.AddDays(6).Date;
+            }
+
+            if (nextSettlementDate == "NextMonth")
+            {
+                return now.AddMonths(1).Date.AddDays(-1).Date;
+            }
+
+            return now.Date;
+        }
+
+        [When(@"I get the Estate Settlement By Date Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByDateReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                                {
+                                    SettlementByDayResponse settlementByDayResponse =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForEstateByDate(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            startDate.ToString("yyyyMMdd"),
+                                            endDate.ToString("yyyyMMdd"),
+                                            CancellationToken.None);
+
+                                    settlementByDayResponse.ShouldNotBeNull();
+
+                                    settlementByDayResponse.SettlementDayResponses.ShouldNotBeNull();
+                                    settlementByDayResponse.SettlementDayResponses.ShouldNotBeEmpty();
+
+                                    DateTime settlementDate =
+                                        SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementDate"), DateTime.UtcNow.Date);
+                                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                                    var settlement = settlementByDayResponse.SettlementDayResponses.SingleOrDefault(sd => sd.Date == settlementDate &&
+                                        sd.NumberOfTransactionsSettled == numberOfFeesSettled && sd.ValueOfSettlement == valueOfFeesSettled);
+
+                                    settlement.ShouldNotBeNull();
+                                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Month Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByMonthReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                                {
+                                    SettlementByMonthResponse settlementByMonthResponse =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForEstateByMonth(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            startDate.ToString("yyyyMMdd"),
+                                            endDate.ToString("yyyyMMdd"),
+                                            CancellationToken.None);
+
+                                    settlementByMonthResponse.ShouldNotBeNull();
+
+                                    settlementByMonthResponse.SettlementMonthResponses.ShouldNotBeNull();
+                                    settlementByMonthResponse.SettlementMonthResponses.ShouldNotBeEmpty();
+
+                                    Int32 settlementMonth = SpecflowTableHelper.GetIntValue(tableRow, "SettlementMonth");
+                                    Int32 settlementYear = SpecflowTableHelper.GetIntValue(tableRow, "SettlementYear");
+                                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                                    var settlement = settlementByMonthResponse.SettlementMonthResponses.SingleOrDefault(sd => sd.MonthNumber == settlementMonth &&
+                                        sd.Year == settlementYear && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                                        sd.ValueOfSettlement == valueOfFeesSettled);
+
+                                    settlement.ShouldNotBeNull();
+                                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Week Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByWeekReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                                {
+                                    SettlementByWeekResponse settlementByWeekResponse =
+                                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForEstateByWeek(this.TestingContext.AccessToken,
+                                            estateDetails.EstateId,
+                                            startDate.ToString("yyyyMMdd"),
+                                            endDate.ToString("yyyyMMdd"),
+                                            CancellationToken.None);
+
+                                    settlementByWeekResponse.ShouldNotBeNull();
+
+                                    settlementByWeekResponse.SettlementWeekResponses.ShouldNotBeNull();
+                                    settlementByWeekResponse.SettlementWeekResponses.ShouldNotBeEmpty();
+
+                                    Int32 settlementWeek = SpecflowTableHelper.GetIntValue(tableRow, "SettlementWeek");
+                                    Int32 settlementYear = SpecflowTableHelper.GetIntValue(tableRow, "SettlementYear");
+                                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                                    var settlement = settlementByWeekResponse.SettlementWeekResponses.SingleOrDefault(sd => sd.WeekNumber == settlementWeek &&
+                                        sd.Year == settlementYear && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                                        sd.ValueOfSettlement == valueOfFeesSettled);
+
+                                    settlement.ShouldNotBeNull();
+                                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+
+        [When(@"I get the Estate Settlement By Merchant Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByMerchantReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                {
+                    SettlementByMerchantResponse settlementByMerchantResponse =
+                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForEstateByMerchant(this.TestingContext.AccessToken,
+                            estateDetails.EstateId,
+                            startDate.ToString("yyyyMMdd"),
+                            endDate.ToString("yyyyMMdd"),
+                            10,
+                            SortDirection.Ascending,
+                            SortField.Value,
+                            CancellationToken.None);
+
+                    settlementByMerchantResponse.ShouldNotBeNull();
+
+                    settlementByMerchantResponse.SettlementMerchantResponses.ShouldNotBeNull();
+                    settlementByMerchantResponse.SettlementMerchantResponses.ShouldNotBeEmpty();
+
+                    String merchantname = SpecflowTableHelper.GetStringRowValue(tableRow, "Merchant");
+                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                    SettlementMerchantResponse settlement = settlementByMerchantResponse.SettlementMerchantResponses.SingleOrDefault(sd => sd.MerchantName == merchantname
+                                                                                                                  && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                                                                                                                  sd.ValueOfSettlement == valueOfFeesSettled);
+
+                    settlement.ShouldNotBeNull();
+                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Operator Report for Estate '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByOperatorReportForEstateWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                {
+                    SettlementByOperatorResponse settlementByOperatorResponse =
+                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForEstateByOperator(this.TestingContext.AccessToken,
+                            estateDetails.EstateId,
+                            startDate.ToString("yyyyMMdd"),
+                            endDate.ToString("yyyyMMdd"),
+                            10,
+                            SortDirection.Ascending,
+                            SortField.Value,
+                            CancellationToken.None);
+
+                    settlementByOperatorResponse.ShouldNotBeNull();
+
+                    settlementByOperatorResponse.SettlementOperatorResponses.ShouldNotBeNull();
+                    settlementByOperatorResponse.SettlementOperatorResponses.ShouldNotBeEmpty();
+
+                    String operatorname = SpecflowTableHelper.GetStringRowValue(tableRow, "Operator");
+                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                    SettlementOperatorResponse settlement = settlementByOperatorResponse.SettlementOperatorResponses.SingleOrDefault(sd => sd.OperatorName == operatorname
+                                                                                                                  && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                                                                                                                  sd.ValueOfSettlement == valueOfFeesSettled);
+
+                    settlement.ShouldNotBeNull();
+                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Date Report for Estate '([^']*)' and Merchant '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByDateReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            var merchantId = estateDetails.GetMerchantId(merchantName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                {
+                    SettlementByDayResponse settlementByDayResponse =
+                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForMerchantByDate(this.TestingContext.AccessToken,
+                            estateDetails.EstateId,
+                            merchantId,
+                            startDate.ToString("yyyyMMdd"),
+                            endDate.ToString("yyyyMMdd"),
+                            CancellationToken.None);
+
+                    settlementByDayResponse.ShouldNotBeNull();
+
+                    settlementByDayResponse.SettlementDayResponses.ShouldNotBeNull();
+                    settlementByDayResponse.SettlementDayResponses.ShouldNotBeEmpty();
+
+                    DateTime settlementDate =
+                        SpecflowTableHelper.GetDateForDateString(SpecflowTableHelper.GetStringRowValue(tableRow, "SettlementDate"), DateTime.UtcNow.Date);
+                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                    var settlement = settlementByDayResponse.SettlementDayResponses.SingleOrDefault(sd => sd.Date == settlementDate &&
+                        sd.NumberOfTransactionsSettled == numberOfFeesSettled && sd.ValueOfSettlement == valueOfFeesSettled);
+
+                    settlement.ShouldNotBeNull();
+                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Month Report for Estate '([^']*)' and Merchant '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByMonthReportForEstateAndMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            var merchantId = estateDetails.GetMerchantId(merchantName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                {
+                    SettlementByMonthResponse settlementByMonthResponse =
+                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForMerchantByMonth(this.TestingContext.AccessToken,
+                            estateDetails.EstateId,
+                            merchantId,
+                            startDate.ToString("yyyyMMdd"),
+                            endDate.ToString("yyyyMMdd"),
+                            CancellationToken.None);
+
+                    settlementByMonthResponse.ShouldNotBeNull();
+
+                    settlementByMonthResponse.SettlementMonthResponses.ShouldNotBeNull();
+                    settlementByMonthResponse.SettlementMonthResponses.ShouldNotBeEmpty();
+
+                    Int32 settlementMonth = SpecflowTableHelper.GetIntValue(tableRow, "SettlementMonth");
+                    Int32 settlementYear = SpecflowTableHelper.GetIntValue(tableRow, "SettlementYear");
+                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                    var settlement = settlementByMonthResponse.SettlementMonthResponses.SingleOrDefault(sd => sd.MonthNumber == settlementMonth &&
+                        sd.Year == settlementYear && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                        sd.ValueOfSettlement == valueOfFeesSettled);
+
+                    settlement.ShouldNotBeNull();
+                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
+
+        [When(@"I get the Estate Settlement By Week Report for Estate '([^']*)' for Merchant '([^']*)' with the Start Date '([^']*)' and the End Date '([^']*)' the following data is returned")]
+        public async Task WhenIGetTheEstateSettlementByWeekReportForEstateForMerchantWithTheStartDateAndTheEndDateTheFollowingDataIsReturned(string estateName,
+            string merchantName,
+            string startDateString,
+            string endDateString,
+            Table table)
+        {
+            EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
+            var merchantId = estateDetails.GetMerchantId(merchantName);
+            DateTime startDate = SpecflowTableHelper.GetDateForDateString(startDateString, DateTime.UtcNow.Date);
+            DateTime endDate = SpecflowTableHelper.GetDateForDateString(endDateString, DateTime.UtcNow.Date);
+
+            foreach (TableRow tableRow in table.Rows)
+            {
+                await Retry.For(async () =>
+                {
+                    SettlementByWeekResponse settlementByWeekResponse =
+                        await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlementForMerchantByWeek(this.TestingContext.AccessToken,
+                            estateDetails.EstateId,
+                            merchantId,
+                            startDate.ToString("yyyyMMdd"),
+                            endDate.ToString("yyyyMMdd"),
+                            CancellationToken.None);
+
+                    settlementByWeekResponse.ShouldNotBeNull();
+
+                    settlementByWeekResponse.SettlementWeekResponses.ShouldNotBeNull();
+                    settlementByWeekResponse.SettlementWeekResponses.ShouldNotBeEmpty();
+
+                    Int32 settlementWeek = SpecflowTableHelper.GetIntValue(tableRow, "SettlementWeek");
+                    Int32 settlementYear = SpecflowTableHelper.GetIntValue(tableRow, "SettlementYear");
+                    Int32 numberOfFeesSettled = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFeesSettled");
+                    Decimal valueOfFeesSettled = SpecflowTableHelper.GetDecimalValue(tableRow, "ValueOfFeesSettled");
+                    Boolean isCompleted = SpecflowTableHelper.GetBooleanValue(tableRow, "IsCompleted");
+
+                    var settlement = settlementByWeekResponse.SettlementWeekResponses.SingleOrDefault(sd => sd.WeekNumber == settlementWeek &&
+                        sd.Year == settlementYear && sd.NumberOfTransactionsSettled == numberOfFeesSettled &&
+                        sd.ValueOfSettlement == valueOfFeesSettled);
+
+                    settlement.ShouldNotBeNull();
+                },
+                                TimeSpan.FromMinutes(3));
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ SELECT
         s.SettlementDate,
 	s.IsCompleted,
 	FORMAT(s.SettlementDate, 'dddd') as DayOfWeek,
-	WEEKOFYEAR(t.TransactionDate) as WeekNumber,
+	WEEKOFYEAR(s.SettlementDate) as WeekNumber,
 	FORMAT(s.SettlementDate, 'MMMM') as Month,
 	MONTH(s.SettlementDate) as MonthNumber,
 	YEAR(s.SettlementDate) as YearNumber,

@@ -334,6 +334,7 @@
             PersistentSubscriptionSettings settings = new PersistentSubscriptionSettings(resolveLinkTos: true, StreamPosition.Start);
             await client.CreateAsync(estateName.Replace(" ", ""), "Reporting", settings);
             await client.CreateAsync($"EstateManagementSubscriptionStream_{estateName.Replace(" ", "")}", "Estate Management", settings);
+            await client.CreateAsync($"TransactionProcessorSubscriptionStream_{estateName.Replace(" ", "")}", "Transaction Processor", settings);
         }
 
         private async Task RemoveEstateReadModel()

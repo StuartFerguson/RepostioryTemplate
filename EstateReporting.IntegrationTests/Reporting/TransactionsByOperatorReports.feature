@@ -124,19 +124,19 @@ Scenario: Sales Transactions By Operator - Transactions For Mutiple Operator
 	| Today     | 10                | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
 	| Today     | 11                | Sale            | Test Merchant 1 | 123456780        | Test Estate 1 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
 	
-	| Today | 1 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today | 2 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 5.00   | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today | 3 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 25.00  | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today | 4 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Safaricom | 150.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today | 5 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Voucher   | 10.00  | 123456789 |  | Health Care Centre Contract | 10 KES         | 123456789 |
-	| Today | 6 | Sale | Test Merchant 2 | 123456781 | Test Estate 1 | Voucher   | 10.00  | 123456789 |  | Health Care Centre Contract | 10 KES         | 123456789 |
+	| Today     | 1                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 100.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 2                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 5.00              | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 3                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 25.00             | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 4                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Safaricom    | 150.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 5                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
+	| Today     | 6                 | Sale            | Test Merchant 2 | 123456781        | Test Estate 1 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
 	
-	| LastMonth | 1 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| LastWeek  | 2 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Safaricom | 200.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Yesterday | 3 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today     | 4 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Safaricom | 100.00 | 123456789 |  | Safaricom Contract          | Variable Topup |           |
-	| Today     | 5 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Voucher   | 10.00  | 123456789 |  | Health Care Centre Contract | 10 KES         | 123456789 |
-	| Today     | 6 | Sale | Test Merchant 3 | 123456782 | Test Estate 2 | Voucher   | 10.00  | 123456789 |  | Health Care Centre Contract | 10 KES         | 123456789 |
+	| LastMonth | 1                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 100.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| LastWeek  | 2                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 200.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Yesterday | 3                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 100.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 4                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Safaricom    | 100.00            | 123456789             |                      | Safaricom Contract          | Variable Topup |                 |
+	| Today     | 5                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
+	| Today     | 6                 | Sale            | Test Merchant 3 | 123456782        | Test Estate 2 | Voucher      | 10.00             | 123456789             |                      | Health Care Centre Contract | 10 KES         | 123456789       |
 
 	Then transaction response should contain the following information
 	| EstateName    | MerchantName    | TransactionNumber | ResponseCode | ResponseMessage      |
