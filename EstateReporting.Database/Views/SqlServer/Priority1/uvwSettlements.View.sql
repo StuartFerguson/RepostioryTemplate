@@ -6,7 +6,7 @@ SELECT
 	s.SettlementDate,
 	s.IsCompleted,
 	FORMAT(s.SettlementDate, 'dddd') as DayOfWeek,
-	DATEPART(wk, t.TransactionDate) as WeekNumber,
+	DATEPART(wk, s.SettlementDate) as WeekNumber,
 	FORMAT(s.SettlementDate, 'MMMM') as Month,
 	DATEPART(MM, s.SettlementDate) as MonthNumber,
 	YEAR(s.SettlementDate) as YearNumber,
@@ -23,7 +23,7 @@ SELECT
 	CAST(ISNULL(tar.Amount,0) as decimal) as Amount,
 	f.IsSettled
 from settlement s 
-inner join merchantsettlementfees f on s.SettlementId = f.SettlementId
+inner join merchantsettlementfee f on s.SettlementId = f.SettlementId
 inner join [transaction] t on t.TransactionId = f.TransactionId
 inner join [merchant] m on t.MerchantId = m.MerchantId
 left outer join contractproducttransactionfee cptf on f.FeeId = cptf.TransactionFeeId

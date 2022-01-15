@@ -85,122 +85,122 @@ namespace EstateReporting.IntegrationTests.Reporting
         {
 #line 4
 #line hidden
-            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table119 = new TechTalk.SpecFlow.Table(new string[] {
                         "Name",
                         "DisplayName",
                         "Description"});
-            table1.AddRow(new string[] {
+            table119.AddRow(new string[] {
                         "estateManagement",
                         "Estate Managememt REST Scope",
                         "A scope for Estate Managememt REST"});
-            table1.AddRow(new string[] {
+            table119.AddRow(new string[] {
                         "transactionProcessor",
                         "Transaction Processor REST  Scope",
                         "A scope for Transaction Processor REST"});
 #line 6
- testRunner.Given("I create the following api scopes", ((string)(null)), table1, "Given ");
+ testRunner.Given("I create the following api scopes", ((string)(null)), table119, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table120 = new TechTalk.SpecFlow.Table(new string[] {
                         "ResourceName",
                         "DisplayName",
                         "Secret",
                         "Scopes",
                         "UserClaims"});
-            table2.AddRow(new string[] {
+            table120.AddRow(new string[] {
                         "estateManagement",
                         "Estate Managememt REST",
                         "Secret1",
                         "estateManagement",
                         "MerchantId, EstateId, role"});
-            table2.AddRow(new string[] {
+            table120.AddRow(new string[] {
                         "transactionProcessor",
                         "Transaction Processor REST",
                         "Secret1",
                         "transactionProcessor",
                         ""});
 #line 11
- testRunner.Given("the following api resources exist", ((string)(null)), table2, "Given ");
+ testRunner.Given("the following api resources exist", ((string)(null)), table120, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table121 = new TechTalk.SpecFlow.Table(new string[] {
                         "ClientId",
                         "ClientName",
                         "Secret",
                         "AllowedScopes",
                         "AllowedGrantTypes"});
-            table3.AddRow(new string[] {
+            table121.AddRow(new string[] {
                         "serviceClient",
                         "Service Client",
                         "Secret1",
                         "estateManagement,transactionProcessor",
                         "client_credentials"});
 #line 16
- testRunner.Given("the following clients exist", ((string)(null)), table3, "Given ");
+ testRunner.Given("the following clients exist", ((string)(null)), table121, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table122 = new TechTalk.SpecFlow.Table(new string[] {
                         "ClientId"});
-            table4.AddRow(new string[] {
+            table122.AddRow(new string[] {
                         "serviceClient"});
 #line 20
  testRunner.Given("I have a token to access the estate management and transaction processor resource" +
-                    "s", ((string)(null)), table4, "Given ");
+                    "s", ((string)(null)), table122, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table123 = new TechTalk.SpecFlow.Table(new string[] {
                         "EstateName"});
-            table5.AddRow(new string[] {
+            table123.AddRow(new string[] {
                         "Test Estate 1"});
-            table5.AddRow(new string[] {
+            table123.AddRow(new string[] {
                         "Test Estate 2"});
 #line 24
- testRunner.Given("I have created the following estates", ((string)(null)), table5, "Given ");
+ testRunner.Given("I have created the following estates", ((string)(null)), table123, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table124 = new TechTalk.SpecFlow.Table(new string[] {
                         "EstateName",
                         "OperatorName",
                         "RequireCustomMerchantNumber",
                         "RequireCustomTerminalNumber"});
-            table6.AddRow(new string[] {
+            table124.AddRow(new string[] {
                         "Test Estate 1",
                         "Safaricom",
                         "True",
                         "True"});
-            table6.AddRow(new string[] {
+            table124.AddRow(new string[] {
                         "Test Estate 2",
                         "Safaricom",
                         "True",
                         "True"});
 #line 29
- testRunner.Given("I have created the following operators", ((string)(null)), table6, "Given ");
+ testRunner.Given("I have created the following operators", ((string)(null)), table124, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table125 = new TechTalk.SpecFlow.Table(new string[] {
                         "EstateName",
                         "OperatorName",
                         "ContractDescription"});
-            table7.AddRow(new string[] {
+            table125.AddRow(new string[] {
                         "Test Estate 1",
                         "Safaricom",
                         "Safaricom Contract"});
-            table7.AddRow(new string[] {
+            table125.AddRow(new string[] {
                         "Test Estate 2",
                         "Safaricom",
                         "Safaricom Contract"});
 #line 34
- testRunner.Given("I create a contract with the following values", ((string)(null)), table7, "Given ");
+ testRunner.Given("I create a contract with the following values", ((string)(null)), table125, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table8 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table126 = new TechTalk.SpecFlow.Table(new string[] {
                         "EstateName",
                         "OperatorName",
                         "ContractDescription",
                         "ProductName",
                         "DisplayText",
                         "Value"});
-            table8.AddRow(new string[] {
+            table126.AddRow(new string[] {
                         "Test Estate 1",
                         "Safaricom",
                         "Safaricom Contract",
                         "Variable Topup",
                         "Custom",
                         ""});
-            table8.AddRow(new string[] {
+            table126.AddRow(new string[] {
                         "Test Estate 2",
                         "Safaricom",
                         "Safaricom Contract",
@@ -208,9 +208,9 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "Custom",
                         ""});
 #line 39
- testRunner.When("I create the following Products", ((string)(null)), table8, "When ");
+ testRunner.When("I create the following Products", ((string)(null)), table126, "When ");
 #line hidden
-            TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table127 = new TechTalk.SpecFlow.Table(new string[] {
                         "EstateName",
                         "OperatorName",
                         "ContractDescription",
@@ -218,7 +218,7 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "CalculationType",
                         "FeeDescription",
                         "Value"});
-            table9.AddRow(new string[] {
+            table127.AddRow(new string[] {
                         "Test Estate 1",
                         "Safaricom",
                         "Safaricom Contract",
@@ -226,7 +226,7 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "Fixed",
                         "Merchant Commission",
                         "2.50"});
-            table9.AddRow(new string[] {
+            table127.AddRow(new string[] {
                         "Test Estate 2",
                         "Safaricom",
                         "Safaricom Contract",
@@ -235,9 +235,9 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "Merchant Commission",
                         "0.85"});
 #line 44
- testRunner.When("I add the following Transaction Fees", ((string)(null)), table9, "When ");
+ testRunner.When("I add the following Transaction Fees", ((string)(null)), table127, "When ");
 #line hidden
-            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table128 = new TechTalk.SpecFlow.Table(new string[] {
                         "MerchantName",
                         "AddressLine1",
                         "Town",
@@ -246,7 +246,7 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "ContactName",
                         "EmailAddress",
                         "EstateName"});
-            table10.AddRow(new string[] {
+            table128.AddRow(new string[] {
                         "Test Merchant 1",
                         "Address Line 1",
                         "TestTown",
@@ -255,7 +255,7 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "Test Contact 1",
                         "testcontact1@merchant1.co.uk",
                         "Test Estate 1"});
-            table10.AddRow(new string[] {
+            table128.AddRow(new string[] {
                         "Test Merchant 2",
                         "Address Line 1",
                         "TestTown",
@@ -264,7 +264,7 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "Test Contact 2",
                         "testcontact2@merchant2.co.uk",
                         "Test Estate 1"});
-            table10.AddRow(new string[] {
+            table128.AddRow(new string[] {
                         "Test Merchant 3",
                         "Address Line 1",
                         "TestTown",
@@ -274,80 +274,80 @@ namespace EstateReporting.IntegrationTests.Reporting
                         "testcontact3@merchant2.co.uk",
                         "Test Estate 2"});
 #line 49
- testRunner.Given("I create the following merchants", ((string)(null)), table10, "Given ");
+ testRunner.Given("I create the following merchants", ((string)(null)), table128, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table129 = new TechTalk.SpecFlow.Table(new string[] {
                         "OperatorName",
                         "MerchantName",
                         "MerchantNumber",
                         "TerminalNumber",
                         "EstateName"});
-            table11.AddRow(new string[] {
+            table129.AddRow(new string[] {
                         "Safaricom",
                         "Test Merchant 1",
                         "00000001",
                         "10000001",
                         "Test Estate 1"});
-            table11.AddRow(new string[] {
+            table129.AddRow(new string[] {
                         "Safaricom",
                         "Test Merchant 2",
                         "00000002",
                         "10000002",
                         "Test Estate 1"});
-            table11.AddRow(new string[] {
+            table129.AddRow(new string[] {
                         "Safaricom",
                         "Test Merchant 3",
                         "00000003",
                         "10000003",
                         "Test Estate 2"});
 #line 55
- testRunner.Given("I have assigned the following  operator to the merchants", ((string)(null)), table11, "Given ");
+ testRunner.Given("I have assigned the following  operator to the merchants", ((string)(null)), table129, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table130 = new TechTalk.SpecFlow.Table(new string[] {
                         "DeviceIdentifier",
                         "MerchantName",
                         "EstateName"});
-            table12.AddRow(new string[] {
+            table130.AddRow(new string[] {
                         "123456780",
                         "Test Merchant 1",
                         "Test Estate 1"});
-            table12.AddRow(new string[] {
+            table130.AddRow(new string[] {
                         "123456781",
                         "Test Merchant 2",
                         "Test Estate 1"});
-            table12.AddRow(new string[] {
+            table130.AddRow(new string[] {
                         "123456782",
                         "Test Merchant 3",
                         "Test Estate 2"});
 #line 61
- testRunner.Given("I have assigned the following devices to the merchants", ((string)(null)), table12, "Given ");
+ testRunner.Given("I have assigned the following devices to the merchants", ((string)(null)), table130, "Given ");
 #line hidden
-            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table131 = new TechTalk.SpecFlow.Table(new string[] {
                         "Reference",
                         "Amount",
                         "DateTime",
                         "MerchantName",
                         "EstateName"});
-            table13.AddRow(new string[] {
+            table131.AddRow(new string[] {
                         "Deposit1",
                         "3000.00",
                         "Today",
                         "Test Merchant 1",
                         "Test Estate 1"});
-            table13.AddRow(new string[] {
+            table131.AddRow(new string[] {
                         "Deposit1",
                         "1000.00",
                         "Today",
                         "Test Merchant 2",
                         "Test Estate 1"});
-            table13.AddRow(new string[] {
+            table131.AddRow(new string[] {
                         "Deposit1",
                         "1000.00",
                         "Today",
                         "Test Merchant 3",
                         "Test Estate 2"});
 #line 67
- testRunner.Given("I make the following manual merchant deposits", ((string)(null)), table13, "Given ");
+ testRunner.Given("I make the following manual merchant deposits", ((string)(null)), table131, "Given ");
 #line hidden
         }
         
@@ -387,7 +387,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table132 = new TechTalk.SpecFlow.Table(new string[] {
                             "DateTime",
                             "TransactionNumber",
                             "TransactionType",
@@ -400,7 +400,7 @@ this.FeatureBackground();
                             "CustomerEmailAddress",
                             "ContractDescription",
                             "ProductName"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "1",
                             "Sale",
@@ -413,7 +413,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "2",
                             "Sale",
@@ -426,7 +426,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "3",
                             "Sale",
@@ -439,7 +439,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "4",
                             "Sale",
@@ -452,7 +452,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "5",
                             "Sale",
@@ -465,7 +465,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "6",
                             "Sale",
@@ -478,7 +478,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "7",
                             "Sale",
@@ -491,7 +491,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "8",
                             "Sale",
@@ -504,7 +504,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "1",
                             "Sale",
@@ -517,7 +517,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "2",
                             "Sale",
@@ -530,7 +530,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "3",
                             "Sale",
@@ -543,7 +543,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "4",
                             "Sale",
@@ -556,7 +556,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table14.AddRow(new string[] {
+                table132.AddRow(new string[] {
                             "Today",
                             "1",
                             "Sale",
@@ -570,131 +570,131 @@ this.FeatureBackground();
                             "Safaricom Contract",
                             "Variable Topup"});
 #line 74
- testRunner.When("I perform the following transactions", ((string)(null)), table14, "When ");
+ testRunner.When("I perform the following transactions", ((string)(null)), table132, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table133 = new TechTalk.SpecFlow.Table(new string[] {
                             "EstateName",
                             "MerchantName",
                             "TransactionNumber",
                             "ResponseCode",
                             "ResponseMessage"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "1",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "2",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "3",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "4",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "5",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "6",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "7",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "8",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "1",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "2",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "3",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "4",
                             "0000",
                             "SUCCESS"});
-                table15.AddRow(new string[] {
+                table133.AddRow(new string[] {
                             "Test Estate 2",
                             "Test Merchant 3",
                             "1",
                             "0000",
                             "SUCCESS"});
 #line 92
- testRunner.Then("transaction response should contain the following information", ((string)(null)), table15, "Then ");
+ testRunner.Then("transaction response should contain the following information", ((string)(null)), table133, "Then ");
 #line hidden
-                TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table134 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table16.AddRow(new string[] {
+                table134.AddRow(new string[] {
                             "Today",
                             "9",
                             "615.00"});
 #line 110
  testRunner.When("I get the Estate Transactions By Date Report for Estate \'Test Estate 1\' with the " +
-                        "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table16, "When ");
+                        "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table134, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table135 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table17.AddRow(new string[] {
+                table135.AddRow(new string[] {
                             "Today",
                             "1",
                             "100.00"});
 #line 114
  testRunner.When("I get the Estate Transactions By Date Report for Estate \'Test Estate 2\' with the " +
-                        "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table17, "When ");
+                        "Start Date \'Today\' and the End Date \'Today\' the following data is returned", ((string)(null)), table135, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table136 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table18.AddRow(new string[] {
+                table136.AddRow(new string[] {
                             "Today",
                             "3",
                             "140.00"});
 #line 118
  testRunner.When("I get the Merchant Transactions By Date Report for Estate \'Test Estate 1\' and Mer" +
                         "chant \'Test Merchant 2\' with the Start Date \'Today\' and the End Date \'Today\' the" +
-                        " following data is returned", ((string)(null)), table18, "When ");
+                        " following data is returned", ((string)(null)), table136, "When ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -733,7 +733,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line hidden
-                TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table137 = new TechTalk.SpecFlow.Table(new string[] {
                             "DateTime",
                             "TransactionNumber",
                             "TransactionType",
@@ -746,7 +746,7 @@ this.FeatureBackground();
                             "CustomerEmailAddress",
                             "ContractDescription",
                             "ProductName"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "LastMonth",
                             "1",
                             "Sale",
@@ -759,7 +759,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "LastWeek",
                             "2",
                             "Sale",
@@ -772,7 +772,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "LastWeek",
                             "3",
                             "Sale",
@@ -785,7 +785,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Yesterday",
                             "4",
                             "Sale",
@@ -798,7 +798,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Yesterday",
                             "5",
                             "Sale",
@@ -811,7 +811,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "6",
                             "Sale",
@@ -824,7 +824,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "7",
                             "Sale",
@@ -837,7 +837,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "8",
                             "Sale",
@@ -850,7 +850,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "1",
                             "Sale",
@@ -863,7 +863,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "2",
                             "Sale",
@@ -876,7 +876,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "3",
                             "Sale",
@@ -889,7 +889,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "4",
                             "Sale",
@@ -902,7 +902,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "LastMonth",
                             "1",
                             "Sale",
@@ -915,7 +915,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "LastWeek",
                             "2",
                             "Sale",
@@ -928,7 +928,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Yesterday",
                             "3",
                             "Sale",
@@ -941,7 +941,7 @@ this.FeatureBackground();
                             "",
                             "Safaricom Contract",
                             "Variable Topup"});
-                table19.AddRow(new string[] {
+                table137.AddRow(new string[] {
                             "Today",
                             "4",
                             "Sale",
@@ -955,173 +955,173 @@ this.FeatureBackground();
                             "Safaricom Contract",
                             "Variable Topup"});
 #line 124
- testRunner.When("I perform the following transactions", ((string)(null)), table19, "When ");
+ testRunner.When("I perform the following transactions", ((string)(null)), table137, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table138 = new TechTalk.SpecFlow.Table(new string[] {
                             "EstateName",
                             "MerchantName",
                             "TransactionNumber",
                             "ResponseCode",
                             "ResponseMessage"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "1",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "2",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "3",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "4",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "5",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "6",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "7",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 1",
                             "8",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "1",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "2",
                             "1008",
                             "DECLINED BY OPERATOR"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "3",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 1",
                             "Test Merchant 2",
                             "4",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 2",
                             "Test Merchant 3",
                             "1",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 2",
                             "Test Merchant 3",
                             "2",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 2",
                             "Test Merchant 3",
                             "3",
                             "0000",
                             "SUCCESS"});
-                table20.AddRow(new string[] {
+                table138.AddRow(new string[] {
                             "Test Estate 2",
                             "Test Merchant 3",
                             "4",
                             "0000",
                             "SUCCESS"});
 #line 145
- testRunner.Then("transaction response should contain the following information", ((string)(null)), table20, "Then ");
+ testRunner.Then("transaction response should contain the following information", ((string)(null)), table138, "Then ");
 #line hidden
-                TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table139 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table21.AddRow(new string[] {
+                table139.AddRow(new string[] {
                             "Today",
                             "6",
                             "475.00"});
-                table21.AddRow(new string[] {
+                table139.AddRow(new string[] {
                             "Yesterday",
                             "1",
                             "15.00"});
-                table21.AddRow(new string[] {
+                table139.AddRow(new string[] {
                             "LastWeek",
                             "1",
                             "25.00"});
-                table21.AddRow(new string[] {
+                table139.AddRow(new string[] {
                             "LastMonth",
                             "1",
                             "10.00"});
 #line 166
  testRunner.When("I get the Estate Transactions By Date Report for Estate \'Test Estate 1\' with the " +
-                        "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table21, "When ");
+                        "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table139, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table140 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table22.AddRow(new string[] {
+                table140.AddRow(new string[] {
                             "Today",
                             "1",
                             "100.00"});
-                table22.AddRow(new string[] {
+                table140.AddRow(new string[] {
                             "Yesterday",
                             "1",
                             "100.00"});
-                table22.AddRow(new string[] {
+                table140.AddRow(new string[] {
                             "LastWeek",
                             "1",
                             "200.00"});
-                table22.AddRow(new string[] {
+                table140.AddRow(new string[] {
                             "LastMonth",
                             "1",
                             "100.00"});
 #line 173
  testRunner.When("I get the Estate Transactions By Date Report for Estate \'Test Estate 2\' with the " +
-                        "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table22, "When ");
+                        "Start Date \'LastMonth\' and the End Date \'Today\' the following data is returned", ((string)(null)), table140, "When ");
 #line hidden
-                TechTalk.SpecFlow.Table table23 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table141 = new TechTalk.SpecFlow.Table(new string[] {
                             "Date",
                             "NumberOfTransactions",
                             "ValueOfTransactions"});
-                table23.AddRow(new string[] {
+                table141.AddRow(new string[] {
                             "Today",
                             "3",
                             "275.00"});
 #line 180
  testRunner.When("I get the Merchant Transactions By Date Report for Estate \'Test Estate 1\' and Mer" +
                         "chant \'Test Merchant 2\' with the Start Date \'LastMonth\' and the End Date \'Today\'" +
-                        " the following data is returned", ((string)(null)), table23, "When ");
+                        " the following data is returned", ((string)(null)), table141, "When ");
 #line hidden
             }
             this.ScenarioCleanup();

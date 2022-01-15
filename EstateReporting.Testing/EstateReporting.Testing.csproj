@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.16.2" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.16.2" />
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.16.2" />
-    <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.0.5" />
-    <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.0.5" />
-    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.17-build76" />
-    <PackageReference Include="TransactionProcessor.Settlement.DomainEvents" Version="1.0.17-build76" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.17-build76" />
-    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.0.7.1" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.19-build99" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.19-build99" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.19-build99" />
+    <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.0.6" />
+    <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.0.6" />
+    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.18-build81" />
+    <PackageReference Include="TransactionProcessor.Settlement.DomainEvents" Version="1.0.18-build81" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.0.18-build81" />
+    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.0.8-build38" />
   </ItemGroup>
 
   <ItemGroup>
