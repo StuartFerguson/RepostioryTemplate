@@ -51,6 +51,7 @@ namespace EstateReporting
     using Shared.EventStore.Aggregate;
     using Shared.EventStore.EventHandling;
     using Shared.EventStore.EventStore;
+    using Shared.EventStore.Extensions;
     using Shared.EventStore.SubscriptionWorker;
     using Shared.Extensions;
     using Shared.General;
@@ -89,15 +90,17 @@ namespace EstateReporting
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            ConfigurationReader.Initialise(Startup.Configuration);
-
-            this.ConfigureMiddlewareServices(services);
-        }
+        //public void ConfigureServices(IServiceCollection services)
+        //{
+        //    ConfigurationReader.Initialise(Startup.Configuration);
+        //    Startup.ConfigureEventStoreSettings();
+            
+        //}
         
         public void ConfigureContainer(IServiceCollection services)
         {
+            ConfigurationReader.Initialise(Startup.Configuration);
+
             Boolean useConnectionStringConfig = Boolean.Parse(ConfigurationReader.GetValue("AppSettings", "UseConnectionStringConfig"));
             
             if (useConnectionStringConfig)
@@ -178,6 +181,8 @@ namespace EstateReporting
             HttpClient httpClient = new HttpClient(httpMessageHandler);
             services.AddSingleton(httpClient);
 
+            this.ConfigureMiddlewareServices(services);
+
             Startup.ServiceProvider = services.BuildServiceProvider();
         }
 
@@ -211,19 +216,33 @@ namespace EstateReporting
 
         private static EventStoreClientSettings EventStoreClientSettings;
 
+        private HttpClientHandler ApiEndpointHttpHandler(IServiceProvider serviceProvider)
+        {
+            return new HttpClientHandler
+                   {
+                       ServerCertificateCustomValidationCallback = (message,
+                                                                    cert,
+                                                                    chain,
+                                                                    errors) =>
+                                                                   {
+                                                                       return true;
+                                                                   }
+                   };
+        }
+
         private void ConfigureMiddlewareServices(IServiceCollection services)
         {
             services.AddHealthChecks()
-                    //.AddSqlServer(connectionString: ConfigurationReader.GetConnectionString("HealthCheck"),
-                    //              healthQuery: "SELECT 1;",
-                    //              name: "Read Model Server",
-                    //              failureStatus: HealthStatus.Degraded,
-                    //              tags: new string[] { "db", "sql", "sqlserver" })
-                    .AddUrlGroup(new Uri($"{ConfigurationReader.GetValue("SecurityConfiguration", "Authority")}/health"),
-                                 name: "Security Service",
-                                 httpMethod: HttpMethod.Get,
-                                 failureStatus: HealthStatus.Unhealthy,
-                                 tags: new string[] { "security", "authorisation" });
+                    .AddSqlServer(connectionString:ConfigurationReader.GetConnectionString("HealthCheck"),
+                                  healthQuery:"SELECT 1;",
+                                  name:"Read Model Server",
+                                  failureStatus:HealthStatus.Degraded,
+                                  tags:new string[] {"db", "sql", "sqlserver"})
+                    .AddEventStore(Startup.EventStoreClientSettings,
+                                   userCredentials: Startup.EventStoreClientSettings.DefaultCredentials,
+                                   name: "Eventstore",
+                                   failureStatus: HealthStatus.Unhealthy,
+                                   tags: new[] { "db", "eventstore" }).AddSecurityService(ApiEndpointHttpHandler);
 
             services.AddSwaggerGen(c =>
             {

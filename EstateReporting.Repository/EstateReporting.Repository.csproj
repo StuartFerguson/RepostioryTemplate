@@ -8,7 +8,7 @@
     <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.19-build99" />
     <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.0.6" />
     <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.0.6" />
-    <PackageReference Include="Shared" Version="1.1.2" />
+    <PackageReference Include="Shared" Version="1.1.4" />
     <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.19-build99" />
     <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.19-build99" />
     <PackageReference Include="EstateManagement.MerchantStatement.DomainEvents" Version="1.0.19-build99" />
