@@ -18,6 +18,7 @@ namespace EstateReporting
     using System.Reflection;
     using System.Threading;
     using System.Xml.Serialization;
+    using Bootstrapper;
     using BusinessLogic;
     using BusinessLogic.EventHandling;
     using BusinessLogic.Events;
@@ -32,6 +33,7 @@ namespace EstateReporting
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
     using HealthChecks.UI.Client;
+    using Lamar;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Mvc;
@@ -87,106 +89,24 @@ namespace EstateReporting
             Startup.Configuration = builder.Build();
             Startup.WebHostEnvironment = webHostEnvironment;
         }
+        public static Container Container;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        //public void ConfigureServices(IServiceCollection services)
-        //{
-        //    ConfigurationReader.Initialise(Startup.Configuration);
-        //    Startup.ConfigureEventStoreSettings();
-            
-        //}
-        
-        public void ConfigureContainer(IServiceCollection services)
+        public void ConfigureContainer(ServiceRegistry services)
         {
             ConfigurationReader.Initialise(Startup.Configuration);
 
-            Boolean useConnectionStringConfig = Boolean.Parse(ConfigurationReader.GetValue("AppSettings", "UseConnectionStringConfig"));
+            Startup.ConfigureEventStoreSettings();
+
+            services.IncludeRegistry<MiddlewareRegistry>();
+            services.IncludeRegistry<RepositoryRegistry>();
+            services.IncludeRegistry<DomainEventHandlerRegistry>();
+            services.IncludeRegistry<MiscRegistry>();
             
-            if (useConnectionStringConfig)
-            {
-                String connectionStringConfigurationConnString = ConfigurationReader.GetConnectionString("ConnectionStringConfiguration");
-                services.AddSingleton<IConnectionStringConfigurationRepository, ConnectionStringConfigurationRepository>();
-                services.AddTransient<ConnectionStringConfigurationContext>(c =>
-                                                                            {
-                                                                                return new ConnectionStringConfigurationContext(connectionStringConfigurationConnString);
-                                                                            });
-            }
-            else
-            {
-                services.AddSingleton<IConnectionStringConfigurationRepository, ConfigurationReaderConnectionStringRepository>();
-            }
-
-            Dictionary<String, String[]> eventHandlersConfiguration = new Dictionary<String, String[]>();
-
-            if (Startup.Configuration != null)
-            {
-                IConfigurationSection section = Startup.Configuration.GetSection("AppSettings:EventHandlerConfiguration");
-
-                if (section != null)
-                {
-                    Startup.Configuration.GetSection("AppSettings:EventHandlerConfiguration").Bind(eventHandlersConfiguration);
-                }
-            }
-
-            services.AddSingleton<Dictionary<String, String[]>>(eventHandlersConfiguration);
-
-            services.AddSingleton<IEstateReportingRepository, EstateReportingRepository>();
-            services.AddSingleton<IEstateReportingRepositoryForReports, EstateReportingRepositoryForReports>();
-            services.AddSingleton<IDbContextFactory<EstateReportingGenericContext>, DbContextFactory<EstateReportingGenericContext>>();
-
-            services.AddSingleton<Func<Type, IDomainEventHandler>>(container => (type) =>
-                                                                                {
-                                                                                    IDomainEventHandler handler = container.GetService(type) as IDomainEventHandler;
-                                                                                    return handler;
-                                                                                });
-
-            services.AddSingleton<Func<String, EstateReportingGenericContext>>(cont => (connectionString) =>
-                                                                                       {
-                                                                                           String databaseEngine =
-                                                                                               ConfigurationReader.GetValue("AppSettings", "DatabaseEngine");
-
-                                                                                           return databaseEngine switch
-                                                                                           {
-                                                                                               "MySql" => new EstateReportingMySqlContext(connectionString),
-                                                                                               "SqlServer" => new EstateReportingSqlServerContext(connectionString),
-                                                                                               _ => throw new
-                                                                                                   NotSupportedException($"Unsupported Database Engine {databaseEngine}")
-                                                                                           };
-                                                                                       });
-            
-            services.AddSingleton<EstateDomainEventHandler>();
-            services.AddSingleton<MerchantDomainEventHandler>();
-            services.AddSingleton<TransactionDomainEventHandler>();
-            services.AddSingleton<ContractDomainEventHandler>();
-            services.AddSingleton<SettlementDomainEventHandler>();
-            services.AddSingleton<FileProcessorDomainEventHandler>();
-            services.AddSingleton<MerchantStatementDomainEventHandler>();
-            services.AddSingleton<IDomainEventHandlerResolver, DomainEventHandlerResolver>();
-            services.AddSingleton<IReportingManager, ReportingManager>();
-            services.AddSingleton<IModelFactory,ModelFactory>();
-
-            services.AddEventStorePersistentSubscriptionsClient(Startup.ConfigureEventStoreSettings);
-
-            var httpMessageHandler = new SocketsHttpHandler
-                                     {
-                                         SslOptions =
-                                         {
-                                             RemoteCertificateValidationCallback = (sender,
-                                                                                    certificate,
-                                                                                    chain,
-                                                                                    errors) => true,
-                                         }
-                                     };
-            HttpClient httpClient = new HttpClient(httpMessageHandler);
-            services.AddSingleton(httpClient);
-
-            this.ConfigureMiddlewareServices(services);
-
             Startup.ServiceProvider = services.BuildServiceProvider();
+            Startup.Container = new Container(services);
         }
 
-        private static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
+        internal static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
         {
             if (settings == null)
             {
@@ -214,104 +134,8 @@ namespace EstateReporting
             Startup.EventStoreClientSettings = settings;
         }
 
-        private static EventStoreClientSettings EventStoreClientSettings;
-
-        private HttpClientHandler ApiEndpointHttpHandler(IServiceProvider serviceProvider)
-        {
-            return new HttpClientHandler
-                   {
-                       ServerCertificateCustomValidationCallback = (message,
-                                                                    cert,
-                                                                    chain,
-                                                                    errors) =>
-                                                                   {
-                                                                       return true;
-                                                                   }
-                   };
-        }
-
-        private void ConfigureMiddlewareServices(IServiceCollection services)
-        {
-            services.AddHealthChecks()
-                    .AddSqlServer(connectionString:ConfigurationReader.GetConnectionString("HealthCheck"),
-                                  healthQuery:"SELECT 1;",
-                                  name:"Read Model Server",
-                                  failureStatus:HealthStatus.Degraded,
-                                  tags:new string[] {"db", "sql", "sqlserver"})
-                    .AddEventStore(Startup.EventStoreClientSettings,
-                                   userCredentials: Startup.EventStoreClientSettings.DefaultCredentials,
-                                   name: "Eventstore",
-                                   failureStatus: HealthStatus.Unhealthy,
-                                   tags: new[] { "db", "eventstore" }).AddSecurityService(ApiEndpointHttpHandler);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                                   {
-                                       Title = "Estate Reporting API",
-                                       Version = "1.0",
-                                       Description = "A REST Api to manage reporting aspects of an estate (merchants, operators and contracts).",
-                                       Contact = new OpenApiContact
-                                                 {
-                                                     Name = "Stuart Ferguson",
-                                                     Email = "golfhandicapping@btinternet.com"
-                                                 }
-                                   });
-
-                // add a custom operation filter which sets default values
-                c.OperationFilter<SwaggerDefaultValues>();
-                c.ExampleFilters();
-
-                //Locate the XML files being generated by ASP.NET...
-                var directory = new DirectoryInfo(AppContext.BaseDirectory);
-                var xmlFiles = directory.GetFiles("*.xml");
-
-                //... and tell Swagger to use those XML comments.
-                foreach (FileInfo fileInfo in xmlFiles)
-                {
-                    c.IncludeXmlComments(fileInfo.FullName);
-                }
-            });
-
-            services.AddSwaggerExamplesFromAssemblyOf<SwaggerJsonConverter>();
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
-                {
-                    options.BackchannelHttpHandler = new HttpClientHandler
-                                                     {
-                                                         ServerCertificateCustomValidationCallback =
-                                                             (message, certificate, chain, sslPolicyErrors) => true
-                                                     };
-                    options.Authority = ConfigurationReader.GetValue("SecurityConfiguration", "Authority");
-                    options.Audience = ConfigurationReader.GetValue("SecurityConfiguration", "ApiName");
-
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-                                                        {
-                                                            ValidateAudience = false,
-                                                            ValidAudience = ConfigurationReader.GetValue("SecurityConfiguration", "ApiName"),
-                                                            ValidIssuer = ConfigurationReader.GetValue("SecurityConfiguration", "Authority"),
-                                                        };
-                    options.IncludeErrorDetails = true;
-                });
-
-            services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
-                options.SerializerSettings.Formatting = Formatting.Indented;
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            });
-
-            Assembly assembly = this.GetType().GetTypeInfo().Assembly;
-            services.AddMvcCore().AddApplicationPart(assembly).AddControllersAsServices();
-        }
+        internal static EventStoreClientSettings EventStoreClientSettings;
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
