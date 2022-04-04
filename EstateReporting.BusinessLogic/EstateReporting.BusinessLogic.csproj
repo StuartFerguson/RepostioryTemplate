@@ -5,14 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.0.19-build99" />
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.0.19-build99" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.0.19-build99" />
-	  <PackageReference Include="EstateManagement.MerchantStatement.DomainEvents" Version="1.0.19-build99" />
+    <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.1.1" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.1.1" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.1.1" />
+	  <PackageReference Include="EstateManagement.MerchantStatement.DomainEvents" Version="1.1.1" />
     <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.0.6" />
     <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.0.6" />
-    <PackageReference Include="Shared.DomainDrivenDesign" Version="1.1.5" />
-    <PackageReference Include="Shared.EventStore" Version="1.1.5" />
+    <PackageReference Include="Shared.DomainDrivenDesign" Version="1.1.8" />
+    <PackageReference Include="Shared.EventStore" Version="1.1.8" />
 
     <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.0.18-build81" />
 
