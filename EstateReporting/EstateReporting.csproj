@@ -23,8 +23,8 @@
 	<ItemGroup>
 		<PackageReference Include="Lamar" Version="7.0.0" />
 		<PackageReference Include="Lamar.Microsoft.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Shared" Version="1.1.5" />
-		<PackageReference Include="Shared.EventStore" Version="1.1.5" />
+		<PackageReference Include="Shared" Version="1.1.8" />
+		<PackageReference Include="Shared.EventStore" Version="1.1.8" />
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="5.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="5.0.1" />
