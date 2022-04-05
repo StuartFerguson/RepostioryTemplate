@@ -22,4 +22,10 @@
     <ProjectReference Include="..\EstateReporting.Models\EstateReporting.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="EstateManagement.MerchantStatement.DomainEvents">
+      <HintPath>..\..\..\..\Users\stuar\.nuget\packages\estatemanagement.merchantstatement.domainevents\1.1.1\lib\net5.0\EstateManagement.MerchantStatement.DomainEvents.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

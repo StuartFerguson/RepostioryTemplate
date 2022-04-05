@@ -3,6 +3,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using Events;
     using Repository;
     using Shared.DomainDrivenDesign.EventSourcing;
@@ -133,6 +134,12 @@
         }
 
         private async Task HandleSpecificDomainEvent(MerchantReferenceAllocatedEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.UpdateMerchant(domainEvent, cancellationToken);
+        }
+
+        private async Task HandleSpecificDomainEvent(StatementGeneratedEvent domainEvent,
                                                      CancellationToken cancellationToken)
         {
             await this.EstateReportingRepository.UpdateMerchant(domainEvent, cancellationToken);

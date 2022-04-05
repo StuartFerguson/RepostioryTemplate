@@ -47,6 +47,8 @@
 
         public String Reference { get; set; }
 
+        public DateTime LastStatementGenerated { get; set; }
+
         #endregion
     }
 }

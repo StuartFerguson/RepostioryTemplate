@@ -1324,6 +1324,33 @@
         /// <param name="domainEvent">The domain event.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="Shared.Exceptions.NotFoundException">Merchant not found with Id {domainEvent.MerchantId}</exception>
+        public async Task UpdateMerchant(StatementGeneratedEvent domainEvent,
+                                         CancellationToken cancellationToken)
+        {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Merchant merchant = await context.Merchants.SingleOrDefaultAsync(m => m.EstateId == domainEvent.EstateId && m.MerchantId == domainEvent.MerchantId);
+
+            if (merchant == null)
+            {
+                throw new NotFoundException($"Merchant not found with Id {domainEvent.MerchantId}");
+            }
+
+            if (merchant.LastStatementGenerated > domainEvent.DateGenerated)
+                return;
+            
+            merchant.LastStatementGenerated= domainEvent.DateGenerated;
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Updates the merchant.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="Shared.Exceptions.NotFoundException">Merchant not found with Id {domainEvent.MerchantId}</exception>
         public async Task UpdateMerchant(SettlementScheduleChangedEvent domainEvent,
                                          CancellationToken cancellationToken)
         {

@@ -2,6 +2,7 @@ namespace EstateReporting.BusinessLogic.Tests
 {
     using System.Threading;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using EventHandling;
     using Events;
     using Moq;
@@ -149,6 +150,20 @@ namespace EstateReporting.BusinessLogic.Tests
             Logger.Initialise(NullLogger.Instance);
 
             Should.NotThrow(async () => { await eventHandler.Handle(settlementScheduleChangedEvent, CancellationToken.None); });
+        }
+
+        [Fact]
+        public void MerchantDomainEventHandler_SettlementGeneratedEvent_EventIsHandled()
+        {
+            StatementGeneratedEvent statementGeneratedEvent = TestData.StatementGeneratedEvent;
+
+            Mock<IEstateReportingRepository> estateReportingRepository = new Mock<IEstateReportingRepository>();
+
+            MerchantDomainEventHandler eventHandler = new MerchantDomainEventHandler(estateReportingRepository.Object);
+
+            Logger.Initialise(NullLogger.Instance);
+
+            Should.NotThrow(async () => { await eventHandler.Handle(statementGeneratedEvent, CancellationToken.None); });
         }
 
         #endregion
