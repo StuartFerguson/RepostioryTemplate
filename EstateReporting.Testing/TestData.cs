@@ -5,6 +5,7 @@
     using EstateManagement.Contract.DomainEvents;
     using EstateManagement.Estate.DomainEvents;
     using EstateManagement.Merchant.DomainEvents;
+    using EstateManagement.MerchantStatement.DomainEvents;
     using EstateReporting.BusinessLogic.Events;
     using FileProcessor.File.DomainEvents;
     using FileProcessor.FileImportLog.DomainEvents;
@@ -302,6 +303,14 @@
                                                                                                                                TestData.OperatorName,
                                                                                                                                TestData.MerchantNumber,
                                                                                                                                TestData.TerminalNumber);
+
+        public static DateTime StatementGeneratedDate = new DateTime(2021, 10, 6);
+        public static Guid StatementId = Guid.Parse("17D432A3-E2A8-47FD-B067-CBF4C132447C");
+
+        public static StatementGeneratedEvent StatementGeneratedEvent = new StatementGeneratedEvent(TestData.StatementId,
+                                                                                                    TestData.EstateId,
+                                                                                                    TestData.MerchantId,
+                                                                                                    TestData.StatementGeneratedDate);
 
         public static Guid TransactionId = Guid.Parse("4187AA70-4E36-451B-9B88-A164C08A9D4D");
 

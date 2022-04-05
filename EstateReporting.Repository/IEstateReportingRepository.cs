@@ -429,6 +429,9 @@
         Task UpdateMerchant(MerchantReferenceAllocatedEvent domainEvent,
                             CancellationToken cancellationToken);
 
+        Task UpdateMerchant(StatementGeneratedEvent domainEvent,
+                            CancellationToken cancellationToken);
+
         /// <summary>
         /// Updates the merchant.
         /// </summary>

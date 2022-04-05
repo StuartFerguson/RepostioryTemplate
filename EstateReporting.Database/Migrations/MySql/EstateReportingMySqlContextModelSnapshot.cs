@@ -273,6 +273,9 @@ namespace EstateReporting.Database.Migrations.MySql
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<DateTime>("LastStatementGenerated")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
