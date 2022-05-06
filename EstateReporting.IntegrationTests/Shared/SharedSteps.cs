@@ -1222,7 +1222,7 @@
                 Int32 numberOfFees = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFees");
                 DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
 
-                var aggregateid = settlementDate.ToGuid();
+                var aggregateid = Helpers.CalculateSettlementAggregateId(settlementDate, estateDetails.EstateId);
                 await Retry.For(async () =>
                                 {
                                     SettlementResponse settlements =
