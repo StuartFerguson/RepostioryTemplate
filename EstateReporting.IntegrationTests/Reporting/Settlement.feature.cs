@@ -652,7 +652,7 @@ namespace EstateReporting.IntegrationTests.Reporting
  testRunner.When("I get the pending settlements the following information should be returned", ((string)(null)), table17, "When ");
 #line hidden
 #line 119
- testRunner.When("I process the settlement for \'2022-02-06\' on Estate \'Test Estate1\' then 1 fees ar" +
+ testRunner.When("I process the settlement for \'2022-02-06\' on Estate \'Test Estate2\' then 1 fees ar" +
                     "e marked as settled and the settlement is completed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
         }

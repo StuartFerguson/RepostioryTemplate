@@ -113,10 +113,10 @@ Background:
 	When I process the settlement for '2022-01-13' on Estate 'Test Estate1' then 9 fees are marked as settled and the settlement is completed
 
 	When I get the pending settlements the following information should be returned
-	| SettlementDate | EstateName    | NumberOfFees |
-	| 2022-02-06          | Test Estate2 | 1            |
+	| SettlementDate | EstateName   | NumberOfFees |
+	| 2022-02-06     | Test Estate2 | 1            |
 
-	When I process the settlement for '2022-02-06' on Estate 'Test Estate1' then 1 fees are marked as settled and the settlement is completed
+	When I process the settlement for '2022-02-06' on Estate 'Test Estate2' then 1 fees are marked as settled and the settlement is completed
 
 @PRTest
 Scenario: Get Settlements - No Merchant Filter
