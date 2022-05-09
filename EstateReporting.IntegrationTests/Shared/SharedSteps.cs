@@ -1222,7 +1222,7 @@
                 Int32 numberOfFees = SpecflowTableHelper.GetIntValue(tableRow, "NumberOfFees");
                 DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
 
-                var aggregateid = settlementDate.ToGuid();
+                var aggregateid = Helpers.CalculateSettlementAggregateId(settlementDate, estateDetails.EstateId);
                 await Retry.For(async () =>
                                 {
                                     SettlementResponse settlements =
@@ -1324,9 +1324,8 @@
             EstateDetails estateDetails = this.TestingContext.GetEstateDetails(estateName);
             DateTime settlementDate = SpecflowTableHelper.GetDateForDateString(settlementDateString, DateTime.UtcNow.Date);
 
-            foreach (TableRow tableRow in table.Rows)
-            {
-                Guid settlementId = settlementDate.ToGuid();
+            foreach (TableRow tableRow in table.Rows) {
+                Guid settlementId = Helpers.CalculateSettlementAggregateId(settlementDate,estateDetails.EstateId);
                 DataTransferObjects.SettlementResponse settlement =
                     await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlement(this.TestingContext.AccessToken,
                                                                                                estateDetails.EstateId,
@@ -1412,7 +1411,7 @@
             {
                 await Retry.For(async () =>
                                 {
-                                    Guid settlementId = settlementDate.ToGuid();
+                                    Guid settlementId = Helpers.CalculateSettlementAggregateId(settlementDate, estateDetails.EstateId);
                                     DataTransferObjects.SettlementResponse settlement =
                                         await this.TestingContext.DockerHelper.EstateReportingClient.GetSettlement(this.TestingContext.AccessToken,
                                             estateDetails.EstateId,

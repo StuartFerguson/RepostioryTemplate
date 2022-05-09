@@ -548,6 +548,21 @@ namespace EstateReporting.Database.Migrations.SqlServer
                     b.ToTable("reconciliation");
                 });
 
+            modelBuilder.Entity("EstateReporting.Database.Entities.ResponseCodes", b =>
+                {
+                    b.Property<int>("ResponseCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ResponseCode");
+
+                    b.ToTable("responsecodes");
+                });
+
             modelBuilder.Entity("EstateReporting.Database.Entities.Settlement", b =>
                 {
                     b.Property<Guid>("EstateId")

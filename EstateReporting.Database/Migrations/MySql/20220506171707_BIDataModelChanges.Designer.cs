@@ -3,14 +3,16 @@ using System;
 using EstateReporting.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EstateReporting.Database.Migrations.MySql
 {
     [DbContext(typeof(EstateReportingMySqlContext))]
-    partial class EstateReportingMySqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220506171707_BIDataModelChanges")]
+    partial class BIDataModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
