@@ -19,7 +19,8 @@ SELECT
 	CASE t.OperatorIdentifier
 		WHEN 'Voucher' THEN REPLACE(c.Description, ' Contract', '')
 		ELSE COALESCE(t.OperatorIdentifier, '')
-	END as OperatorIdentifier
+	END as OperatorIdentifier,
+	t.ContractId
 from [transaction] t
 inner join contract c on c.ContractId = t.ContractId
 left outer join transactionadditionalrequestdata tar on tar.TransactionId = t.TransactionId AND tar.MerchantId = t.MerchantId and tar.EstateId = t.EstateId
