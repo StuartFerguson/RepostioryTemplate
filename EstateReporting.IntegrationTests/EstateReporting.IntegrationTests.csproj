@@ -60,6 +60,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EstateReporting.Client\EstateReporting.Client.csproj" />
     <ProjectReference Include="..\EstateReporting.DataTransferObjects\EstateReporting.DataTransferObjects.csproj" />
+    <ProjectReference Include="..\EstateReporting\EstateReporting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
