@@ -19,6 +19,46 @@ namespace EstateReporting.Database.Migrations.SqlServer
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("EstateReporting.Database.Entities.Calendar", b =>
+                {
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DayOfWeek")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DayOfWeekNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DayOfWeekShort")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MonthNameLong")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MonthNameShort")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MonthNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WeekNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WeekNumberString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.Property<string>("YearWeekNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Date");
+
+                    b.ToTable("calendar");
+                });
+
             modelBuilder.Entity("EstateReporting.Database.Entities.Contract", b =>
                 {
                     b.Property<Guid>("EstateId")
