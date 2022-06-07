@@ -192,7 +192,6 @@
             // Add the estate to the read model
             Estate estate = new Estate
                             {
-                                CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                 EstateId = estateId,
                                 Name = domainEvent.EstateName
                             };
@@ -241,7 +240,6 @@
 
             EstateSecurityUser estateSecurityUser = new EstateSecurityUser
                                                     {
-                                                        CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                                         EstateId = domainEvent.EstateId,
                                                         EmailAddress = domainEvent.EmailAddress,
                                                         SecurityUserId = domainEvent.SecurityUserId
@@ -527,7 +525,6 @@
                                               {
                                                   EstateId = domainEvent.EstateId,
                                                   MerchantId = domainEvent.MerchantId,
-                                                  CreatedDateTime = domainEvent.EventTimestamp.DateTime,
                                                   AddressId = domainEvent.AddressId,
                                                   AddressLine1 = domainEvent.AddressLine1,
                                                   AddressLine2 = domainEvent.AddressLine2,
@@ -563,8 +560,7 @@
                                                   Name = domainEvent.ContactName,
                                                   ContactId = domainEvent.ContactId,
                                                   EmailAddress = domainEvent.ContactEmailAddress,
-                                                  PhoneNumber = domainEvent.ContactPhoneNumber,
-                                                  CreatedDateTime = domainEvent.EventTimestamp.DateTime
+                                                  PhoneNumber = domainEvent.ContactPhoneNumber
                                               };
 
             await context.MerchantContacts.AddAsync(merchantContact, cancellationToken);
@@ -589,8 +585,7 @@
                                                 EstateId = domainEvent.EstateId,
                                                 MerchantId = domainEvent.MerchantId,
                                                 DeviceId = domainEvent.DeviceId,
-                                                DeviceIdentifier = domainEvent.DeviceIdentifier,
-                                                CreatedDateTime = domainEvent.EventTimestamp.DateTime
+                                                DeviceIdentifier = domainEvent.DeviceIdentifier
                                             };
 
             await context.MerchantDevices.AddAsync(merchantDevice, cancellationToken);
@@ -642,8 +637,7 @@
                                                             EstateId = domainEvent.EstateId,
                                                             MerchantId = domainEvent.MerchantId,
                                                             EmailAddress = domainEvent.EmailAddress,
-                                                            SecurityUserId = domainEvent.SecurityUserId,
-                                                            CreatedDateTime = domainEvent.EventTimestamp.DateTime
+                                                            SecurityUserId = domainEvent.SecurityUserId
                                                         };
 
             await context.MerchantSecurityUsers.AddAsync(merchantSecurityUser, cancellationToken);

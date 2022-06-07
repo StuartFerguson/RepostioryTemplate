@@ -10,7 +10,7 @@
     /// </summary>
     /// <seealso cref="Shared.DomainDrivenDesign.EventSourcing.DomainEvent" />
     [ExcludeFromCodeCoverage]
-    public record MerchantBalanceChangedEvent : DomainEventRecord.DomainEvent
+    public record MerchantBalanceChangedEvent : DomainEvent
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MerchantBalanceChangedEvent" /> class.

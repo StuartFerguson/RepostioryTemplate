@@ -5,7 +5,7 @@
     using Shared.DomainDrivenDesign.EventSourcing;
 
     [ExcludeFromCodeCoverage]
-    public record ServiceProviderFeeAddedToTransactionEnrichedEvent : DomainEventRecord.DomainEvent
+    public record ServiceProviderFeeAddedToTransactionEnrichedEvent : DomainEvent
     {
         #region Constructors
 
