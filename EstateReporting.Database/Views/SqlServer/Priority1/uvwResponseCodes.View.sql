@@ -1,6 +1,6 @@
 ﻿CREATE OR ALTER VIEW [dbo].[uvwResponseCodes]
 AS
 SELECT
-	ResponseCode, 
+	RIGHT('000'+CAST(responsecode AS VARCHAR(4)),4) as ResponseCode,
 	Description
 from [responsecodes]

@@ -41,6 +41,8 @@
 
         #region Properties
 
+        public DbSet<Calendar> Calendar { get; set; }
+
         /// <summary>
         /// Gets or sets the contract products.
         /// </summary>
