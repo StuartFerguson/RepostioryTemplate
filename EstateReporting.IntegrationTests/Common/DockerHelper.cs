@@ -317,11 +317,9 @@
                                                           }
                                                       };
             settings.ConnectionName = "Specflow";
-            settings.ConnectivitySettings = new EventStoreClientConnectivitySettings
-                                            {
-                                                Insecure = true,
-                                                Address = new Uri(connectionString),
-                                            };
+            settings.ConnectivitySettings = EventStoreClientConnectivitySettings.Default;
+            settings.ConnectivitySettings.Address = new Uri(Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString"));
+            settings.ConnectivitySettings.Insecure = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure");
 
             settings.DefaultCredentials = new UserCredentials("admin","changeit");
             return settings;
