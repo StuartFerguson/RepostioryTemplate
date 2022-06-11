@@ -69,21 +69,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>LogonTransaction.feature</DependentUpon>
     </Compile>
-    <Compile Update="Reporting\TransactionsByMerchantReports.feature.cs">
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Update="Reporting\TransactionsByMonthReports.feature.cs">
-      <DependentUpon>TransactionsByMonthReports.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Reporting\TransactionsByOperatorReports.feature.cs">
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Update="Reporting\TransactionsByWeekReports.feature.cs">
-      <DependentUpon>TransactionsByWeekReports.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Reporting\TransactionsByDayReports.feature.cs">
-      <DesignTime>True</DesignTime>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -117,42 +102,6 @@
     <SpecFlowFeatureFiles Update="LogonTransaction\LogonTransaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>LogonTransaction.feature.cs</LastGenOutput>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\SettlementByOperatorReports.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\SettlementByWeekReports.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\SettlementByMonthReports.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\TransactionsByMerchantReports.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>TransactionsByMerchantReports.feature.cs</LastGenOutput>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\TransactionsByMonthReports.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-      <LastGenOutput>TransactionsByDayReports.feature.cs</LastGenOutput>
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\TransactionsByOperatorReports.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>TransactionsByOperatorReports.feature.cs</LastGenOutput>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\TransactionsByWeekReports.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-      <LastGenOutput>TransactionsByDayReports.feature.cs</LastGenOutput>
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Reporting\TransactionsByDayReports.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>TransactionsByDayReports.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
   </ItemGroup>
 
