@@ -94,39 +94,22 @@ namespace EstateReporting
         public void ConfigureContainer(ServiceRegistry services)
         {
             ConfigurationReader.Initialise(Startup.Configuration);
-
-            Startup.ConfigureEventStoreSettings();
-
-            services.IncludeRegistry<MiddlewareRegistry>();
+            
             services.IncludeRegistry<RepositoryRegistry>();
             services.IncludeRegistry<DomainEventHandlerRegistry>();
             services.IncludeRegistry<MiscRegistry>();
-            
+            services.IncludeRegistry<MiddlewareRegistry>();
+
             Startup.ServiceProvider = services.BuildServiceProvider();
             Startup.Container = new Container(services);
         }
 
-        internal static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
+        public static void ConfigureEventStoreSettings(EventStoreClientSettings settings)
         {
-            if (settings == null)
-            {
-                settings = new EventStoreClientSettings();
-            }
-
-            settings.CreateHttpMessageHandler = () => new SocketsHttpHandler
-                                                      {
-                                                          SslOptions =
-                                                          {
-                                                              RemoteCertificateValidationCallback = (sender,
-                                                                                                     certificate,
-                                                                                                     chain,
-                                                                                                     errors) => true,
-                                                          }
-                                                      };
-            settings.ConnectionName = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionName");
             settings.ConnectivitySettings = EventStoreClientConnectivitySettings.Default;
             settings.ConnectivitySettings.Address = new Uri(Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString"));
             settings.ConnectivitySettings.Insecure = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure");
+
 
             settings.DefaultCredentials = new UserCredentials(Startup.Configuration.GetValue<String>("EventStoreSettings:UserName"),
                                                               Startup.Configuration.GetValue<String>("EventStoreSettings:Password"));
@@ -219,6 +202,19 @@ namespace EstateReporting
 
     public static class Extensions
     {
+        public static IServiceCollection AddInSecureEventStoreClient(
+            this IServiceCollection services,
+            Uri address,
+            Func<HttpMessageHandler>? createHttpMessageHandler = null)
+        {
+            return services.AddEventStoreClient((Action<EventStoreClientSettings>)(options =>
+                                                                                   {
+                                                                                       options.ConnectivitySettings.Address = address;
+                                                                                       options.ConnectivitySettings.Insecure = true;
+                                                                                       options.CreateHttpMessageHandler = createHttpMessageHandler;
+                                                                                   }));
+        }
+
         static Action<TraceEventType, String, String> log = (tt, subType, message) => {
             String logMessage = $"{subType} - {message}";
             switch (tt)
