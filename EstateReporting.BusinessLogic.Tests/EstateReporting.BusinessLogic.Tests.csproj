@@ -11,8 +11,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.1.2-build7" />
-    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.1.2-build7" />
+    <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.1.2" />
+    <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Moq" Version="4.18.1" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
