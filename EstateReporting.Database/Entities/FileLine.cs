@@ -48,5 +48,7 @@
         /// The status.
         /// </value>
         public string Status { get; set; } // Success/Failed/Ignored (maybe first char?)
+
+        public Guid TransactionId { get; set; }
     }
 }

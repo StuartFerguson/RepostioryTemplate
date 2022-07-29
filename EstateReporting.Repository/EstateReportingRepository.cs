@@ -1287,7 +1287,8 @@
         public async Task UpdateFileLine(FileLineProcessingSuccessfulEvent domainEvent,
                                          CancellationToken cancellationToken)
         {
-            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "S", cancellationToken);
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber,
+                                            domainEvent.TransactionId, "S", cancellationToken);
         }
 
         /// <summary>
@@ -1298,7 +1299,8 @@
         public async Task UpdateFileLine(FileLineProcessingFailedEvent domainEvent,
                                          CancellationToken cancellationToken)
         {
-            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "F", cancellationToken);
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber,
+                                            domainEvent.TransactionId, "F", cancellationToken);
         }
 
         /// <summary>
@@ -1309,7 +1311,8 @@
         public async Task UpdateFileLine(FileLineProcessingIgnoredEvent domainEvent,
                                          CancellationToken cancellationToken)
         {
-            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber, "I", cancellationToken);
+            await this.UpdateFileLineStatus(domainEvent.EstateId, domainEvent.FileId, domainEvent.LineNumber,
+                                            Guid.Empty, "I", cancellationToken);
         }
 
         /// <summary>
@@ -1662,6 +1665,7 @@
         private async Task UpdateFileLineStatus(Guid estateId,
                                                 Guid fileId,
                                                 Int32 lineNumber,
+                                                Guid transactionId,
                                                 String newStatus,
                                                 CancellationToken cancellationToken)
         {
@@ -1675,6 +1679,7 @@
             }
 
             fileLine.Status = newStatus;
+            fileLine.TransactionId = transactionId;
 
             await context.SaveChangesAsync(cancellationToken);
         }
