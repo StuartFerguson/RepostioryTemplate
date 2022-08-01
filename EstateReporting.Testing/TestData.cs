@@ -451,6 +451,9 @@
         public static ProductDetailsAddedToTransactionEvent ProductDetailsAddedToTransactionEvent =
             new ProductDetailsAddedToTransactionEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.ContractId, TestData.ProductId);
 
+        public static TransactionSourceAddedToTransactionEvent TransactionSourceAddedToTransactionEvent =
+            new TransactionSourceAddedToTransactionEvent(TestData.TransactionId, TestData.EstateId, TestData.MerchantId, TestData.TransactionSource);
+
         public static String RecipientEmail = "testemail@recipient.co.uk";
 
         public static String RecipientMobile = "123455679";
@@ -594,6 +597,8 @@
         private static readonly DateTime TransactionCompletedDateTime = new DateTime(2021, 12, 16);
 
         private static readonly DateTime VoucherRedeemedDate = new DateTime(2021, 12, 16);
+
+        private static Int32 TransactionSource = 1;
 
         #endregion
 

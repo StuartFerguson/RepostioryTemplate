@@ -771,6 +771,25 @@
             await context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task AddSourceDetailsToTransaction(TransactionSourceAddedToTransactionEvent domainEvent,
+                                                  CancellationToken cancellationToken) {
+            Guid estateId = domainEvent.EstateId;
+
+            EstateReportingGenericContext context = await this.DbContextFactory.GetContext(estateId, cancellationToken);
+
+            Transaction transaction =
+                await context.Transactions.SingleOrDefaultAsync(t => t.TransactionId == domainEvent.TransactionId, cancellationToken: cancellationToken);
+
+            if (transaction == null)
+            {
+                throw new NotFoundException($"Transaction with Id [{domainEvent.TransactionId}] not found in the Read Model");
+            }
+
+            transaction.TransactionSource = domainEvent.TransactionSource;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
         /// <summary>
         /// Adds the transaction to statement.
         /// </summary>

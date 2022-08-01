@@ -731,6 +731,9 @@ namespace EstateReporting.Database.Migrations.MySql
                     b.Property<string>("TransactionReference")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("TransactionSource")
+                        .HasColumnType("int");
+
                     b.Property<TimeSpan>("TransactionTime")
                         .HasColumnType("time(6)");
 
