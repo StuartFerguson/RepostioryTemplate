@@ -6,16 +6,16 @@
 
   <ItemGroup>
     <PackageReference Include="EstateManagement.Contract.DomainEvents" Version="1.1.2" />
-    <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.1.4" />
-    <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.1.4" />
+    <PackageReference Include="FileProcessor.File.DomainEvents" Version="1.1.7" />
+    <PackageReference Include="FileProcessor.FileImportLog.DomainEvents" Version="1.1.7" />
     <PackageReference Include="Shared" Version="1.3.7" />
     <PackageReference Include="EstateManagement.Estate.DomainEvents" Version="1.1.2" />
     <PackageReference Include="EstateManagement.Merchant.DomainEvents" Version="1.1.2" />
     <PackageReference Include="EstateManagement.MerchantStatement.DomainEvents" Version="1.1.2" />
-    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.1.5" />
-    <PackageReference Include="TransactionProcessor.Settlement.DomainEvents" Version="1.1.5" />
-    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.1.5" />
-    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.1.1" />
+    <PackageReference Include="TransactionProcessor.Reconciliation.DomainEvents" Version="1.1.7" />
+    <PackageReference Include="TransactionProcessor.Settlement.DomainEvents" Version="1.1.7" />
+    <PackageReference Include="TransactionProcessor.Transaction.DomainEvents" Version="1.1.7" />
+    <PackageReference Include="VoucherManagement.Voucher.DomainEvents" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>

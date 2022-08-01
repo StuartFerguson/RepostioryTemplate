@@ -160,6 +160,12 @@
             await this.EstateReportingRepository.CompleteTransaction(domainEvent, cancellationToken);
         }
 
+        private async Task HandleSpecificDomainEvent(TransactionSourceAddedToTransactionEvent domainEvent,
+                                                     CancellationToken cancellationToken)
+        {
+            await this.EstateReportingRepository.AddSourceDetailsToTransaction(domainEvent, cancellationToken);
+        }
+
         /// <summary>
         /// Handles the specific domain event.
         /// </summary>

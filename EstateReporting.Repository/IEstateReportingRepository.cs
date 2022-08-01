@@ -240,6 +240,9 @@
                                                MerchantFeeAddedToTransactionEvent domainEvent,
                                                CancellationToken cancellationToken);
 
+        Task AddSourceDetailsToTransaction(TransactionSourceAddedToTransactionEvent domainEvent,
+                                           CancellationToken cancellationToken);
+
         /// <summary>
         /// Adds the transaction to statement.
         /// </summary>

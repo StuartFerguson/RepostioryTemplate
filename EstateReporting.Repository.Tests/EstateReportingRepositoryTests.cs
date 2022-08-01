@@ -985,6 +985,56 @@ namespace EstateReporting.Repository.Tests
         [Theory]
         [InlineData(TestDatabaseType.InMemory)]
         [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddSourceDetailsToTransaction_TransactionSourceAdded(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingGenericContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+            await context.Transactions.AddAsync(new Transaction
+            {
+                TransactionId = TestData.TransactionId,
+                MerchantId = TestData.MerchantId,
+                EstateId = TestData.EstateId
+            });
+            await context.SaveChangesAsync();
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionSourceAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionSourceAddedToTransactionEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+
+            await reportingRepository.AddSourceDetailsToTransaction(@event, CancellationToken.None);
+
+            Transaction transaction = await context.Transactions.SingleOrDefaultAsync(e => e.MerchantId == @event.MerchantId && e.TransactionId == @event.TransactionId && e.EstateId == @event.EstateId);
+            transaction.ShouldNotBeNull();
+            transaction.TransactionSource.ShouldBe(@event.TransactionSource);
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
+        public async Task EstateReportingRepository_AddSourceDetailsToTransaction_TransactionNotFound_ErrorThroen(TestDatabaseType testDatabaseType)
+        {
+            EstateReportingGenericContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
+
+            var dbContextFactory = this.CreateMockContextFactory();
+            dbContextFactory.Setup(d => d.GetContext(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(context);
+
+            var jsonData = JsonConvert.SerializeObject(TestData.TransactionSourceAddedToTransactionEvent);
+            var @event = JsonConvert.DeserializeObject<TransactionSourceAddedToTransactionEvent>(jsonData);
+
+            EstateReportingRepository reportingRepository = new EstateReportingRepository(dbContextFactory.Object);
+            Should.Throw<NotFoundException>(async () =>
+            {
+                await reportingRepository.AddSourceDetailsToTransaction(@event,
+                                                                        CancellationToken.None);
+            });
+        }
+
+        [Theory]
+        [InlineData(TestDatabaseType.InMemory)]
+        [InlineData(TestDatabaseType.SqliteInMemory)]
         public async Task EstateReportingRepository_AddFeeDetailsToTransaction_MerchantFeeAddedToTransactionEvent_FeeAdded(TestDatabaseType testDatabaseType)
         {
             EstateReportingGenericContext context = await this.GetContext(Guid.NewGuid().ToString("N"), testDatabaseType);
