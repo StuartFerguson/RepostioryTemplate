@@ -75,6 +75,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\CallbackHandlerEnricher.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\EstateAggregator.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\FileProcessorSubscriptionStreamBuilder.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\MerchantAggregator.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\TransactionProcessorSubscriptionStreamBuilder.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
