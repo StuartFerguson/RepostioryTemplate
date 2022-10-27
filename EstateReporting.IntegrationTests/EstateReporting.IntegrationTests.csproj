@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\EstateManagementSubscriptionStreamBuilder.js" />
+    <Content Remove="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\MerchantBalanceAggregator.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByDayReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMerchantReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMonthReports - Copy.feature.cs" />
@@ -71,27 +76,6 @@
 
   <ItemGroup>
     <None Update="nlog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\CallbackHandlerEnricher.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\EstateAggregator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\FileProcessorSubscriptionStreamBuilder.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\MerchantAggregator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\MerchantBalanceCalculator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\TransactionEnricher.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\TransactionProcessorSubscriptionStreamBuilder.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
