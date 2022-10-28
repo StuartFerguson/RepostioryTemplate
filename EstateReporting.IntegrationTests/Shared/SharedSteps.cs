@@ -773,7 +773,7 @@
 
                 // Get current balance
                 MerchantBalanceResponse previousMerchantBalance =
-                    await this.TestingContext.DockerHelper.EstateClient.GetMerchantBalance(token, estateDetails.EstateId, merchantId, CancellationToken.None);
+                    await this.TestingContext.DockerHelper.TransactionProcessorClient.GetMerchantBalance(token, estateDetails.EstateId, merchantId, CancellationToken.None);
 
                 MakeMerchantDepositRequest makeMerchantDepositRequest = new MakeMerchantDepositRequest
                                                                         {
