@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\EstateManagementSubscriptionStreamBuilder.js" />
+    <Content Remove="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\MerchantBalanceAggregator.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByDayReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMerchantReports - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Reporting\SettlementByMonthReports - Copy.feature.cs" />
@@ -25,8 +30,10 @@
   <ItemGroup>
     <PackageReference Include="ClientProxyBase" Version="1.4.0" />
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.48" />
-    <PackageReference Include="EstateManagement.Client" Version="1.1.5" />
     <PackageReference Include="EstateReporting.Database" Version="1.1.7" />
+    <PackageReference Include="EstateManagement.Client" Version="1.1.6-build15" />
+    <PackageReference Include="EstateReporting.Database" Version="1.1.6" />
+    <PackageReference Include="EventStoreProjections" Version="1.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.5" />
@@ -42,7 +49,7 @@
     <PackageReference Include="SpecFlow" Version="3.9.74" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.74" />
     <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
-    <PackageReference Include="TransactionProcessor.Client" Version="1.1.12" />
+    <PackageReference Include="TransactionProcessor.Client" Version="1.1.13-build21" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
@@ -69,28 +76,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\CallbackHandlerEnricher.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\EstateAggregator.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\FileProcessorSubscriptionStreamBuilder.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\MerchantAggregator.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\stuar\.nuget\packages\eventstoreprojections\1.0.13\contentFiles\any\net6.0\projections\continuous\TransactionProcessorSubscriptionStreamBuilder.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="nlog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\CallbackHandlerEnricher.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\EstateAggregator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\FileProcessorSubscriptionStreamBuilder.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\MerchantAggregator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\MerchantBalanceCalculator.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\TransactionEnricher.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="projections\continuous\TransactionProcessorSubscriptionStreamBuilder.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
