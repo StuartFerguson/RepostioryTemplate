@@ -159,8 +159,8 @@ namespace EstateReporting
                                  endpoints.MapHealthChecks("health", new HealthCheckOptions()
                                                                      {
                                                                          Predicate = _ => true,
-                                                                         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                                                                     });
+                                                                         ResponseWriter = Shared.HealthChecks.HealthCheckMiddleware.WriteResponse
+                                 });
                              });
             app.UseSwagger();
 
