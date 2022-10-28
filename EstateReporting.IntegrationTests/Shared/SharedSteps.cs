@@ -802,7 +802,7 @@
                 await Retry.For(async () =>
                                 {
                                     MerchantBalanceResponse currentMerchantBalance =
-                                        await this.TestingContext.DockerHelper.EstateClient.GetMerchantBalance(token,
+                                        await this.TestingContext.DockerHelper.TransactionProcessorClient.GetMerchantBalance(token,
                                                                                                                estateDetails.EstateId,
                                                                                                                merchantId,
                                                                                                                CancellationToken.None);
