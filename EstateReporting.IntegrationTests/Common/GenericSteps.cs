@@ -40,7 +40,7 @@
             this.TestingContext.DockerHelper.SqlCredentials = Setup.SqlCredentials;
             this.TestingContext.DockerHelper.SqlServerContainerName = "sharedsqlserver";
 
-            this.TestingContext.DockerHelper.SetImageDetails(ContainerType.EstateManagement, ("estatemanagement", false));
+            this.TestingContext.DockerHelper.SetImageDetails(ContainerType.EstateManagement, ("estatereporing", false));
 
             this.TestingContext.Logger = logger;
             this.TestingContext.Logger.LogInformation("About to Start Containers for Scenario Run");
